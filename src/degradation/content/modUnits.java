@@ -34,12 +34,12 @@ public class modUnits {
                     reload = 140f;
                     ejectEffect = Fx.hitLancer;
                     shoot.shots = 4;
-                    bullet = new BasicBulletType(2.5f, 9) {{
+                    bullet = new BasicBulletType(2f, 9) {{
                         frontColor = Color.valueOf(" 8aa3f4");
                         sprite = "circle-bullet";
                         width = 8f;
                         height = 8f;
-                        lifetime = 45f;
+                        lifetime = 110f;
                         shootEffect = Fx.lancerLaserShoot;
                         smokeEffect = Fx.none;
                         homingPower = 0.17f;
