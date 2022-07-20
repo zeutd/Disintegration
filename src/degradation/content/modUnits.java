@@ -37,14 +37,17 @@ public class modUnits {
                     bullet = new BasicBulletType(2.5f, 9) {{
                         frontColor = Color.valueOf(" 8aa3f4");
                         sprite = "circle-bullet";
-                        width = 5f;
-                        height = 5f;
+                        width = 8f;
+                        height = 8f;
                         lifetime = 45f;
                         shootEffect = Fx.lancerLaserShoot;
                         smokeEffect = Fx.none;
                         homingPower = 0.17f;
                         homingDelay = 19f;
                         homingRange = 30f;
+                        trailColor = Color.valueOf(" 8aa3f4");
+                        trailWidth = 4;
+                        trailLength = 20;
                     }};
                 }});
         }};
