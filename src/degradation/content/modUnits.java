@@ -38,7 +38,7 @@ public class modUnits {
                         frontColor = Color.valueOf(" 8aa3f4");
                         sprite = "circle-bullet";
                         width = 8f;
-                        height = 8f;
+                        height = 10f;
                         lifetime = 110f;
                         shootEffect = Fx.lancerLaserShoot;
                         smokeEffect = Fx.none;
