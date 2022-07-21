@@ -2,7 +2,6 @@ package degradation.world.blocks.defence;
 
 import arc.math.*;
 import degradation.content.modBullets;
-import mindustry.entities.bullet.*;
 import mindustry.gen.Bullet;
 import mindustry.world.blocks.defense.*;
 
