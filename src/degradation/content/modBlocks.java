@@ -21,7 +21,7 @@ public class modBlocks {
             shardChance = 0.1f;
             size = 2;
             health = 2800;
-            requirements(Category.defense, with(modItems.iridium, 8));
+            requirements(Category.defense, with(modItems.iridium, 24));
         }};
     }
 }

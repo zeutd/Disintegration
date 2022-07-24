@@ -11,7 +11,6 @@ public class DegradationJavaMod extends Mod{
     public static modItems ModItems;
     public static modUnits ModUnits;
     public static modBlocks ModBlocks;
-    public static modBullets ModBullets;
     public DegradationJavaMod(){
         Log.info("Loaded DegradationMod constructor.");
     }
@@ -21,10 +20,8 @@ public class DegradationJavaMod extends Mod{
         ModItems = new modItems();
         ModItems.load();
         ModUnits = new modUnits();
-        ModItems.load();
+        ModUnits.load();
         ModBlocks = new modBlocks();
         ModBlocks.load();
-        ModBullets = new modBullets();
-        ModBullets.load();
     }
 }
