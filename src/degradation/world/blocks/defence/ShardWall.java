@@ -1,7 +1,7 @@
 package degradation.world.blocks.defence;
 
 import arc.math.*;
-import degradation.content.modBullets;
+import degradation.content.DTBullets;
 import mindustry.gen.Bullet;
 import mindustry.world.blocks.defense.*;
 
@@ -23,7 +23,7 @@ public class ShardWall extends Wall {
             //create shard if necessary
             if (shardChance > 0f) {
                 if (Mathf.chance(shardChance)) {
-                    modBullets.shard.create(this, this.team, x, y, bullet.rotation() + 180f, 2f, 2f);
+                    DTBullets.shard.create(this, this.team, x, y, bullet.rotation() + 180f, 2f, 2f);
                 }
             }
             return true;

@@ -4,7 +4,7 @@ import arc.graphics.Color;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.BulletType;
 
-public class modBullets {
+public class DTBullets {
     public static BulletType shard;
     public static void load(){
         shard = new BasicBulletType(4f,50f){{

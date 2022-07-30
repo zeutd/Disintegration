@@ -3,7 +3,7 @@ package degradation.content;
 import arc.graphics.Color;
 import mindustry.type.Item;
 
-public class modItems {
+public class DTItems {
     public static Item iridium, iron, heavite, ionicAlloy, silver, concussionAlloy;
     public static void load() {
         iridium = new Item("iridium", Color.valueOf("00ffff")){{
