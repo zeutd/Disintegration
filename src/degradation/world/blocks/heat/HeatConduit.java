@@ -1,28 +1,4 @@
-package degradation.world.blocks.distribution;
-
-import arc.Core;
-import arc.graphics.Blending;
-import arc.graphics.Color;
-import arc.graphics.g2d.Draw;
-import arc.graphics.g2d.TextureRegion;
-import arc.math.Mathf;
-import arc.util.Eachable;
-import arc.util.Nullable;
-import mindustry.entities.units.BuildPlan;
-import mindustry.gen.Building;
-import mindustry.graphics.Layer;
-import mindustry.world.Block;
-import mindustry.world.Tile;
-import mindustry.world.blocks.Autotiler;
-import mindustry.world.blocks.heat.HeatConductor;
-import mindustry.world.blocks.liquid.Conduit;
-import mindustry.world.draw.DrawDefault;
-import mindustry.world.draw.DrawHeatOutput;
-import mindustry.world.draw.DrawMulti;
-import mindustry.world.blocks.heat.*;
-
-import static mindustry.Vars.renderer;
-import static mindustry.type.Liquid.animationFrames;
+package degradation.world.blocks.heat;
 
 public class HeatConduit/*extends HeatConductor*/{/*
     static final float rotatePad = 6, hpad = rotatePad / 2f / 4f;

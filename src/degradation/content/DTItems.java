@@ -1,10 +1,14 @@
 package degradation.content;
 
 import arc.graphics.Color;
+import arc.struct.Seq;
 import mindustry.type.Item;
+
+import static mindustry.content.Items.*;
 
 public class DTItems {
     public static Item iridium, iron, heavite, ionicAlloy, silver, concussionAlloy;
+    public static final Seq<Item> omurloItems = new Seq<>();
     public static void load() {
         iridium = new Item("iridium", Color.valueOf("00ffff")){{
              hardness = 4;
@@ -30,5 +34,8 @@ public class DTItems {
             hardness = 2;
             cost = 2;
         }};
+        omurloItems.addAll(
+                iridium, iron, heavite, ionicAlloy, silver, concussionAlloy, sand, silicon, graphite, coal
+        );
     }
 }

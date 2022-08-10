@@ -12,7 +12,6 @@ public class HealTurret extends PowerTurret {
     public class HealTurretBuild extends PowerTurretBuild {
         @Override
         public boolean collide(Bullet other){ return other.owner != this;}
-
         @Override
         public void findTarget() {
             Building HealTarget = Units.findDamagedTile(team, x, y);
