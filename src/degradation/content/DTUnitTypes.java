@@ -13,6 +13,7 @@ import mindustry.entities.bullet.EmpBulletType;
 import mindustry.entities.bullet.LaserBoltBulletType;
 import mindustry.gen.EntityMapping;
 import mindustry.gen.Sounds;
+import mindustry.gen.UnitEntity;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
@@ -40,7 +41,7 @@ public class DTUnitTypes {
         //air-Hyper
         //T1 lancet
         lancet = new UnitType("lancet"){{
-            constructor = EntityMapping.map(0);
+            constructor = UnitEntity::create;
             speed = 2.7f;
             accel = 0.08f;
             drag = 0.04f;
@@ -125,7 +126,7 @@ public class DTUnitTypes {
                 }});
         }};
         separate = new UnitType("separate"){{
-            constructor = EntityMapping.map(0);
+            constructor = UnitEntity::create;
             ammoType = new PowerAmmoType(900);
             aiController = BuilderAI::new;
             isEnemy = false;
@@ -144,11 +145,11 @@ public class DTUnitTypes {
             engineOffset = 6f;
             hitSize = 8f;
             alwaysUnlocked = true;
-            weapons.add(new Weapon("laser-bolt-mount"){{
+            weapons.add(new Weapon("degradation-laser-bolt-mount"){{
                 reload = 17f;
                 x = 2f;
                 y = 0f;
-                top = true;
+                top = false;
                 ejectEffect = Fx.casing1;
                 shootSound = Sounds.lasershoot;
                 bullet = new LaserBoltBulletType(2.5f, 10){{

@@ -41,7 +41,8 @@ public class DTBlocks {
             requirements(Category.defense, with(DTItems.iridium, 24));
         }};
         //storage
-        corePedestal = new CoreBlock("core-pedestal"){{
+        corePedestal = new CoreBlock("core-pedestal"){
+            {
             requirements(Category.effect, BuildVisibility.editorOnly, with(DTItems.iron, 1300));
             alwaysUnlocked = true;
 
