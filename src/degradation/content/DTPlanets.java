@@ -1,6 +1,7 @@
 package degradation.content;
 
 import arc.graphics.Color;
+import degradation.maps.planet.OmurloPlanetGenerator;
 import mindustry.content.Blocks;
 import mindustry.content.Items;
 import mindustry.content.Planets;
@@ -8,16 +9,14 @@ import mindustry.game.Team;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.HexSkyMesh;
 import mindustry.graphics.g3d.MultiMesh;
-import mindustry.maps.planet.ErekirPlanetGenerator;
 import mindustry.type.Planet;
-import mindustry.world.meta.Attribute;
 import mindustry.world.meta.Env;
 
 public class DTPlanets {
     public static Planet omurlo;
     public static void load(){
         omurlo = new Planet("omurlo", Planets.sun, 1f, 2){{
-                generator = new ErekirPlanetGenerator();
+                generator = new OmurloPlanetGenerator();
                 meshLoader = () -> new HexMesh(this, 5);
                 cloudMeshLoader = () -> new MultiMesh(
                         new HexSkyMesh(this, 2, 0.15f, 0.14f, 5, Color.valueOf("e6e6fa").a(0.75f), 2, 0.42f, 1f, 0.43f),
@@ -26,7 +25,6 @@ public class DTPlanets {
                 alwaysUnlocked = true;
                 landCloudColor = Color.valueOf("ed6542");
                 atmosphereColor = Color.valueOf("f0f0ff");
-                defaultEnv = Env.scorching | Env.terrestrial;
                 startSector = 17;
                 atmosphereRadIn = 0.02f;
                 atmosphereRadOut = 0.3f;
@@ -46,7 +44,7 @@ public class DTPlanets {
                     r.showSpawns = false;
                 };
 
-                unlockedOnLand.add(Blocks.coreBastion);
+                unlockedOnLand.add(DTBlocks.corePedestal);
             }};
     }
 }

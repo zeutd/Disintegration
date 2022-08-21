@@ -15,6 +15,7 @@ public class DegradationJavaMod extends Mod{
         DTUnitTypes.load();
         DTBlocks.load();
         DTBullets.load();
+        DTPlanets.load();
         DTStatusEffects.load();
     }
 }
