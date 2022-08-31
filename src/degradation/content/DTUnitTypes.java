@@ -11,7 +11,6 @@ import mindustry.content.Fx;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.EmpBulletType;
 import mindustry.entities.bullet.LaserBoltBulletType;
-import mindustry.gen.EntityMapping;
 import mindustry.gen.Sounds;
 import mindustry.gen.UnitEntity;
 import mindustry.graphics.Drawf;
@@ -36,6 +35,7 @@ public class DTUnitTypes {
             //ground-subsidiary
             //core-unit
             separate
+            //special-unit
             ;
     public static void load(){
         //air-Hyper

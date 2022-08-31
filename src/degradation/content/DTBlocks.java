@@ -3,6 +3,7 @@ package degradation.content;
 import arc.graphics.Color;
 import arc.graphics.g2d.TextureRegion;
 import degradation.world.blocks.defence.turrets.HealTurret;
+import degradation.world.blocks.production.Quarry;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.content.Liquids;
@@ -35,7 +36,9 @@ public class DTBlocks {
     //heat
             heatConduit,
     //turrets
-            holy;
+            holy,
+    //drills
+            quarry;
     public static void load() {
         //environment
         greenIce = new Floor("green-ice"){{
@@ -114,6 +117,14 @@ public class DTBlocks {
                 collidesTeam = true;
             }};
             requirements(Category.turret, with(DTItems.iridium, 1));
+        }};
+        quarry = new Quarry("quarry"){{
+           size = 3;
+           regionRotated1 = 1;
+           consumePower(20);
+           consumeLiquid(Liquids.hydrogen, 5f / 60f);
+           consumeLiquid(Liquids.nitrogen, 6f / 60f).boost();
+           requirements(Category.production, with(DTItems.iridium, 1));
         }};
     }
 }
