@@ -23,7 +23,7 @@ import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.type.Category;
 import mindustry.world.Block;
-import mindustry.world.blocks.defense.turrets.PowerTurret;
+import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.storage.CoreBlock;
@@ -130,10 +130,10 @@ public class DTBlocks {
             }};
             requirements(Category.turret, with(DTItems.iridium, 1));
         }};
-        fracture = new PowerTurret("fracture"){{
+        fracture = new ItemTurret("fracture"){{
             requirements(Category.turret, with(Items.thorium, 50, Items.oxide, 150, Items.silicon, 200, Items.beryllium, 350));
 
-            shootType = new BasicBulletType(){{
+            ammo(Items.oxide ,new BasicBulletType(){{
                 lightOpacity = 0.7f;
                 damage = 60;
                 hitColor = lightColor = Pal.berylShot;
@@ -166,7 +166,7 @@ public class DTBlocks {
                     }
                 });
                 hitEffect = despawnEffect = DTFx.hitFracture;
-            }};
+            }});
 
             reload = 17f;
             shootY = 15f;
@@ -282,6 +282,8 @@ public class DTBlocks {
 
             coolant = consume(new ConsumeLiquid(Liquids.water, 20f / 60f));
             coolantMultiplier = 2.5f;
+            consumePower(60);
+            ammoPerShot = 1;
 
             limitRange(-5f);
         }};
