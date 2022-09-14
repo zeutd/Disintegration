@@ -264,40 +264,7 @@ public class DTBlocks {
                             haloRotation = 180f;
                             layer = Layer.effect;
                             y = haloY;
-                        }}/*,
-
-                        new HaloPart(){{
-                            progress = haloProgress;
-                            color = haloColor;
-                            sides = 3;
-                            tri = true;
-                            shapes = 3;
-                            triLength = 0f;
-                            triLengthTo = 10f;
-                            shapeRotation = 180f;
-                            radius = 6f;
-                            haloRadius = 16f;
-                            haloRotateSpeed = -haloRotSpeed;
-                            haloRotation = 180f / 3f;
-                            layer = Layer.effect;
-                            y = haloY;
-                        }},
-
-                        new HaloPart(){{
-                            progress = haloProgress;
-                            color = haloColor;
-                            sides = 3;
-                            tri = true;
-                            shapes = 3;
-                            triLength = 0f;
-                            triLengthTo = 4f;
-                            radius = 6f;
-                            haloRadius = 16f;
-                            haloRotateSpeed = -haloRotSpeed;
-                            haloRotation = 180f / 3f;
-                            layer = Layer.effect;
-                            y = haloY;
-                        }}*/);
+                        }});
             }};
 
             targetGround = true;
