@@ -36,6 +36,7 @@ import static arc.graphics.g2d.Draw.color;
 import static mindustry.type.ItemStack.with;
 
 public class DTBlocks {
+    //TODO check bundles
     public static Block
     //environment
             iceWater,greenIce,
@@ -130,8 +131,9 @@ public class DTBlocks {
             }};
             requirements(Category.turret, with(DTItems.iridium, 1));
         }};
+        //TODO balancing
         fracture = new ItemTurret("fracture"){{
-            requirements(Category.turret, with(Items.thorium, 50, Items.oxide, 150, Items.silicon, 200, Items.beryllium, 350));
+            requirements(Category.turret, with(Items.surgeAlloy, 200, Items.oxide, 400, Items.silicon, 400, Items.beryllium, 500));
 
             ammo(Items.oxide ,new BasicBulletType(){{
                 lightOpacity = 0.7f;
