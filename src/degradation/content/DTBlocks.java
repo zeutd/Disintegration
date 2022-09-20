@@ -3,7 +3,6 @@ package degradation.content;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import degradation.world.blocks.defence.ShardWall;
-import degradation.world.blocks.defence.turrets.HealTurret;
 import degradation.world.blocks.production.Quarry;
 import mindustry.content.Fx;
 import mindustry.content.Items;
@@ -24,6 +23,7 @@ import mindustry.graphics.Pal;
 import mindustry.type.Category;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
+import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.storage.CoreBlock;
@@ -107,11 +107,12 @@ public class DTBlocks {
            requirements(Category.distribution, with(DTItems.iridium, 24));
         }};*/
         //turret
-        holy = new HealTurret("holy"){{
+        holy = new PowerTurret("holy"){{
             scaledHealth = 260;
             size = 1;
             targetAir = true;
             targetGround = true;
+            targetHealing = true;
             rotateSpeed = 5;
             coolant = consumeCoolant(0.2f);
             consumePower(2f);
