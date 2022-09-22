@@ -187,20 +187,22 @@ public class DTBlocks {
                             moveY = -1.25f;
                             under = true;
                             progress = PartProgress.recoil;
-                            heatProgress = PartProgress.recoil.add(0.25f).min(PartProgress.warmup);
+                            heatProgress = PartProgress.recoil.min(PartProgress.warmup);
                             moves.add(new PartMove(PartProgress.recoil, 0f, -0.5f, 0f));
                         }},
                         new RegionPart("-mid"){{
                             under = true;
                             progress = PartProgress.recoil;
-                            heatProgress = PartProgress.recoil.add(0.25f).min(PartProgress.warmup);
-                            heatColor = Color.sky.cpy().a(0.9f);
+                            heatProgress = PartProgress.recoil.min(PartProgress.warmup);
+                            heatColor = Color.green.cpy().a(0.5f);
                         }},
                         new RegionPart("-blade"){{
                             mirror = true;
                             under = true;
                             moveX = 1.75f;
                             moveY = -1f;
+                            heatProgress = PartProgress.recoil.min(PartProgress.warmup);
+                            heatColor = Color.green.cpy().a(0.5f);
                             moves.add(new PartMove(PartProgress.recoil, 0.4f, -3f, 0f));
                         }},
                         new ShapePart(){{
@@ -249,7 +251,7 @@ public class DTBlocks {
                             triLength = 0f;
                             triLengthTo = 10f;
                             radius = 6f;
-                            haloRadius = 10f;
+                            haloRadius = 9f;
                             haloRotation = 180f;
                             layer = Layer.effect;
                             y = haloY;
@@ -262,7 +264,7 @@ public class DTBlocks {
                             triLength = 0f;
                             triLengthTo = 3f;
                             radius = 6f;
-                            haloRadius = 10f;
+                            haloRadius = 9f;
                             shapeRotation = 180f;
                             haloRotation = 180f;
                             layer = Layer.effect;

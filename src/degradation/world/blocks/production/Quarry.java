@@ -137,7 +137,7 @@ public class Quarry extends Block {
     }
     public class QuarryBuild extends Building {
         float progress;
-        float mx = 0, mxS = 0, mxP = 0, mxN = 0, mxM = 0, mxR = 0, mxL = 0,my = 0, myS = 0, myP = 0, myN = 0, myM = 0, myR = 0, myL = 0;
+        float mx = 0, mxS = 0, mxP = 0, mxM = 0, mxR = 0, my = 0, myS = 0, myP = 0, myM = 0, myR = 0, mN = 0, mL = 0;
         float warmup;
         Color fullColor;
         float fulls = areaSize * tilesize/2f;
@@ -210,12 +210,12 @@ public class Quarry extends Block {
                 myS = MathDef.lerp(myS, my - fulls - y, 4, 2, paused);
                 myP = MathDef.lerp(myP, my + fulls - y, 4, 2, paused);
                 if (Math.abs(myP - (my + fulls - y)) <= 0.1){
-                    mxN = MathDef.lerp(mxN, -fulls, 4, 3, paused);
-                    myN = MathDef.lerp(myN, -fulls, 4, 3, paused);
-                    if (mxN + fulls >= -0.01) {
-                        mxL = MathDef.lerp(mxL, -fulls, 4, 3, paused);
-                        myL = MathDef.lerp(myL, -fulls, 4, 3, paused);
-                        if(mxL + fulls >= -0.01) {
+                    mN = MathDef.lerp(mN, -fulls, 4, 5, paused);
+                    mN = MathDef.lerp(mN, -fulls, 4, 5, paused);
+                    if (mN + fulls >= -0.01) {
+                        mL = MathDef.lerp(mL, -fulls, 4, 5, paused);
+                        mL = MathDef.lerp(mL, -fulls, 4, 5, paused);
+                        if(mL + fulls >= -0.01) {
                             drillAlpha = MathDef.lerp(drillAlpha, 1, 4, 2, paused);
                             if (1 - drillAlpha <= 0.01){
                                 armAlphaAni = 0;
@@ -225,14 +225,14 @@ public class Quarry extends Block {
                                         mxR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
                                         myR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
                                     }
-                                    mxM = MathDef.linear(mxM, mxR, 0.1f, paused);
-                                    myM = MathDef.linear(myM, myR, 0.1f, paused);
+                                    mxM = MathDef.linear(mxM, mxR, 0.07f, paused);
+                                    myM = MathDef.linear(myM, myR, 0.07f, paused);
                                 }
                                 else{
                                     mxR = 0;
                                     myR = 0;
-                                    mxM = MathDef.lerp(mxM, mxR, 4, 4, paused);
-                                    myM = MathDef.lerp(myM, myR, 4, 4, paused);
+                                    mxM = MathDef.lerp(mxM, mxR, 4, 6, paused);
+                                    myM = MathDef.lerp(myM, myR, 4, 6, paused);
                                 }
                             }
                         }
@@ -246,24 +246,24 @@ public class Quarry extends Block {
             else{
                 mxR = 0;
                 myR = 0;
-                mxM = MathDef.lerp(mxM, mxR, 4, 4, paused);
-                myM = MathDef.lerp(myM, myR, 4, 4, paused);
+                mxM = MathDef.lerp(mxM, mxR, 4, 5, paused);
+                myM = MathDef.lerp(myM, myR, 4, 5, paused);
                 if(Math.abs(mxM) <= 0.001) {
                     drillAlpha = MathDef.lerp(drillAlpha, 0, 4, 2, paused);
                     if (drillAlpha <= 0.01){
                         armAlphaAni = 1;
                         armAlpha = 0;
-                        myL = MathDef.lerp(mxL, -2 * fulls, 4, 4, paused);
-                        mxL = MathDef.lerp(myL, -2 * fulls, 4, 4, paused);
-                        if (mxL <= -2 * fulls + 0.006) {
-                            if (mxN <= -2 * fulls + 0.006) {
+                        mL = MathDef.lerp(mL, -2 * fulls, 4, 6, paused);
+                        mL = MathDef.lerp(mL, -2 * fulls, 4, 6, paused);
+                        if (mL <= -2 * fulls + 0.006) {
+                            if (mN <= -2 * fulls + 0.006) {
                                 mxS = MathDef.lerp(mxS, 0, 4, 2, paused);
                                 mxP = MathDef.lerp(mxP, 0, 4, 2, paused);
                                 myS = MathDef.lerp(myS, 0, 4, 2, paused);
                                 myP = MathDef.lerp(myP, 0, 4, 2, paused);
                             }
-                            mxN = MathDef.lerp(mxN, -2 * fulls, 4, 4, paused);
-                            myN = MathDef.lerp(myN, -2 * fulls, 4, 4, paused);
+                            mN = MathDef.lerp(mN, -2 * fulls, 4, 5, paused);
+                            mN = MathDef.lerp(mN, -2 * fulls, 4, 5, paused);
                         }
                     }
                 }
@@ -312,26 +312,26 @@ public class Quarry extends Block {
             Lines.line(armRegion,
                     mx - fulls,
                     my + fulls,
-                    mxN + mx + fulls,
+                    mN + mx + fulls,
                     my + fulls, false
             );
             Lines.line(armRegion,
                     mx + fulls,
                     my + fulls,
-                    -mxN + mx - fulls,
+                    -mN + mx - fulls,
                     my + fulls, false
             );
             //down
             Lines.line(armRegion,
                     mx - fulls,
                     my - fulls,
-                    mxN + mx + fulls,
+                    mN + mx + fulls,
                     my - fulls, false
             );
             Lines.line(armRegion,
                     mx + fulls,
                     my - fulls,
-                    -mxN + mx - fulls,
+                    -mN + mx - fulls,
                     my - fulls, false
             );
             //right
@@ -339,26 +339,26 @@ public class Quarry extends Block {
                     mx + fulls,
                     my - fulls,
                     mx + fulls,
-                    myN + my + fulls, false
+                    mN + my + fulls, false
             );
             Lines.line(armRegion,
                     mx + fulls,
                     my + fulls,
                     mx + fulls,
-                    -myN + my - fulls, false
+                    -mN + my - fulls, false
             );
             //left
             Lines.line(armRegion,
                     mx - fulls,
                     my - fulls,
                     mx - fulls,
-                    myN + my + fulls, false
+                    mN + my + fulls, false
             );
             Lines.line(armRegion,
                     mx - fulls,
                     my + fulls,
                     mx - fulls,
-                    -myN + my - fulls, false
+                    -mN + my - fulls, false
             );
             //draw across arm animation
             Draw.z(Layer.buildBeam + 1.1f);
@@ -367,24 +367,24 @@ public class Quarry extends Block {
                     mx,
                     my - fulls,
                     mx,
-                    myL + my + fulls, false
+                    mL + my + fulls, false
             );
             Lines.line(armRegion,
                     mx,
                     my + fulls,
                     mx,
-                    -myL + my - fulls, false
+                    -mL + my - fulls, false
             );
             Lines.line(armRegion,
                     mx - fulls,
                     my,
-                    mxL + mx + fulls,
+                    mL + mx + fulls,
                     my, false
             );
             Lines.line(armRegion,
                     mx + fulls,
                     my,
-                    -mxL + mx - fulls,
+                    -mL + mx - fulls,
                     my, false
             );
             //draw across arm
