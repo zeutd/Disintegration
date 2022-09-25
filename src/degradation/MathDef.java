@@ -1,11 +1,11 @@
 package degradation;
 
 public class MathDef {
-    /**Better Mathf.lerp*/
+    /** Better Mathf.lerp*/
     public static float lerp(float value, float target, float power, float speed){
         return (((target / speed - value / speed) / power / 5 + value / speed) * speed + (target - value) / speed / 5);
     }
-    /**Better Mathf.lerp*/
+    /** Better Mathf.lerp*/
     public static float lerp(float value, float target, float power, float speed, boolean paused){
         if (!paused) {
             return (((target / speed - value / speed) / power / 5 + value / speed) * speed + (target - value) / speed / 5);
