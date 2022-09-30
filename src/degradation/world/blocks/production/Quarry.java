@@ -18,15 +18,15 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import degradation.MathDef;
 import degradation.content.DTFx;
-import degradation.content.DTItems;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
-import mindustry.content.Items;
 import mindustry.core.World;
 import mindustry.entities.Effect;
 import mindustry.entities.effect.MultiEffect;
 import mindustry.entities.units.BuildPlan;
+import mindustry.game.Team;
 import mindustry.gen.Building;
+import mindustry.gen.Sounds;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
@@ -54,7 +54,6 @@ public class Quarry extends Block {
     public Color areaColor = Pal.accent;
     public Color boostColor = Color.sky.cpy().mul(0.87f);
     public Effect drillEffect = new MultiEffect(DTFx.quarryDrillEffect, Fx.mine);
-    public Item[] blackListItem = {Items.sand, Items.thorium, DTItems.iridium};
 
     protected final float fulls = areaSize * tilesize/2f;
 
@@ -72,6 +71,8 @@ public class Quarry extends Block {
         //drills work in space I guess
         envEnabled |= Env.space;
         quickRotate = false;
+        ambientSoundVolume = 0.05f;
+        ambientSound = Sounds.minebeam;
     }
     @Override
     public void load(){
@@ -96,14 +97,12 @@ public class Quarry extends Block {
     public void drawPlace(int x, int y, int rotation, boolean valid){
         super.drawPlace(x, y, rotation, valid);
 
-        Vec2 mineCentre = getMiningArea(x, y, rotation);
-
         int mx = (int) (x + Geometry.d4x(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
         int my = (int) (y + Geometry.d4y(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
 
         Tile[][] tiles = getMiningTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
-        Item[][] items = getDropArray(tiles, areaSize - 1, areaSize - 1);
+        Item[][] items = getDropArray(tiles, areaSize, areaSize);
 
         Seq<Item> itemList = listItem(items);
 
@@ -117,6 +116,18 @@ public class Quarry extends Block {
         Rect rect = getRect(Tmp.r1, x, y, rotation);
 
         Drawf.dashRect(valid ? Pal.accent : Pal.remove, rect);
+    }
+
+    @Override
+    public boolean canPlaceOn(Tile tile, Team team, int rotation){
+        super.canPlaceOn(tile, team, rotation);
+        int mx = (int) (tile.x + Geometry.d4x(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
+        int my = (int) (tile.y + Geometry.d4y(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
+
+        Tile[][] tiles = getMiningTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
+
+        Item[][] items = getDropArray(tiles, areaSize, areaSize);
+        return getEmptyDrop(items);
     }
 
     public void drawText(Item item, int count, int x, int y, boolean valid, int layer){
@@ -167,8 +178,7 @@ public class Quarry extends Block {
         int dy = (int) pos.y;
         for (int ix = 0; ix <= width - 1; ix ++){
             for (int iy = 0; iy <= height - 1; iy ++){
-                Tile other = world.tile(ix + dx + 1, iy + dy + 1)/*.setBlock(Blocks.shockMine)*/;
-                //Log.info(other);
+                Tile other = world.tile(ix + dx + 1, iy + dy + 1);
                 if(other != null) tilesGet[ix][iy] = other;
             }
         }
@@ -491,7 +501,7 @@ public class Quarry extends Block {
                 Draw.z(Layer.blockOver);
 
                 Lines.stroke(0.6f);
-                if (1 - drillAlpha <= 0.01 && !paused && Mathf.range(1) >= 0 && efficiency > 0 && items.total() < itemCapacity && !empty) {
+                if (1 - drillAlpha <= 0.01 && Mathf.range(1) >= 0 && efficiency > 0 && items.total() < itemCapacity) {
                     angle = rand.random(0, 360f);
                     drillEffect.at(mxM + mx, myM + my, angle, fullColor);
                 }

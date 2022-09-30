@@ -3,6 +3,7 @@ package degradation.content;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import degradation.world.blocks.defence.ShardWall;
+import degradation.world.blocks.defence.turrets.ElectricTowerTurret;
 import degradation.world.blocks.production.Quarry;
 import mindustry.content.Fx;
 import mindustry.content.Items;
@@ -48,8 +49,9 @@ public class DTBlocks {
     //heat
             heatConduit,
     //turrets
-            holy,
             fracture,
+            holy,
+            sparkover,
     //drills
             quarry;
     public static void load() {
@@ -107,31 +109,7 @@ public class DTBlocks {
            requirements(Category.distribution, with(DTItems.iridium, 24));
         }};*/
         //turret
-        holy = new PowerTurret("holy"){{
-            scaledHealth = 260;
-            size = 1;
-            targetAir = true;
-            targetGround = true;
-            targetHealing = true;
-            rotateSpeed = 5;
-            coolant = consumeCoolant(0.2f);
-            consumePower(2f);
-            reload = 10;
-            maxAmmo = 10;
-            range = 180;
-            shootSound = Sounds.sap;
-            inaccuracy = 3;
-            shootEffect = Fx.shootHeal;
-            shootType = new LaserBoltBulletType(5,10){{
-                lifetime = 40;
-                healPercent = 4;
-                status = StatusEffects.corroded;
-                frontColor = Color.white;
-                backColor = Pal.heal;
-                collidesTeam = true;
-            }};
-            requirements(Category.turret, with(DTItems.iridium, 1));
-        }};
+
         //TODO balancing
         fracture = new ItemTurret("fracture"){{
             requirements(Category.turret, with(Items.surgeAlloy, 200, Items.oxide, 400, Items.silicon, 400, Items.beryllium, 500));
@@ -184,12 +162,12 @@ public class DTBlocks {
 
             drawer = new DrawTurret("reinforced-"){{
                 parts.addAll(new RegionPart("-mouth"){{
-                            moveY = -1.25f;
-                            under = true;
-                            progress = PartProgress.recoil;
-                            heatProgress = PartProgress.recoil.min(PartProgress.warmup);
-                            moves.add(new PartMove(PartProgress.recoil, 0f, -0.5f, 0f));
-                        }},
+                                 moveY = -1.25f;
+                                 under = true;
+                                 progress = PartProgress.recoil;
+                                 heatProgress = PartProgress.recoil.min(PartProgress.warmup);
+                                 moves.add(new PartMove(PartProgress.recoil, 0f, -0.5f, 0f));
+                             }},
                         new RegionPart("-mid"){{
                             under = true;
                             progress = PartProgress.recoil;
@@ -291,6 +269,47 @@ public class DTBlocks {
             ammoPerShot = 1;
 
             limitRange(-5f);
+        }};
+        holy = new PowerTurret("holy"){{
+            scaledHealth = 260;
+            size = 1;
+            targetAir = true;
+            targetGround = true;
+            targetHealing = true;
+            rotateSpeed = 5;
+            coolant = consumeCoolant(0.2f);
+            consumePower(2f);
+            drawer = new DrawTurret("framed-");
+            reload = 10;
+            maxAmmo = 10;
+            range = 180;
+            shootSound = Sounds.sap;
+            inaccuracy = 3;
+            shootEffect = Fx.shootHeal;
+            shootType = new LaserBoltBulletType(5,10){{
+                lifetime = 40;
+                healPercent = 4;
+                status = StatusEffects.corroded;
+                frontColor = Color.white;
+                backColor = Pal.heal;
+                collidesTeam = true;
+            }};
+            requirements(Category.turret, with(DTItems.iridium, 1));
+        }};
+        sparkover = new ElectricTowerTurret("sparkover"){{
+            hasPower = true;
+            size = 2;
+            range = 170f;
+            damage = 120f;
+            reload = 200f;
+            maxTargets = 30;
+
+            targetAir = true;
+            targetGround = true;
+
+            consumePower(10f);
+
+            requirements(Category.turret, with(DTItems.iron, 200, Items.silicon, 110, DTItems.iridium, 90));
         }};
         quarry = new Quarry("quarry"){{
            size = 3;
