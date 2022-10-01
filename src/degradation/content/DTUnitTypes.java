@@ -38,6 +38,16 @@ public class DTUnitTypes {
             //special-unit
             ;
     public static void load(){
+        /*
+        UnitTypes.gamma.weapons.get(0).bullet.homingPower = 0.1f;
+        UnitTypes.gamma.weapons.get(0).bullet.homingRange = 1000f;
+        UnitTypes.gamma.weapons.get(0).bullet.fragBullets = 2;
+        UnitTypes.gamma.weapons.get(0).bullet.fragOnHit = false;
+        UnitTypes.gamma.weapons.get(0).bullet.fragBullet = UnitTypes.gamma.weapons.get(0).bullet;
+        UnitTypes.gamma.weapons.get(0).bullet.fragVelocityMax = 1f;
+        UnitTypes.gamma.weapons.get(0).bullet.fragVelocityMin = 1f;
+        UnitTypes.gamma.weapons.get(0).reload = 0f;
+        */
         //air-Hyper
         //T1 lancet
         lancet = new UnitType("lancet"){{

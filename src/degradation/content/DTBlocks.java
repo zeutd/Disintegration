@@ -54,6 +54,11 @@ public class DTBlocks {
             sparkover,
     //drills
             quarry;
+            /*force,
+            test1,
+            test2,
+            awa;
+             */
     public static void load() {
         //environment
         greenIce = new Floor("green-ice"){{
@@ -81,12 +86,30 @@ public class DTBlocks {
         //defence
         iridiumWall = new ShardWall("iridium-wall"){{
             shardChance = 0.1f;
+            shard = new BasicBulletType(4f,10f){{
+                frontColor = Color.white;
+                backColor = Color.white;
+                pierce = true;
+                pierceBuilding = false;
+                drag = 0.1f;
+                width = 3f;
+                height = 4f;
+            }};
             size = 1;
             health = 700;
             requirements(Category.defense, with(DTItems.iridium, 8));
         }};
         iridiumWallLarge = new ShardWall("iridium-wall-large"){{
             shardChance = 0.1f;
+            shard = new BasicBulletType(4f,10f){{
+                frontColor = Color.white;
+                backColor = Color.white;
+                pierce = true;
+                pierceBuilding = false;
+                drag = 0.1f;
+                width = 3f;
+                height = 4f;
+            }};
             size = 2;
             health = 2800;
             requirements(Category.defense, with(DTItems.iridium, 24));
@@ -320,5 +343,26 @@ public class DTBlocks {
            consumeLiquid(Liquids.nitrogen, 6f / 60f).boost();
            requirements(Category.production, with(DTItems.iridium, 1));
         }};
+        /*
+        force = new ForceProjector("force"){{
+            requirements(Category.effect, with(Items.lead, 100, Items.titanium, 75, Items.silicon, 125));
+            size = 1;
+            phaseRadiusBoost = 80f;
+            radius = 101.7f;
+            shieldHealth = 75000000f;
+            cooldownNormal = 1.5f;
+            cooldownLiquid = 1.2f;
+            cooldownBrokenBase = 0.35f;
+            alwaysUpdateInUnits = true;
+
+            itemConsumer = consumeItem(Items.phaseFabric).boost();
+        }};
+        awa = new Wall("awa"){{
+            size = 2;
+            chanceDeflect = 100;
+            health = 999999999;
+            requirements(Category.effect, with(Items.lead, 100, Items.titanium, 75, Items.silicon, 125));
+        }};
+        */
     }
 }
