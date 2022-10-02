@@ -5,6 +5,7 @@ import arc.math.Mathf;
 import degradation.world.blocks.defence.ShardWall;
 import degradation.world.blocks.defence.turrets.ElectricTowerTurret;
 import degradation.world.blocks.production.Quarry;
+import degradation.world.blocks.temperature.HeatConduit;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
@@ -128,9 +129,11 @@ public class DTBlocks {
 
             unitCapModifier = 8;
         }};
-        /*heatConduit = new HeatConduit("heat-conduit"){{
-           requirements(Category.distribution, with(DTItems.iridium, 24));
-        }};*/
+        heatConduit = new HeatConduit("heat-conduit"){{
+            health = 100;
+            temperatureCapacity = 5;
+            requirements(Category.distribution, with(DTItems.iridium, 24));
+        }};
         //turret
 
         //TODO balancing
