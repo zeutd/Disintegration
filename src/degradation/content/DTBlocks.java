@@ -6,6 +6,8 @@ import degradation.world.blocks.defence.ShardWall;
 import degradation.world.blocks.defence.turrets.ElectricTowerTurret;
 import degradation.world.blocks.production.Quarry;
 import degradation.world.blocks.temperature.HeatConduit;
+import degradation.world.blocks.temperature.TemperatureSource;
+import degradation.world.blocks.temperature.TemperatureVoid;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
@@ -49,6 +51,7 @@ public class DTBlocks {
             corePedestal,
     //heat
             heatConduit,
+            temperatureSource,
     //turrets
             fracture,
             holy,
@@ -131,8 +134,20 @@ public class DTBlocks {
         }};
         heatConduit = new HeatConduit("heat-conduit"){{
             health = 100;
-            temperatureCapacity = 5;
+            conductionSpeed = 0.1f;
             requirements(Category.distribution, with(DTItems.iridium, 24));
+        }};
+
+        temperatureSource = new TemperatureSource("temperature-source"){{
+            health = 200;
+            requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+            alwaysUnlocked = true;
+        }};
+
+        temperatureSource = new TemperatureVoid("temperature-void"){{
+            health = 200;
+            requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
+            alwaysUnlocked = true;
         }};
         //turret
 

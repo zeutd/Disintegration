@@ -4,18 +4,18 @@ import arc.graphics.g2d.TextureRegion;
 import mindustry.gen.Building;
 import mindustry.world.Block;
 
-public class TemperatureSource extends Block{
+public class TemperatureVoid extends Block{
     public TextureRegion bottomRegion;
-    public TemperatureSource(String name) {
+    public TemperatureVoid(String name) {
         super(name);
 
         update = true;
     }
 
-    public class TemperatureSourceBuild extends Building implements TemperatureBlock{
+    public class TemperatureVoidBuild extends Building implements TemperatureBlock{
         @Override
         public float temperature() {
-            return 1000;
+            return 0;
         }
 
         @Override
