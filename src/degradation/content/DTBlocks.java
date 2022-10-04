@@ -5,7 +5,8 @@ import arc.math.Mathf;
 import degradation.world.blocks.defence.ShardWall;
 import degradation.world.blocks.defence.turrets.ElectricTowerTurret;
 import degradation.world.blocks.production.Quarry;
-import degradation.world.blocks.temperature.HeatConduit;
+import degradation.world.blocks.temperature.TemperatureConduit;
+import degradation.world.blocks.temperature.TemperatureProducer;
 import degradation.world.blocks.temperature.TemperatureSource;
 import degradation.world.blocks.temperature.TemperatureVoid;
 import mindustry.content.Fx;
@@ -31,6 +32,8 @@ import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.consumers.ConsumeItemExplode;
+import mindustry.world.consumers.ConsumeItemFlammable;
 import mindustry.world.consumers.ConsumeLiquid;
 import mindustry.world.draw.DrawTurret;
 import mindustry.world.meta.Attribute;
@@ -50,8 +53,10 @@ public class DTBlocks {
     //storage
             corePedestal,
     //heat
-            heatConduit,
+            temperatureConduit,
             temperatureSource,
+            temperatureVoid,
+            burningHeater,
     //turrets
             fracture,
             holy,
@@ -132,10 +137,11 @@ public class DTBlocks {
 
             unitCapModifier = 8;
         }};
-        heatConduit = new HeatConduit("heat-conduit"){{
+        temperatureConduit = new TemperatureConduit("temperature-conduit"){{
             health = 100;
             conductionSpeed = 0.1f;
-            requirements(Category.distribution, with(DTItems.iridium, 24));
+            temperatureCapacity = 15f;
+            requirements(Category.distribution, with(DTItems.iron, 2));
         }};
 
         temperatureSource = new TemperatureSource("temperature-source"){{
@@ -144,10 +150,20 @@ public class DTBlocks {
             alwaysUnlocked = true;
         }};
 
-        temperatureSource = new TemperatureVoid("temperature-void"){{
+        temperatureVoid = new TemperatureVoid("temperature-void"){{
             health = 200;
             requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
             alwaysUnlocked = true;
+        }};
+
+        burningHeater = new TemperatureProducer("burning-heater"){{
+            size = 2;
+            health = 900;
+            temperatureOutput = 3f;
+            itemCapacity = 10;
+            consume(new ConsumeItemFlammable());
+            consume(new ConsumeItemExplode());
+            requirements(Category.distribution, with(DTItems.iron, 30, Items.silicon, 20));
         }};
         //turret
 

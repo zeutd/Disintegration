@@ -11,9 +11,9 @@ import arc.util.Eachable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import degradation.graphics.Pal2;
+import degradation.util.TileDef;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
-import mindustry.graphics.Drawf;
 import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
@@ -21,7 +21,7 @@ import mindustry.world.Block;
 import static arc.Core.atlas;
 import static mindustry.Vars.world;
 
-public class HeatConduit extends Block {
+public class TemperatureConduit extends Block {
     public TextureRegion topRegion;
     public TextureRegion edgeRegion;
     public TextureRegion bottomRegion;
@@ -31,10 +31,12 @@ public class HeatConduit extends Block {
 
     public float conductionSpeed;
 
+    public float temperatureCapacity;
+
     public Color heatColor = Pal2.burn;
     public Color sideHeatColor = Pal2.heat;
 
-    public HeatConduit(String name) {
+    public TemperatureConduit(String name) {
         super(name);
 
         update = true;
@@ -52,6 +54,8 @@ public class HeatConduit extends Block {
         topHeatRegion = atlas.find(name + "-top-heat");
     }
 
+
+
     @Override
     public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list){
         Draw.rect(bottomRegion, plan.x * 8, plan.y * 8);
@@ -61,13 +65,13 @@ public class HeatConduit extends Block {
             int dx = plan.x + Geometry.d4x(i);
             int dy = plan.y + Geometry.d4y(i);
             Building build = world.build(dx, dy);
-            final boolean[] listDraw = {false};
+            final boolean[] isDraw = {false};
             list.each(req -> {
                 if(req.x == dx && req.y == dy){
-                    listDraw[0] = true;
+                    isDraw[0] = true;
                 }
             });
-            if (!(build instanceof TemperatureBlock || listDraw[0])){
+            if (!(build instanceof TemperatureConduitBuild || isDraw[0])){
                 Draw.rect(edgeRegion, plan.x * 8, plan.y * 8, i * 90);
             }
         }
@@ -77,10 +81,10 @@ public class HeatConduit extends Block {
     public void setBars(){
         super.setBars();
 
-        addBar("heat", (HeatConduitBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (float)(Math.round(entity.temperature * 10)) / 10), () -> Pal.lightOrange, () -> entity.temperature / 5f));
+        addBar("heat", (TemperatureConduitBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (float)(Math.round(entity.temperature * 10)) / 10), () -> Pal.lightOrange, () -> entity.temperature / 15f));
     }
 
-    public class HeatConduitBuild extends Building implements TemperatureBlock{
+    public class TemperatureConduitBuild extends Building implements TemperatureBlock{
         public float temperature = 0;
 
         @Override
@@ -88,10 +92,8 @@ public class HeatConduit extends Block {
             return temperature;
         }
 
-        @Override
-        public float conductionSpeed(){
-            return conductionSpeed;
-
+        public void setTemperature(float target) {
+            temperature = target;
         }
 
         @Override
@@ -99,8 +101,11 @@ public class HeatConduit extends Block {
             Seq<Building> proximityBuilds = this.proximity();
 
             for(Building build : proximityBuilds){
-                if(build instanceof TemperatureBlock other){
-                    temperature += other.conductionSpeed() * (other.temperature() - temperature);
+                if(build instanceof TemperatureConduitBuild other){
+                    temperature += conductionSpeed * (other.temperature() - temperature);
+                }
+                else if(build instanceof TemperatureProducer.TemperatureProducerBuild other && TileDef.toBlock(this, other)){
+                    temperature += other.temperature();
                 }
             }
         }
@@ -112,7 +117,7 @@ public class HeatConduit extends Block {
 
             Draw.color(heatColor);
             Draw.blend(Blending.additive);
-            Draw.alpha(Math.min(temperature, 3.6f) / 4);
+            Draw.alpha(Math.min(temperature, 13f) / 15);
             Draw.rect(heatRegion, x, y);
 
             Draw.blend();
@@ -121,7 +126,7 @@ public class HeatConduit extends Block {
             Draw.rect(topRegion, x, y);
             Draw.color(sideHeatColor);
             Draw.blend(Blending.additive);
-            Draw.alpha(Math.min(temperature, 1f) / 6);
+            Draw.alpha(Math.min(temperature, 13f) / 78);
             Draw.rect(topHeatRegion, x, y);
 
             Draw.blend();
@@ -129,21 +134,18 @@ public class HeatConduit extends Block {
 
             for (int i = 0; i < 4; i++){
 
-                int dx = (int) x + Geometry.d4x(i)*8;
-                int dy = (int) y + Geometry.d4y(i)*8;
-                Building build = world.build(dx / 8, dy / 8);
-                if (!(build instanceof TemperatureBlock)){
+                Building build = nearby(i);
+                if (!TileDef.conductSideTemperature(this, build)){
                     Draw.rect(edgeRegion, x, y, i * 90);
                     Draw.color(sideHeatColor);
                     Draw.blend(Blending.additive);
-                    Draw.alpha(Math.min(temperature, 1f) / 6);
+                    Draw.alpha(Math.min(temperature, 13f) / 78);
                     Draw.rect(edgeHeatRegion, x, y, i * 90);
 
                     Draw.blend();
                     Draw.reset();
                 }
             }
-            Drawf.light(x, y, heatRegion, heatColor, temperature * 100);
         }
         @Override
         public void write(Writes write){

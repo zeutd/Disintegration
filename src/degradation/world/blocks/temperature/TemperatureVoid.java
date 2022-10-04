@@ -1,11 +1,11 @@
 package degradation.world.blocks.temperature;
 
-import arc.graphics.g2d.TextureRegion;
+import arc.struct.Seq;
+import degradation.util.TileDef;
 import mindustry.gen.Building;
 import mindustry.world.Block;
 
 public class TemperatureVoid extends Block{
-    public TextureRegion bottomRegion;
     public TemperatureVoid(String name) {
         super(name);
 
@@ -19,8 +19,17 @@ public class TemperatureVoid extends Block{
         }
 
         @Override
-        public float conductionSpeed() {
-            return 1;
+        public void setTemperature(float target) {}
+
+        @Override
+        public void updateTile(){
+            Seq<Building> proximityBuilds = this.proximity();
+
+            for(Building build : proximityBuilds){
+                if(TileDef.conductSideTemperature(this, build)){
+                    ((TemperatureBlock)build).setTemperature(0);
+                }
+            }
         }
     }
 }

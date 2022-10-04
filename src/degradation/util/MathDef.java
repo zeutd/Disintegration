@@ -1,4 +1,4 @@
-package degradation;
+package degradation.util;
 
 public class MathDef {
     /** Better Mathf.lerp*/
