@@ -8,7 +8,9 @@ import arc.math.Mathf;
 import degradation.graphics.Pal2;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
+import mindustry.content.UnitTypes;
 import mindustry.entities.Effect;
+import mindustry.entities.abilities.EnergyFieldAbility;
 import mindustry.entities.bullet.EmpBulletType;
 import mindustry.entities.bullet.LaserBoltBulletType;
 import mindustry.gen.Sounds;
@@ -34,8 +36,9 @@ public class DTUnitTypes {
             //air-subsidiary
             //ground-subsidiary
             //core-unit
-            separate
+            separate,
             //special-unit
+            test
             ;
     public static void load(){
         /*
@@ -48,6 +51,12 @@ public class DTUnitTypes {
         UnitTypes.gamma.weapons.get(0).bullet.fragVelocityMin = 1f;
         UnitTypes.gamma.weapons.get(0).reload = 0f;
         */
+        test = UnitTypes.aegires;
+        test.abilities.clear();
+        test.abilities.add(new EnergyFieldAbility(4f, 0f, 1800f){{
+            statusDuration = 60f * 6f;
+            maxTargets = 1000;
+        }});
         //air-Hyper
         //T1 lancet
         lancet = new UnitType("lancet"){{

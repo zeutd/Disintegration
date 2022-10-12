@@ -30,8 +30,7 @@ public class TemperatureConduit extends Block {
     public TextureRegion topHeatRegion;
 
     public float conductionSpeed;
-
-    public float temperatureCapacity;
+    public float temperaturePercent;
 
     public Color heatColor = Pal2.burn;
     public Color sideHeatColor = Pal2.heat;
@@ -81,7 +80,7 @@ public class TemperatureConduit extends Block {
     public void setBars(){
         super.setBars();
 
-        addBar("heat", (TemperatureConduitBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (float)(Math.round(entity.temperature * 10)) / 10), () -> Pal.lightOrange, () -> entity.temperature / 15f));
+        addBar("heat", (TemperatureConduitBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (float)(Math.round(entity.temperature * 10)) / 10), () -> Pal.lightOrange, () -> entity.temperature / temperaturePercent));
     }
 
     public class TemperatureConduitBuild extends Building implements TemperatureBlock{
@@ -102,7 +101,12 @@ public class TemperatureConduit extends Block {
 
             for(Building build : proximityBuilds){
                 if(build instanceof TemperatureConduitBuild other){
-                    temperature += conductionSpeed * (other.temperature() - temperature);
+                    if (other.temperature() >= temperature) {
+                        temperature += conductionSpeed * (other.temperature() - temperature);
+                    }
+                    else{
+                        temperature += conductionSpeed * (other.temperature() - temperature) / 2;
+                    }
                 }
                 else if(build instanceof TemperatureProducer.TemperatureProducerBuild other && TileDef.toBlock(this, other)){
                     temperature += other.temperature();
@@ -117,7 +121,7 @@ public class TemperatureConduit extends Block {
 
             Draw.color(heatColor);
             Draw.blend(Blending.additive);
-            Draw.alpha(Math.min(temperature, 13f) / 15);
+            Draw.alpha(Math.min(temperature, 0.9f * temperaturePercent) / temperaturePercent);
             Draw.rect(heatRegion, x, y);
 
             Draw.blend();
@@ -126,7 +130,7 @@ public class TemperatureConduit extends Block {
             Draw.rect(topRegion, x, y);
             Draw.color(sideHeatColor);
             Draw.blend(Blending.additive);
-            Draw.alpha(Math.min(temperature, 13f) / 78);
+            Draw.alpha(Math.min(temperature, 0.9f * temperaturePercent) / temperaturePercent / 5);
             Draw.rect(topHeatRegion, x, y);
 
             Draw.blend();
@@ -139,7 +143,7 @@ public class TemperatureConduit extends Block {
                     Draw.rect(edgeRegion, x, y, i * 90);
                     Draw.color(sideHeatColor);
                     Draw.blend(Blending.additive);
-                    Draw.alpha(Math.min(temperature, 13f) / 78);
+                    Draw.alpha(Math.min(temperature, 0.9f * temperaturePercent) / temperaturePercent / 5);
                     Draw.rect(edgeHeatRegion, x, y, i * 90);
 
                     Draw.blend();

@@ -1,21 +1,23 @@
 package degradation.world.blocks.temperature;
 
 import arc.Core;
-import arc.graphics.Blending;
 import arc.graphics.Color;
-import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
-import arc.struct.Seq;
+import arc.math.Mathf;
 import arc.util.Eachable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import degradation.DTVars;
 import degradation.graphics.Pal2;
-import degradation.util.TileDef;
+import degradation.world.draw.DrawAllRotate;
+import degradation.world.draw.DrawTemperature;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
+import mindustry.world.draw.DrawBlock;
+import mindustry.world.draw.DrawMulti;
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
 
@@ -33,6 +35,9 @@ public class TemperatureProducer extends Block {
     public Color sideHeatColor = Pal2.heat;
 
     public float temperatureOutput;
+    public float temperturePercent = DTVars.temperaturePercent;
+
+    public DrawBlock drawer = new DrawMulti(new DrawAllRotate(), new DrawTemperature(heatColor, sideHeatColor, temperturePercent));
 
     public TemperatureProducer(String name) {
         super(name);
@@ -52,17 +57,14 @@ public class TemperatureProducer extends Block {
         region4 = atlas.find(name + "4");
         heatRegion = atlas.find(name + "-heat");
         sideHeatRegion = atlas.find(name + "-heat-side");
+        drawer.load(this);
     }
 
     @Override
     public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list){
-        switch (plan.rotation) {
-            case 0 -> Draw.rect(region1, plan.x, plan.y);
-            case 1 -> Draw.rect(region2, plan.x, plan.y);
-            case 2 -> Draw.rect(region3, plan.x, plan.y);
-            case 3 -> Draw.rect(region4, plan.x, plan.y);
-        }
+        drawer.drawPlan(this, plan, list);
     }
+
     @Override
     public void setStats(){
         super.setStats();
@@ -74,7 +76,7 @@ public class TemperatureProducer extends Block {
     public void setBars(){
         super.setBars();
 
-        addBar("heat", (TemperatureProducerBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (float)(Math.round(entity.temperature * 10)) / 10), () -> Pal.lightOrange, () -> entity.temperature / 5f));
+        addBar("heat", (TemperatureProducerBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (float)(Math.round(entity.temperature * 10)) / 10), () -> Pal.lightOrange, () -> entity.temperature / temperatureOutput));
     }
 
     public class TemperatureProducerBuild extends Building implements TemperatureBlock{
@@ -82,7 +84,11 @@ public class TemperatureProducer extends Block {
 
         @Override
         public float temperature() {
-            return temperature / 60;
+            return temperature / 60 / 2;
+        }
+
+        public float temperatureOutput(){
+            return temperatureOutput;
         }
 
         @Override
@@ -90,42 +96,12 @@ public class TemperatureProducer extends Block {
 
         @Override
         public void updateTile(){
-            temperature = temperatureOutput * efficiency();
+            temperature = Mathf.approachDelta(temperature, temperatureOutput * efficiency(), 0.1f);
         }
 
         @Override
         public void draw(){
-            switch (rotation) {
-                case 0 -> Draw.rect(region1, x, y);
-                case 1 -> Draw.rect(region2, x, y);
-                case 2 -> Draw.rect(region3, x, y);
-                case 3 -> Draw.rect(region4, x, y);
-            }
-            Seq<Building> proximityBuilds = this.proximity();
-            for(Building build : proximityBuilds) {
-                if (TileDef.toBlock(build, this) && (build instanceof TemperatureConduit.TemperatureConduitBuild other)) {
-                    float otherTemperature = other.temperature();
-
-                    Draw.color(heatColor);
-
-                    Draw.blend(Blending.additive);
-
-                    Draw.alpha(Math.min(otherTemperature, 13f) / 15);
-
-                    Draw.rect(heatRegion, x, y, rotation * 90);
-
-                    Draw.color(sideHeatColor);
-
-                    Draw.alpha(Math.min(otherTemperature, 13f) / 78);
-
-                    Draw.rect(sideHeatRegion, x, y, rotation * 90);
-
-                    Draw.blend();
-                    Draw.reset();
-
-                    break;
-                }
-            }
+            drawer.draw(this);
         }
         @Override
         public void write(Writes write){

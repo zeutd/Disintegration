@@ -2,6 +2,7 @@ package degradation.content;
 
 import arc.graphics.Color;
 import arc.math.Mathf;
+import degradation.DTVars;
 import degradation.world.blocks.defence.ShardWall;
 import degradation.world.blocks.defence.turrets.ElectricTowerTurret;
 import degradation.world.blocks.production.Quarry;
@@ -140,7 +141,7 @@ public class DTBlocks {
         temperatureConduit = new TemperatureConduit("temperature-conduit"){{
             health = 100;
             conductionSpeed = 0.1f;
-            temperatureCapacity = 15f;
+            temperaturePercent = DTVars.temperaturePercent;
             requirements(Category.distribution, with(DTItems.iron, 2));
         }};
 
@@ -158,7 +159,7 @@ public class DTBlocks {
 
         burningHeater = new TemperatureProducer("burning-heater"){{
             size = 2;
-            health = 900;
+            health = 150;
             temperatureOutput = 3f;
             itemCapacity = 10;
             consume(new ConsumeItemFlammable());

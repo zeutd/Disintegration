@@ -18,6 +18,7 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import degradation.util.MathDef;
 import degradation.content.DTFx;
+import degradation.util.TileDef;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.core.World;
@@ -100,11 +101,11 @@ public class Quarry extends Block {
         int mx = (int) (x + Geometry.d4x(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
         int my = (int) (y + Geometry.d4y(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
 
-        Tile[][] tiles = getMiningTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
+        Tile[][] tiles = TileDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
         Item[][] items = getDropArray(tiles, areaSize, areaSize);
 
-        Seq<Item> itemList = listItem(items);
+        Seq<Item> itemList = TileDef.listItem(items);
 
         drawDrillText(itemList, items, x, y, valid);
         Log.info(itemList);
@@ -124,7 +125,7 @@ public class Quarry extends Block {
         int mx = (int) (tile.x + Geometry.d4x(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
         int my = (int) (tile.y + Geometry.d4y(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
 
-        Tile[][] tiles = getMiningTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
+        Tile[][] tiles = TileDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
         Item[][] items = getDropArray(tiles, areaSize, areaSize);
         return getEmptyDrop(items);
@@ -172,18 +173,6 @@ public class Quarry extends Block {
     public Item getDrop(Tile tile){
         return tile.overlay().itemDrop;
     }
-    public Tile[][] getMiningTile(Vec2 pos, int width, int height){
-        Tile[][] tilesGet = new Tile[width][height];
-        int dx = (int) pos.x;
-        int dy = (int) pos.y;
-        for (int ix = 0; ix <= width - 1; ix ++){
-            for (int iy = 0; iy <= height - 1; iy ++){
-                Tile other = world.tile(ix + dx + 1, iy + dy + 1);
-                if(other != null) tilesGet[ix][iy] = other;
-            }
-        }
-        return tilesGet;
-    }
     public Item[][] getDropArray(Tile[][] tiles, int width, int height){
         Item[][] items = new Item[width][height];
         for (int ix = 0; ix <= width - 1; ix ++){
@@ -200,15 +189,6 @@ public class Quarry extends Block {
         float len = tilesize * (areaSize + size)/2f;
         float mineX = x + Geometry.d4x(rotation) * len, mineY = y + Geometry.d4y(rotation) * len;
         return Tmp.v4.set(mineX, mineY);
-    }
-    public Seq<Item> listItem(Item[][] array){
-        Seq<Item> items = new Seq<>();
-        for(Item[] tileItems : array){
-            for(Item tileItem : tileItems){
-                if (!items.contains(tileItem)) items.add(tileItem);
-            }
-        }
-        return items;
     }
     public boolean getEmptyDrop(Item[][] array){
         boolean empty = false;
@@ -263,13 +243,13 @@ public class Quarry extends Block {
 
             Vec2 MiningPos = new Vec2(World.conv(mx - fulls), World.conv(my - fulls));
 
-            tiles = getMiningTile(MiningPos, areaSize, areaSize);
+            tiles = TileDef.getAreaTile(MiningPos, areaSize, areaSize);
 
             itemsArray = getDropArray(tiles, areaSize, areaSize);
 
             empty = getEmptyDrop(itemsArray);
 
-            itemList = listItem(itemsArray);
+            itemList = TileDef.listItem(itemsArray);
 
             Vec2 mineCentre = getMiningArea(x, y, rotation);
 
