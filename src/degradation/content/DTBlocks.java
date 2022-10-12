@@ -3,13 +3,12 @@ package degradation.content;
 import arc.graphics.Color;
 import arc.math.Mathf;
 import degradation.DTVars;
+import degradation.graphics.Pal2;
 import degradation.world.blocks.defence.ShardWall;
 import degradation.world.blocks.defence.turrets.ElectricTowerTurret;
 import degradation.world.blocks.production.Quarry;
-import degradation.world.blocks.temperature.TemperatureConduit;
-import degradation.world.blocks.temperature.TemperatureProducer;
-import degradation.world.blocks.temperature.TemperatureSource;
-import degradation.world.blocks.temperature.TemperatureVoid;
+import degradation.world.blocks.temperature.*;
+import degradation.world.draw.DrawTemperature;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
@@ -27,6 +26,7 @@ import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.type.Category;
+import mindustry.type.LiquidStack;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.PowerTurret;
@@ -36,9 +36,10 @@ import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.consumers.ConsumeItemExplode;
 import mindustry.world.consumers.ConsumeItemFlammable;
 import mindustry.world.consumers.ConsumeLiquid;
-import mindustry.world.draw.DrawTurret;
+import mindustry.world.draw.*;
 import mindustry.world.meta.Attribute;
 import mindustry.world.meta.BuildVisibility;
+import mindustry.world.meta.Env;
 
 import static arc.graphics.g2d.Draw.color;
 import static mindustry.type.ItemStack.with;
@@ -53,11 +54,13 @@ public class DTBlocks {
             iridiumWall, iridiumWallLarge,
     //storage
             corePedestal,
-    //heat
+    //temperature
             temperatureConduit,
             temperatureSource,
             temperatureVoid,
             burningHeater,
+    //factory
+            boiler,
     //turrets
             fracture,
             holy,
@@ -157,14 +160,44 @@ public class DTBlocks {
             alwaysUnlocked = true;
         }};
 
-        burningHeater = new TemperatureProducer("burning-heater"){{
+        burningHeater = new ConsumeTemperatureProducer("burning-heater"){{
             size = 2;
             health = 150;
             temperatureOutput = 3f;
             itemCapacity = 10;
+
+            itemDuration = 120f;
+
+            effectChance = 0.01f;
+
+            productEffect = Fx.generatespark;
+            ambientSound = Sounds.smelter;
+            ambientSoundVolume = 0.06f;
+
             consume(new ConsumeItemFlammable());
             consume(new ConsumeItemExplode());
-            requirements(Category.distribution, with(DTItems.iron, 30, Items.silicon, 20));
+            requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20));
+        }};
+        //factory
+        boiler = new TemperatureCrafter("bolier"){{
+            requirements(Category.crafting, with(DTItems.iron, 65, Items.silicon, 40, Items.graphite, 60));
+            outputLiquid = new LiquidStack(Liquids.hydrogen, 12f / 60f);
+            size = 2;
+            rotateDraw = false;
+            hasPower = true;
+            hasItems = true;
+            hasLiquids = true;
+            outputsLiquid = true;
+            envEnabled = Env.any;
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawLiquidTile(Liquids.water), new DrawLiquidTile(Liquids.hydrogen){{drawLiquidLight = true;}}, new DrawDefault(), new DrawTemperature(Pal2.burn, Pal2.heat, DTVars.temperaturePercent));
+            liquidCapacity = 24f;
+            regionRotated1 = 1;
+            craftTime = 120;
+            temperatureConsumes = 3f;
+
+
+            consumePower(1f);
+            consumeLiquid(Liquids.water, 12f / 60f);
         }};
         //turret
 

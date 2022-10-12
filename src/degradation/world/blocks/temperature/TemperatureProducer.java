@@ -37,6 +37,8 @@ public class TemperatureProducer extends Block {
     public float temperatureOutput;
     public float temperturePercent = DTVars.temperaturePercent;
 
+    public float warmupRate = 0.15f;
+
     public DrawBlock drawer = new DrawMulti(new DrawAllRotate(), new DrawTemperature(heatColor, sideHeatColor, temperturePercent));
 
     public TemperatureProducer(String name) {
@@ -44,7 +46,6 @@ public class TemperatureProducer extends Block {
 
         rotate = true;
         update = true;
-        underBullets = true;
         hasItems = true;
     }
 
@@ -80,6 +81,8 @@ public class TemperatureProducer extends Block {
     }
 
     public class TemperatureProducerBuild extends Building implements TemperatureBlock{
+        public float productionEfficiency = 1f;
+
         public float temperature = 0;
 
         @Override
@@ -96,7 +99,7 @@ public class TemperatureProducer extends Block {
 
         @Override
         public void updateTile(){
-            temperature = Mathf.approachDelta(temperature, temperatureOutput * efficiency(), 0.1f);
+            temperature = Mathf.approachDelta(temperature, temperatureOutput * productionEfficiency, warmupRate * delta());
         }
 
         @Override

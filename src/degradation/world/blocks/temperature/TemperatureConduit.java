@@ -84,6 +84,7 @@ public class TemperatureConduit extends Block {
     }
 
     public class TemperatureConduitBuild extends Building implements TemperatureBlock{
+
         public float temperature = 0;
 
         @Override
@@ -110,6 +111,12 @@ public class TemperatureConduit extends Block {
                 }
                 else if(build instanceof TemperatureProducer.TemperatureProducerBuild other && TileDef.toBlock(this, other)){
                     temperature += other.temperature();
+                }
+                else if (build instanceof TemperatureCrafter.TemperatureCrafterBuild other && TileDef.toBlock(this, other)) {
+                    if(other.temperature() <= temperature) {
+                        temperature -= conductionSpeed;
+                        other.setTemperature(other.temperature() + conductionSpeed);
+                    }
                 }
             }
         }

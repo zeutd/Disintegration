@@ -5,10 +5,12 @@ import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.struct.Seq;
+import arc.util.Eachable;
 import degradation.util.TileDef;
 import degradation.world.blocks.temperature.TemperatureBlock;
 import degradation.world.blocks.temperature.TemperatureConduit;
 import degradation.world.blocks.temperature.TemperatureProducer;
+import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 import mindustry.world.Block;
 import mindustry.world.draw.DrawBlock;
@@ -16,7 +18,7 @@ import mindustry.world.draw.DrawBlock;
 import static arc.Core.atlas;
 
 public class DrawTemperature extends DrawBlock {
-    public TextureRegion heatRegion, sideHeatRegion;
+    public TextureRegion heatRegion, sideHeatRegion, topRegion;
     
     public Color heatColor, sideHeatColor;
 
@@ -28,6 +30,11 @@ public class DrawTemperature extends DrawBlock {
         this.heatColor = heatColor;
         this.sideHeatColor = sideHeatColor;
         this.percent = percent;
+    }
+    public void drawPlan(Block block, BuildPlan plan, Eachable<BuildPlan> list){
+        if(topRegion.found()) {
+            Draw.rect(topRegion, plan.x, plan.y, plan.rotation * 90);
+        }
     }
 
     @Override
@@ -48,6 +55,9 @@ public class DrawTemperature extends DrawBlock {
                 temperatureOutput = block.temperatureOutput();
             }
             otherTemperature = ((TemperatureBlock) build).temperature() * percent * 60 * 1.5f / temperatureOutput;
+        }
+        if(topRegion.found()) {
+            Draw.rect(topRegion, build.x, build.y, build.rotation * 90);
         }
         Draw.color(heatColor);
 
@@ -71,5 +81,6 @@ public class DrawTemperature extends DrawBlock {
     public void load(Block block){
         heatRegion = atlas.find(block.name + "-heat");
         sideHeatRegion = atlas.find(block.name + "-heat-side");
+        topRegion = atlas.find(block.name + "-top");
     }
 }
