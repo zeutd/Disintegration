@@ -181,7 +181,7 @@ public class DTBlocks {
         //factory
         boiler = new TemperatureCrafter("bolier"){{
             requirements(Category.crafting, with(DTItems.iron, 65, Items.silicon, 40, Items.graphite, 60));
-            outputLiquid = new LiquidStack(Liquids.hydrogen, 12f / 60f);
+            outputLiquid = new LiquidStack(DTLiquids.steam, 12f / 60f);
             size = 2;
             rotateDraw = false;
             hasPower = true;
@@ -189,14 +189,12 @@ public class DTBlocks {
             hasLiquids = true;
             outputsLiquid = true;
             envEnabled = Env.any;
-            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawLiquidTile(Liquids.water), new DrawLiquidTile(Liquids.hydrogen){{drawLiquidLight = true;}}, new DrawDefault(), new DrawTemperature(Pal2.burn, Pal2.heat, DTVars.temperaturePercent));
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawLiquidTile(Liquids.water), new DrawLiquidTile(DTLiquids.steam){{drawLiquidLight = true;}}, new DrawDefault(), new DrawTemperature(Pal2.burn, Pal2.heat, DTVars.temperaturePercent));
             liquidCapacity = 24f;
             regionRotated1 = 1;
             craftTime = 120;
             temperatureConsumes = 3f;
 
-
-            consumePower(1f);
             consumeLiquid(Liquids.water, 12f / 60f);
         }};
         //turret

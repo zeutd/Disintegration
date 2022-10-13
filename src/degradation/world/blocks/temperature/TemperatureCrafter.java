@@ -2,6 +2,8 @@ package degradation.world.blocks.temperature;
 
 import arc.Core;
 import arc.struct.Seq;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import degradation.DTVars;
 import degradation.util.TileDef;
 import degradation.world.draw.DrawTemperature;
@@ -62,9 +64,6 @@ public class TemperatureCrafter extends GenericCrafter {
                 if(build instanceof TemperatureProducer.TemperatureProducerBuild other && TileDef.toBlock(this, other) && TileDef.toBlock(other, this)){
                     temperature += other.temperature() * 2;
                 }
-                if(build instanceof TemperatureConduit.TemperatureConduitBuild other && TileDef.toBlock(other, this)){
-                    temperature += other.temperature();
-                }
             }
             temperature -= temperatureConsumes / 60 * efficiency;
         }
@@ -72,6 +71,18 @@ public class TemperatureCrafter extends GenericCrafter {
         @Override
         public float efficiencyScale(){
             return temperature >= 0 ? efficiency : 0;
+        }
+
+        @Override
+        public void write(Writes write){
+            super.write(write);
+            write.f(temperature);
+        }
+
+        @Override
+        public void read(Reads read, byte revision){
+            super.read(read, revision);
+            temperature = read.f();
         }
     }
 }

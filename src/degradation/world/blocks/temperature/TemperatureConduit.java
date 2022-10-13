@@ -102,12 +102,7 @@ public class TemperatureConduit extends Block {
 
             for(Building build : proximityBuilds){
                 if(build instanceof TemperatureConduitBuild other){
-                    if (other.temperature() >= temperature) {
-                        temperature += conductionSpeed * (other.temperature() - temperature);
-                    }
-                    else{
-                        temperature += conductionSpeed * (other.temperature() - temperature) / 2;
-                    }
+                    temperature += conductionSpeed * (other.temperature() - temperature);
                 }
                 else if(build instanceof TemperatureProducer.TemperatureProducerBuild other && TileDef.toBlock(this, other)){
                     temperature += other.temperature();

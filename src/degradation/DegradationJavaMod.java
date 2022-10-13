@@ -12,6 +12,7 @@ public class DegradationJavaMod extends Mod{
     public void loadContent() {
         Log.info("Loading degradation content.");
         DTItems.load();
+        DTLiquids.load();
         DTUnitTypes.load();
         DTBlocks.load();
         DTBullets.load();

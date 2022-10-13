@@ -22,7 +22,7 @@ public class DTItems {
             hardness = 7;
             cost = 3;
         }};
-        ionicAlloy = new Item("ionicAlloy", Color.valueOf("84F491")){{
+        ionicAlloy = new Item("ionic-alloy", Color.valueOf("84F491")){{
             hardness = 2;
             cost = 4;
         }};
@@ -30,7 +30,7 @@ public class DTItems {
             hardness = 2;
             cost = 2;
         }};
-        concussionAlloy = new Item("concussionAlloy", Color.valueOf("EFEAEA")){{
+        concussionAlloy = new Item("concussion-alloy", Color.valueOf("EFEAEA")){{
             hardness = 2;
             cost = 2;
         }};

@@ -2,10 +2,7 @@ package degradation.util;
 
 import arc.math.geom.Vec2;
 import arc.struct.Seq;
-import degradation.world.blocks.temperature.TemperatureConduit;
-import degradation.world.blocks.temperature.TemperatureProducer;
-import degradation.world.blocks.temperature.TemperatureSource;
-import degradation.world.blocks.temperature.TemperatureVoid;
+import degradation.world.blocks.temperature.*;
 import mindustry.gen.Building;
 import mindustry.type.Item;
 import mindustry.world.Tile;
@@ -21,7 +18,7 @@ public class TileDef {
         if(other instanceof TemperatureConduit.TemperatureConduitBuild || other instanceof TemperatureVoid.TemperatureVoidBuild || other instanceof TemperatureSource.TemperatureSourceBuild){
             return true;
         }
-        else if(other instanceof TemperatureProducer.TemperatureProducerBuild){
+        else if(other instanceof TemperatureProducer.TemperatureProducerBuild || other instanceof TemperatureCrafter.TemperatureCrafterBuild){
             return TileDef.toBlock(block, other);
         }
         return false;
