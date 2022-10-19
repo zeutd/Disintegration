@@ -1,7 +1,7 @@
 package degradation.util;
 
 public class MathDef {
-    /** Better Mathf.lerp*/
+    /**Better Mathf.lerp*/
     public static float lerp(float value, float target, float power, float speed){
         return (((target / speed - value / speed) / power / 5 + value / speed) * speed + (target - value) / speed / 5);
     }

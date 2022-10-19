@@ -4,11 +4,13 @@ import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
+import arc.struct.Seq;
 import arc.util.Eachable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import degradation.DTVars;
 import degradation.graphics.Pal2;
+import degradation.util.TileDef;
 import degradation.world.draw.DrawAllRotate;
 import degradation.world.draw.DrawTemperature;
 import mindustry.entities.units.BuildPlan;
@@ -87,7 +89,7 @@ public class TemperatureProducer extends Block {
 
         @Override
         public float temperature() {
-            return temperature / 60 / 2;
+            return (temperature + temperature > 0 ? 0.1f : 0) / 2;
         }
 
         public float temperatureOutput(){
@@ -95,11 +97,21 @@ public class TemperatureProducer extends Block {
         }
 
         @Override
+        public void addTemperature(float target){}
+
+        @Override
         public void setTemperature(float target){}
 
         @Override
         public void updateTile(){
             temperature = Mathf.approachDelta(temperature, temperatureOutput * productionEfficiency, warmupRate * delta());
+            Seq<Building> proximityBuilds = this.proximity();
+
+            for(Building build : proximityBuilds) {
+                if (build instanceof TemperatureConduit.TemperatureConduitBuild || build instanceof TemperatureCrafter.TemperatureCrafterBuild  && TileDef.toBlock(this, build) && TileDef.toBlock(build, this)) {
+                    ((TemperatureBlock)build).addTemperature(temperature());
+                }
+            }
         }
 
         @Override

@@ -9,7 +9,6 @@ import mindustry.world.Block;
 import mindustry.world.draw.DrawBlock;
 
 import static arc.Core.atlas;
-import static mindustry.Vars.tilesize;
 
 public class DrawAllRotate extends DrawBlock {
     public TextureRegion region1, region2, region3, region4;
@@ -29,10 +28,10 @@ public class DrawAllRotate extends DrawBlock {
     @Override
     public void drawPlan(Block block, BuildPlan plan, Eachable<BuildPlan> list){
         switch (plan.rotation) {
-            case 0 -> Draw.rect(region1, plan.x * tilesize + block.offset, plan.y * tilesize + block.offset);
-            case 1 -> Draw.rect(region2, plan.x * tilesize + block.offset, plan.y * tilesize + block.offset);
-            case 2 -> Draw.rect(region3, plan.x * tilesize + block.offset, plan.y * tilesize + block.offset);
-            case 3 -> Draw.rect(region4, plan.x * tilesize + block.offset, plan.y * tilesize + block.offset);
+            case 0 -> Draw.rect(region1, plan.drawx(), plan.drawy());
+            case 1 -> Draw.rect(region2, plan.drawx(), plan.drawy());
+            case 2 -> Draw.rect(region3, plan.drawx(), plan.drawy());
+            case 3 -> Draw.rect(region4, plan.drawx(), plan.drawy());
         }
     }
 

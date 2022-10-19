@@ -11,7 +11,7 @@ import static mindustry.Vars.world;
 
 public class TileDef {
     public static boolean toBlock(Building block, Building other){
-        return (block.relativeTo(other) + 2) % 4 == other.rotation;
+        return !other.block().rotate || (block.relativeTo(other) + 2) % 4 == other.rotation;
     }
 
     public static boolean conductSideTemperature(Building block, Building other){

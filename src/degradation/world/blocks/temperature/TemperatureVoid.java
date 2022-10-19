@@ -5,7 +5,7 @@ import degradation.util.TileDef;
 import mindustry.gen.Building;
 import mindustry.world.Block;
 
-public class TemperatureVoid extends Block{
+public class TemperatureVoid extends Block {
     public TemperatureVoid(String name) {
         super(name);
 
@@ -19,7 +19,10 @@ public class TemperatureVoid extends Block{
         }
 
         @Override
-        public void setTemperature(float target) {}
+        public void addTemperature(float target){}
+
+        @Override
+        public void setTemperature(float target){}
 
         @Override
         public void updateTile(){

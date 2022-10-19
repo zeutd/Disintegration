@@ -221,8 +221,6 @@ public class Quarry extends Block {
         float armAlpha;
         float drillAlpha;
         float angle;
-        boolean paused;
-
         boolean empty;
         Vec2 DrillPos;
         Tile[][] tiles;
@@ -234,8 +232,6 @@ public class Quarry extends Block {
         public void updateTile(){
             tiles = new Tile[areaSize][areaSize];
             itemsArray = new Item[areaSize][areaSize];
-
-            paused = state.isPaused();
 
             boostWarmup = Mathf.lerpDelta(boostWarmup, optionalEfficiency, 0.1f);
 
@@ -262,7 +258,7 @@ public class Quarry extends Block {
             if (efficiency > 0 && armAlphaAni == 0) {
                 progress += delta() * speed;
             }
-            if(empty && progress >= mineTime && items.total() < itemCapacity && armAlphaAni == 0 && !paused){
+            if(empty && progress >= mineTime && items.total() < itemCapacity && armAlphaAni == 0){
                 progress %= mineTime;
                 DrillPos = new Vec2(mxM + mx, myM + my);
                 Item tileItem;
@@ -283,16 +279,16 @@ public class Quarry extends Block {
             areaAlpha = efficiency > 0 && empty ? 1 : Math.abs(myP - 0.1) <= 0.1 ? 0 : 1;
             if (empty) {
                 if (efficiency > 0 || items.total() >= itemCapacity) {
-                    mxS = MathDef.lerp(mxS, mx - fulls - x, 4, 2, paused);
-                    mxP = MathDef.lerp(mxP, mx + fulls - x, 4, 2, paused);
-                    myS = MathDef.lerp(myS, my - fulls - y, 4, 2, paused);
-                    myP = MathDef.lerp(myP, my + fulls - y, 4, 2, paused);
+                    mxS = MathDef.lerp(mxS, mx - fulls - x, 4, 2);
+                    mxP = MathDef.lerp(mxP, mx + fulls - x, 4, 2);
+                    myS = MathDef.lerp(myS, my - fulls - y, 4, 2);
+                    myP = MathDef.lerp(myP, my + fulls - y, 4, 2);
                     if (Math.abs(myP - (my + fulls - y)) <= 0.1) {
-                        mN = MathDef.lerp(mN, -fulls, 4, 5, paused);
+                        mN = MathDef.lerp(mN, -fulls, 4, 5);
                         if (mN + fulls >= -0.01) {
-                            mL = MathDef.lerp(mL, -fulls, 4, 5, paused);
+                            mL = MathDef.lerp(mL, -fulls, 4, 5);
                             if (mL + fulls >= -0.01) {
-                                drillAlpha = MathDef.lerp(drillAlpha, 1, 4, 2, paused);
+                                drillAlpha = MathDef.lerp(drillAlpha, 1, 4, 2);
                                 if (1 - drillAlpha <= 0.01) {
                                     armAlphaAni = 0;
                                     armAlpha = 1;
@@ -301,13 +297,13 @@ public class Quarry extends Block {
                                             mxR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
                                             myR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
                                         }
-                                        mxM = MathDef.linear(mxM, mxR, 0.07f, paused);
-                                        myM = MathDef.linear(myM, myR, 0.07f, paused);
+                                        mxM = MathDef.linear(mxM, mxR, 0.07f);
+                                        myM = MathDef.linear(myM, myR, 0.07f);
                                     } else {
                                         mxR = 0;
                                         myR = 0;
-                                        mxM = MathDef.lerp(mxM, mxR, 4, 6, paused);
-                                        myM = MathDef.lerp(myM, myR, 4, 6, paused);
+                                        mxM = MathDef.lerp(mxM, mxR, 4, 6);
+                                        myM = MathDef.lerp(myM, myR, 4, 6);
                                     }
                                 }
                             } else {
@@ -319,22 +315,22 @@ public class Quarry extends Block {
                 } else {
                     mxR = 0;
                     myR = 0;
-                    mxM = MathDef.lerp(mxM, mxR, 4, 5, paused);
-                    myM = MathDef.lerp(myM, myR, 4, 5, paused);
+                    mxM = MathDef.lerp(mxM, mxR, 4, 5);
+                    myM = MathDef.lerp(myM, myR, 4, 5);
                     if (Math.abs(mxM) <= 0.001) {
-                        drillAlpha = MathDef.lerp(drillAlpha, 0, 4, 2, paused);
+                        drillAlpha = MathDef.lerp(drillAlpha, 0, 4, 2);
                         if (drillAlpha <= 0.01) {
                             armAlphaAni = 1;
                             armAlpha = 0;
-                            mL = MathDef.lerp(mL, -2 * fulls, 4, 6, paused);
+                            mL = MathDef.lerp(mL, -2 * fulls, 4, 6);
                             if (mL <= -2 * fulls + 0.006) {
                                 if (mN <= -2 * fulls + 0.006) {
-                                    mxS = MathDef.lerp(mxS, 0, 4, 2, paused);
-                                    mxP = MathDef.lerp(mxP, 0, 4, 2, paused);
-                                    myS = MathDef.lerp(myS, 0, 4, 2, paused);
-                                    myP = MathDef.lerp(myP, 0, 4, 2, paused);
+                                    mxS = MathDef.lerp(mxS, 0, 4, 2);
+                                    mxP = MathDef.lerp(mxP, 0, 4, 2);
+                                    myS = MathDef.lerp(myS, 0, 4, 2);
+                                    myP = MathDef.lerp(myP, 0, 4, 2);
                                 }
-                                mN = MathDef.lerp(mN, -2 * fulls, 4, 5, paused);
+                                mN = MathDef.lerp(mN, -2 * fulls, 4, 5);
                             }
                         }
                     }

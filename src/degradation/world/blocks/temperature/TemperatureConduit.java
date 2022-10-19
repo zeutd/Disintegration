@@ -92,7 +92,12 @@ public class TemperatureConduit extends Block {
             return temperature;
         }
 
-        public void setTemperature(float target) {
+        @Override
+        public void addTemperature(float target) {
+            temperature += target;
+        }
+        @Override
+        public void setTemperature(float target){
             temperature = target;
         }
 
@@ -102,15 +107,13 @@ public class TemperatureConduit extends Block {
 
             for(Building build : proximityBuilds){
                 if(build instanceof TemperatureConduitBuild other){
-                    temperature += conductionSpeed * (other.temperature() - temperature);
-                }
-                else if(build instanceof TemperatureProducer.TemperatureProducerBuild other && TileDef.toBlock(this, other)){
-                    temperature += other.temperature();
+                    addTemperature(conductionSpeed * (other.temperature() - temperature));
+                    other.addTemperature(conductionSpeed * (temperature - other.temperature()));
                 }
                 else if (build instanceof TemperatureCrafter.TemperatureCrafterBuild other && TileDef.toBlock(this, other)) {
                     if(other.temperature() <= temperature) {
                         temperature -= conductionSpeed;
-                        other.setTemperature(other.temperature() + conductionSpeed);
+                        other.addTemperature(conductionSpeed);
                     }
                 }
             }

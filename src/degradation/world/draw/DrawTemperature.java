@@ -31,15 +31,14 @@ public class DrawTemperature extends DrawBlock {
         this.sideHeatColor = sideHeatColor;
         this.percent = percent;
     }
+    @Override
     public void drawPlan(Block block, BuildPlan plan, Eachable<BuildPlan> list){
-        if(topRegion.found()) {
-            Draw.rect(topRegion, plan.x, plan.y, plan.rotation * 90);
-        }
+        Draw.rect(topRegion, plan.drawx(), plan.drawy(), plan.rotation * 90);
     }
 
     @Override
     public void draw(Building build){
-        float otherTemperature = -1;
+        float otherTemperature = Float.NaN;
 
         Seq<Building> proximityBuilds = build.proximity();
 
@@ -49,16 +48,15 @@ public class DrawTemperature extends DrawBlock {
                 break;
             }
         }
-        if(otherTemperature < 0) {
+        if(Float.isNaN(otherTemperature)){
             float temperatureOutput = 1f;
             if(build instanceof TemperatureProducer.TemperatureProducerBuild block) {
                 temperatureOutput = block.temperatureOutput();
             }
             otherTemperature = ((TemperatureBlock) build).temperature() * percent * 60 * 1.5f / temperatureOutput;
         }
-        if(topRegion.found()) {
-            Draw.rect(topRegion, build.x, build.y, build.rotation * 90);
-        }
+        Draw.rect(topRegion, build.x, build.y, build.rotation * 90);
+
         Draw.color(heatColor);
 
         Draw.blend(Blending.additive);

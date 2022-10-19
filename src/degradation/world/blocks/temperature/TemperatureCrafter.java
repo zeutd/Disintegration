@@ -1,13 +1,10 @@
 package degradation.world.blocks.temperature;
 
 import arc.Core;
-import arc.struct.Seq;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import degradation.DTVars;
-import degradation.util.TileDef;
 import degradation.world.draw.DrawTemperature;
-import mindustry.gen.Building;
 import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.production.GenericCrafter;
@@ -52,19 +49,18 @@ public class TemperatureCrafter extends GenericCrafter {
         }
 
         @Override
-        public void setTemperature(float target) {
+        public void addTemperature(float target) {
+            temperature += target;
+        }
+
+        @Override
+        public void setTemperature(float target){
             temperature = target;
         }
 
         @Override
         public void updateTile(){
             super.updateTile();
-            Seq<Building> proximityBuilds = this.proximity();
-            for(Building build : proximityBuilds){
-                if(build instanceof TemperatureProducer.TemperatureProducerBuild other && TileDef.toBlock(this, other) && TileDef.toBlock(other, this)){
-                    temperature += other.temperature() * 2;
-                }
-            }
             temperature -= temperatureConsumes / 60 * efficiency;
         }
 

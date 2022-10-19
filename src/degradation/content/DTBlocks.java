@@ -16,6 +16,7 @@ import mindustry.content.StatusEffects;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.LaserBoltBulletType;
+import mindustry.entities.bullet.ShrapnelBulletType;
 import mindustry.entities.part.DrawPart;
 import mindustry.entities.part.HaloPart;
 import mindustry.entities.part.RegionPart;
@@ -63,6 +64,7 @@ public class DTBlocks {
             boiler,
     //turrets
             fracture,
+            permeation,
             holy,
             sparkover,
     //drills
@@ -143,7 +145,7 @@ public class DTBlocks {
         }};
         temperatureConduit = new TemperatureConduit("temperature-conduit"){{
             health = 100;
-            conductionSpeed = 0.1f;
+            conductionSpeed = 0.25f;
             temperaturePercent = DTVars.temperaturePercent;
             requirements(Category.distribution, with(DTItems.iron, 2));
         }};
@@ -179,7 +181,7 @@ public class DTBlocks {
             requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20));
         }};
         //factory
-        boiler = new TemperatureCrafter("bolier"){{
+        boiler = new TemperatureCrafter("boiler"){{
             requirements(Category.crafting, with(DTItems.iron, 65, Items.silicon, 40, Items.graphite, 60));
             outputLiquid = new LiquidStack(DTLiquids.steam, 12f / 60f);
             size = 2;
@@ -358,6 +360,43 @@ public class DTBlocks {
             ammoPerShot = 1;
 
             limitRange(-5f);
+        }};
+        permeation = new ItemTurret("permeation"){{
+            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
+
+            reload = 50f;
+            shake = 4f;
+            range = 60f;
+            recoil = 2f;
+
+            heatColor = Color.sky.cpy().a(0.9f);
+
+            shootCone = 30;
+            size = 2;
+            envEnabled |= Env.space;
+
+            scaledHealth = 300;
+            shootSound = Sounds.shotgun;
+            coolant = consumeCoolant(0.3f);
+            ammo(Items.graphite, new ShrapnelBulletType(){{
+                length = 50f;
+                damage = 85f;
+                ammoMultiplier = 5f;
+                toColor = Color.sky;
+                shootEffect = smokeEffect = Fx.shootBigSmoke;
+            }});
+            drawer = new DrawTurret("reinforced-"){{
+                parts.addAll(new RegionPart("-side"){{
+                    heatProgress = PartProgress.recoil.add(-0.1f).clamp();
+                    progress = PartProgress.warmup;
+                    mirror = true;
+                    moveX = 0.5f;
+                    moveY = -0.5f;
+                    moves.add(new PartMove(PartProgress.recoil, 1f, -0.5f, 0.2f));
+                    under = true;
+                    heatColor = Color.sky.cpy().a(0.8f);
+                }});
+            }};
         }};
         holy = new PowerTurret("holy"){{
             scaledHealth = 260;

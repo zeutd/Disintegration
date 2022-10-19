@@ -19,6 +19,9 @@ public class TemperatureSource extends Block{
         }
 
         @Override
+        public void addTemperature(float target){}
+
+        @Override
         public void setTemperature(float target){}
 
         @Override
