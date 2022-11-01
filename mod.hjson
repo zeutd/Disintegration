@@ -1,14 +1,14 @@
 #the mod name as displayed in-game
-displayName: "degradation"
+displayName: "disintegration"
 
 #the internal name of your mod
-name: "degradation"
+name: "disintegration"
 
 #your name
 author: "zeutd"
 
 #the fully qualified main class of the mod
-main: "degradation.DegradationJavaMod"
+main: "disintegration.disintegrationJavaMod"
 
 #the mod description as seen in the mod dialog
 description: "A Mindustry Java mod."
