@@ -26,7 +26,7 @@ public class TileDef {
     public static Seq<Item> listItem(Seq<Item> array){
         Seq<Item> result = new Seq<>();
         array.forEach(a -> {
-            if(!result.contains(a)){
+            if(!result.contains(a) && a != null){
                 result.add(a);
             }
         });

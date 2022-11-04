@@ -1,6 +1,7 @@
 package disintegration.world.blocks.temperature;
 
 import arc.Core;
+import arc.graphics.g2d.TextureRegion;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.DTVars;
@@ -32,6 +33,11 @@ public class TemperatureCrafter extends GenericCrafter {
         super.setStats();
 
         stats.add(Stat.input, String.valueOf(temperatureConsumes), StatUnit.heatUnits ,StatUnit.perSecond);
+    }
+
+    @Override
+    public TextureRegion[] icons(){
+        return drawer.icons(this);
     }
 
     @Override

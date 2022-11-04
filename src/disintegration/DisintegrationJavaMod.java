@@ -4,8 +4,8 @@ import arc.util.*;
 import disintegration.content.*;
 import mindustry.mod.*;
 
-public class disintegrationJavaMod extends Mod{
-    public disintegrationJavaMod(){
+public class DisintegrationJavaMod extends Mod{
+    public DisintegrationJavaMod(){
         Log.info("Loaded disintegrationMod constructor.");
     }
     @Override

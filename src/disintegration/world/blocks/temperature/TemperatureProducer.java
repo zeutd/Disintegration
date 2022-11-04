@@ -23,16 +23,7 @@ import mindustry.world.draw.DrawMulti;
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
 
-import static arc.Core.atlas;
-
 public class TemperatureProducer extends Block {
-    public TextureRegion region1;
-    public TextureRegion region2;
-    public TextureRegion region3;
-    public TextureRegion region4;
-    public TextureRegion heatRegion;
-    public TextureRegion sideHeatRegion;
-
     public Color heatColor = Pal2.burn;
     public Color sideHeatColor = Pal2.heat;
 
@@ -54,13 +45,12 @@ public class TemperatureProducer extends Block {
     @Override
     public void load() {
         super.load();
-        region1 = atlas.find(name + "1");
-        region2 = atlas.find(name + "2");
-        region3 = atlas.find(name + "3");
-        region4 = atlas.find(name + "4");
-        heatRegion = atlas.find(name + "-heat");
-        sideHeatRegion = atlas.find(name + "-heat-side");
         drawer.load(this);
+    }
+
+    @Override
+    public TextureRegion[] icons(){
+        return drawer.icons(this);
     }
 
     @Override

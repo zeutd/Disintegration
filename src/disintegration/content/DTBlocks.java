@@ -6,8 +6,12 @@ import disintegration.DTVars;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.defence.ShardWall;
 import disintegration.world.blocks.defence.turrets.ElectricTowerTurret;
+import disintegration.world.blocks.laser.LaserDevice;
+import disintegration.world.blocks.laser.LaserReflector;
 import disintegration.world.blocks.production.Quarry;
 import disintegration.world.blocks.temperature.*;
+import disintegration.world.draw.DrawAllRotate;
+import disintegration.world.draw.DrawLaser;
 import disintegration.world.draw.DrawTemperature;
 import mindustry.content.Fx;
 import mindustry.content.Items;
@@ -60,6 +64,12 @@ public class DTBlocks {
             temperatureSource,
             temperatureVoid,
             burningHeater,
+    //laser
+            laserDevice,
+            laserReflector,
+            laserRouter,
+            laserSource,
+
     //factory
             boiler,
     //turrets
@@ -70,10 +80,6 @@ public class DTBlocks {
     //drills
             quarry
             ;
-            /*test1,
-            test2,
-            awa;
-             */
     public static void load() {
         //environment
         greenIce = new Floor("green-ice"){{
@@ -185,6 +191,41 @@ public class DTBlocks {
 
             consume(new ConsumeItemFlammable());
             consume(new ConsumeItemExplode());
+            requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
+        }};
+
+        laserSource = new LaserDevice("laser-source"){{
+            range = 10;
+            health = 400;
+            laserOutput = 1000;
+            drawer = new DrawMulti(new DrawAllRotate(1), new DrawLaser(false));
+            requirements(Category.crafting, with());
+        }};
+
+        laserDevice = new LaserDevice("laser-device"){{
+           range = 7;
+           health = 200;
+           laserOutput = 5;
+           drawer = new DrawMulti(new DrawAllRotate(1), new DrawLaser(false));
+           consumePower(3);
+           requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
+        }};
+
+        laserReflector = new LaserReflector("laser-reflector"){{
+            range = 7;
+            split = false;
+            rotateDraw = false;
+            health = 200;
+            drawer = new DrawMulti(new DrawRegion(""), new DrawLaser(true));
+            requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
+        }};
+
+        laserRouter = new LaserReflector("laser-router"){{
+            range = 7;
+            split = true;
+            rotateDraw = false;
+            health = 200;
+            drawer = new DrawMulti(new DrawRegion(""), new DrawLaser(true));
             requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
         }};
         //factory

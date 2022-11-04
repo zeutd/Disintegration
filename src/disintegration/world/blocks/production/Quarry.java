@@ -1,6 +1,7 @@
 package disintegration.world.blocks.production;
 
 import arc.Core;
+import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
@@ -71,9 +72,17 @@ public class Quarry extends Block {
         hasPower = true;
         //drills work in space I guess
         envEnabled |= Env.space;
+        updateInUnits = false;
         quickRotate = false;
         ambientSoundVolume = 0.05f;
         ambientSound = Sounds.minebeam;
+        clipSize = (areaSize + size) * 8;
+    }
+
+    @Override
+    public void init(){
+        updateClipRadius((size + areaSize) * 8);
+        super.init();
     }
     @Override
     public void load(){
@@ -98,8 +107,8 @@ public class Quarry extends Block {
     public void drawPlace(int x, int y, int rotation, boolean valid){
         super.drawPlace(x, y, rotation, valid);
 
-        int mx = (int) (x + Geometry.d4x(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
-        int my = (int) (y + Geometry.d4y(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
+        int mx = (int) (x + Geometry.d4x(rotation) * (areaSize / 2f - (areaSize % 2) / 2f - sizeOffset * 2) - areaSize / 2f + (areaSize % 2));
+        int my = (int) (y + Geometry.d4y(rotation) * (areaSize / 2f - (areaSize % 2) / 2f - sizeOffset * 2) - areaSize / 2f + (areaSize % 2));
 
         Seq<Tile> tiles = TileDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
@@ -127,7 +136,8 @@ public class Quarry extends Block {
         Seq<Tile> tiles = TileDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
         Seq<Item> items = getDropArray(tiles);
-        return !items.isEmpty();
+        Seq<Item> itemList = TileDef.listItem(items);
+        return !itemList.isEmpty();
     }
 
     public void drawText(Item item, int count, int x, int y, boolean valid, int layer){
@@ -330,90 +340,75 @@ public class Quarry extends Block {
         public void dumpOutputs(Seq<Item> array){
             array.forEach(this::dump);
         }
-        @Override
-        public void draw(){
-            super.draw();
 
-            Draw.rect(rotation >= 2 ? sideRegion2 : sideRegion1, x, y, rotdeg());
-
-            Draw.z(Layer.buildBeam);
-            //draw full area
-            Lines.stroke(2f, fullColor);
-            Draw.alpha(warmup);
-            if (empty) Drawf.dashRectBasic(mx - fulls, my - fulls, fulls*2f, fulls*2f);
-            Draw.reset();
-            Draw.color();
-            Draw.alpha(areaAlpha);
-            Draw.z(Layer.buildBeam + 1.3f);
-            //draw locator
-            if (empty) {
-                Vec2 locator1 = new Vec2(mxS + x, myS + y);
-                Vec2 locator2 = new Vec2(mxP + x, myS + y);
-                Vec2 locator3 = new Vec2(mxS + x, myP + y);
-                Vec2 locator4 = new Vec2(mxP + x, myP + y);
-
-                Draw.rect(locator, locator1.x, locator1.y);
-                Draw.rect(locator, locator2.x, locator2.y);
-                Draw.rect(locator, locator3.x, locator3.y);
-                Draw.rect(locator, locator4.x, locator4.y);
-                //Draw arm
-                Draw.z(Layer.buildBeam + 1.2f);
-                Lines.stroke(3.5f);
-                //up
-                Lines.line(armRegion,
-                        mx - fulls,
-                        my + fulls,
-                        mN + mx + fulls,
-                        my + fulls, false
-                );
-                Lines.line(armRegion,
-                        mx + fulls,
-                        my + fulls,
-                        -mN + mx - fulls,
-                        my + fulls, false
-                );
-                //down
-                Lines.line(armRegion,
-                        mx - fulls,
-                        my - fulls,
-                        mN + mx + fulls,
-                        my - fulls, false
-                );
-                Lines.line(armRegion,
-                        mx + fulls,
-                        my - fulls,
-                        -mN + mx - fulls,
-                        my - fulls, false
-                );
-                //right
-                Lines.line(armRegion,
-                        mx + fulls,
-                        my - fulls,
-                        mx + fulls,
-                        mN + my + fulls, false
-                );
-                Lines.line(armRegion,
-                        mx + fulls,
-                        my + fulls,
-                        mx + fulls,
-                        -mN + my - fulls, false
-                );
-                //left
-                Lines.line(armRegion,
-                        mx - fulls,
-                        my - fulls,
-                        mx - fulls,
-                        mN + my + fulls, false
-                );
-                Lines.line(armRegion,
-                        mx - fulls,
-                        my + fulls,
-                        mx - fulls,
-                        -mN + my - fulls, false
-                );
-                //draw across arm animation
-                Draw.z(Layer.buildBeam + 1.1f);
-                Draw.alpha(armAlphaAni);
+        public void drawDrill(float x, float y, float mx, float my){
+            Vec2 locator1 = new Vec2(mxS + x, myS + y);
+            Vec2 locator2 = new Vec2(mxP + x, myS + y);
+            Vec2 locator3 = new Vec2(mxS + x, myP + y);
+            Vec2 locator4 = new Vec2(mxP + x, myP + y);
+            Draw.rect(locator, locator1.x, locator1.y);
+            Draw.rect(locator, locator2.x, locator2.y);
+            Draw.rect(locator, locator3.x, locator3.y);
+            Draw.rect(locator, locator4.x, locator4.y);
+            //Draw arm
+            Draw.z(Layer.flyingUnitLow - 1.1f);
+            Lines.stroke(3.5f);
+            //up
+            Lines.line(armRegion,
+                    mx - fulls,
+                    my + fulls,
+                    mN + mx + fulls,
+                    my + fulls, false
+            );
+            Lines.line(armRegion,
+                    mx + fulls,
+                    my + fulls,
+                    -mN + mx - fulls,
+                    my + fulls, false
+            );
+            //down
+            Lines.line(armRegion,
+                    mx - fulls,
+                    my - fulls,
+                    mN + mx + fulls,
+                    my - fulls, false
+            );
+            Lines.line(armRegion,
+                    mx + fulls,
+                    my - fulls,
+                    -mN + mx - fulls,
+                    my - fulls, false
+            );
+            //right
+            Lines.line(armRegion,
+                    mx + fulls,
+                    my - fulls,
+                    mx + fulls,
+                    mN + my + fulls, false
+            );
+            Lines.line(armRegion,
+                    mx + fulls,
+                    my + fulls,
+                    mx + fulls,
+                    -mN + my - fulls, false
+            );
+            //left
+            Lines.line(armRegion,
+                    mx - fulls,
+                    my - fulls,
+                    mx - fulls,
+                    mN + my + fulls, false
+            );
+            Lines.line(armRegion,
+                    mx - fulls,
+                    my + fulls,
+                    mx - fulls,
+                    -mN + my - fulls, false
+            );
+            //draw across arm animation
+            Draw.z(Layer.flyingUnitLow - 1.2f);
+            Draw.alpha(armAlphaAni);
+            if (armAlphaAni != 0) {
                 Lines.line(armRegion,
                         mx,
                         my - fulls,
@@ -438,26 +433,45 @@ public class Quarry extends Block {
                         -mL + mx - fulls,
                         my, false
                 );
-                //draw across arm
-                Draw.alpha(armAlpha);
-                Lines.line(armRegion,
-                        mxM + mx,
-                        my - fulls,
-                        mxM + mx,
-                        my + fulls, false
-                );
-                Lines.line(armRegion,
-                        mx - fulls,
-                        myM + my,
-                        mx + fulls,
-                        myM + my, false
-                );
-                //draw drill
-                Draw.z(Layer.buildBeam + 1.2f);
+            }
+            //draw across arm
+            Draw.alpha(armAlpha);
+            Lines.line(armRegion,
+                    mxM + mx,
+                    my - fulls,
+                    mxM + mx,
+                    my + fulls, false
+            );
+            Lines.line(armRegion,
+                    mx - fulls,
+                    myM + my,
+                    mx + fulls,
+                    myM + my, false
+            );
+            //draw drill
+            Draw.z(Layer.flyingUnitLow - 1.1f);
 
-                Draw.alpha(drillAlpha);
+            Draw.alpha(drillAlpha);
 
-                Draw.rect(drill, mxM + mx, myM + my);
+            Draw.rect(drill, mxM + mx, myM + my);
+        }
+        @Override
+        public void draw(){
+            Draw.rect(region, x, y);
+            Draw.rect(rotation >= 2 ? sideRegion2 : sideRegion1, x, y, rotdeg());
+            Draw.reset();
+            Draw.color();
+            Draw.alpha(areaAlpha);
+            Draw.z(Layer.flyingUnitLow - 1f);
+            //draw locator
+            if (empty) {
+                Draw.color(Pal.shadow);
+                Draw.blend(Blending.additive);
+                drawDrill(x - 8f, y - 8f, mx - 8f, my - 8f);
+                Draw.blend();
+                Draw.color();
+                drawDrill(x, y, mx, my);
+
                 //draw ore stroke
                 Draw.z(Layer.blockOver);
 
@@ -465,7 +479,7 @@ public class Quarry extends Block {
 
                 DrillPos = new Vec2(mxM + mx, myM + my);
                 Item tileItem;
-                for (int ix = 0; ix < areaSize ; ix++) {
+                for (int ix = 0; ix < areaSize; ix++) {
                     for (int iy = 0; iy < areaSize; iy++) {
                         float dx = ix * 8 + mx - fulls + 4;
                         float dy = iy * 8 + my - fulls + 4;

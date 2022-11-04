@@ -12,27 +12,28 @@ import static arc.Core.atlas;
 
 public class DrawAllRotate extends DrawBlock {
     public TextureRegion region1, region2, region3, region4;
+    public TextureRegion[] regions;
+
+    public int iconRot = 0;
 
     public DrawAllRotate(){}
 
+    public DrawAllRotate(int iconRot){
+        this.iconRot = iconRot;
+    }
+
+    @Override
+    public TextureRegion[] icons(Block block){
+        return new TextureRegion[]{regions[iconRot]};
+    }
     @Override
     public void draw(Building build){
-        switch (build.rotation) {
-            case 0 -> Draw.rect(region1, build.x, build.y);
-            case 1 -> Draw.rect(region2, build.x, build.y);
-            case 2 -> Draw.rect(region3, build.x, build.y);
-            case 3 -> Draw.rect(region4, build.x, build.y);
-        }
+        Draw.rect(regions[build.rotation], build.x, build.y);
     }
 
     @Override
     public void drawPlan(Block block, BuildPlan plan, Eachable<BuildPlan> list){
-        switch (plan.rotation) {
-            case 0 -> Draw.rect(region1, plan.drawx(), plan.drawy());
-            case 1 -> Draw.rect(region2, plan.drawx(), plan.drawy());
-            case 2 -> Draw.rect(region3, plan.drawx(), plan.drawy());
-            case 3 -> Draw.rect(region4, plan.drawx(), plan.drawy());
-        }
+        Draw.rect(regions[plan.rotation], plan.drawx(), plan.drawy());
     }
 
     @Override
@@ -41,5 +42,6 @@ public class DrawAllRotate extends DrawBlock {
         region2 = atlas.find(block.name + "2");
         region3 = atlas.find(block.name + "3");
         region4 = atlas.find(block.name + "4");
+        regions = new TextureRegion[]{region1, region2, region3, region4};
     }
 }

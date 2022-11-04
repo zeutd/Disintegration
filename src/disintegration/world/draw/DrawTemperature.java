@@ -38,6 +38,11 @@ public class DrawTemperature extends DrawBlock {
     }
 
     @Override
+    public TextureRegion[] icons(Block block){
+        return new TextureRegion[]{topRegion};
+    }
+
+    @Override
     public void draw(Building build){
         float otherTemperature = 0;
 
