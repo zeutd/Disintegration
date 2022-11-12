@@ -5,6 +5,7 @@ import arc.graphics.g2d.TextureRegion;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.DTVars;
+import disintegration.util.MathDef;
 import disintegration.world.draw.DrawTemperature;
 import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
@@ -44,7 +45,7 @@ public class TemperatureCrafter extends GenericCrafter {
     public void setBars(){
         super.setBars();
 
-        addBar("heat", (TemperatureCrafterBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (float)(Math.round(entity.temperature * 10)) / 10), () -> Pal.lightOrange, () -> entity.temperature / temperturePercent));
+        addBar("heat", (TemperatureCrafterBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", MathDef.round(entity.temperature, 10)), () -> Pal.lightOrange, () -> entity.temperature / temperturePercent));
     }
 
     public class TemperatureCrafterBuild extends GenericCrafterBuild implements TemperatureBlock{

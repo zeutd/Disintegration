@@ -9,6 +9,8 @@ import arc.struct.IntSet;
 import arc.util.Eachable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import disintegration.util.MathDef;
+import disintegration.world.meta.DTStatUnit;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 import mindustry.graphics.Drawf;
@@ -17,6 +19,7 @@ import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
 import mindustry.world.draw.DrawBlock;
+import mindustry.world.meta.Stat;
 
 import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
@@ -31,7 +34,6 @@ public class LaserDevice extends Block {
         update = true;
         rotate = true;
         solid = true;
-        clipSize = (range + size) * 8;
     }
 
     @Override
@@ -80,10 +82,17 @@ public class LaserDevice extends Block {
     }
 
     @Override
+    public void setStats(){
+        super.setStats();
+
+        stats.add(Stat.output, laserOutput, DTStatUnit.laserUnits);
+    }
+
+    @Override
     public void setBars(){
         super.setBars();
 
-        addBar("laser", (LaserDeviceBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", (float)(Math.round(entity.luminosity * 10)) / 10), () -> Pal.redLight, () -> entity.luminosity / 15));
+        addBar("laser", (LaserDeviceBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity(), 10)), () -> Pal.redLight, () -> entity.luminosity / laserOutput));
     }
 
     public class LaserDeviceBuild extends Building implements LaserBlock {

@@ -11,6 +11,7 @@ import arc.util.Eachable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.graphics.Pal2;
+import disintegration.util.MathDef;
 import disintegration.util.TileDef;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
@@ -80,7 +81,7 @@ public class TemperatureConduit extends Block {
     public void setBars(){
         super.setBars();
 
-        addBar("heat", (TemperatureConduitBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (float)(Math.round(entity.temperature * 10)) / 10), () -> Pal.lightOrange, () -> entity.temperature / temperaturePercent));
+        addBar("heat", (TemperatureConduitBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", MathDef.round(entity.temperature, 10)), () -> Pal.lightOrange, () -> entity.temperature / temperaturePercent));
     }
 
     public class TemperatureConduitBuild extends Building implements TemperatureBlock{

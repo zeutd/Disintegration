@@ -7,10 +7,12 @@ import disintegration.graphics.Pal2;
 import disintegration.world.blocks.defence.ShardWall;
 import disintegration.world.blocks.defence.turrets.ElectricTowerTurret;
 import disintegration.world.blocks.laser.LaserDevice;
+import disintegration.world.blocks.laser.LaserReactor;
 import disintegration.world.blocks.laser.LaserReflector;
 import disintegration.world.blocks.production.Quarry;
 import disintegration.world.blocks.temperature.*;
 import disintegration.world.draw.DrawAllRotate;
+import disintegration.world.draw.DrawFusion;
 import disintegration.world.draw.DrawLaser;
 import disintegration.world.draw.DrawTemperature;
 import mindustry.content.Fx;
@@ -69,6 +71,7 @@ public class DTBlocks {
             laserReflector,
             laserRouter,
             laserSource,
+            excitationReactor,
 
     //factory
             boiler,
@@ -78,7 +81,8 @@ public class DTBlocks {
             holy,
             sparkover,
     //drills
-            quarry
+            quarry,
+    test
             ;
     public static void load() {
         //environment
@@ -227,6 +231,31 @@ public class DTBlocks {
             health = 200;
             drawer = new DrawMulti(new DrawRegion(""), new DrawLaser(true));
             requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
+        }};
+        excitationReactor = new LaserReactor("excitation-reactor"){{
+            size = 5;
+            scaledHealth = 100;
+            maxLaser = 100f;
+            warmupSpeed = 0.003f;
+            powerProduction = 120f;
+            coolantPower = 0.5f;
+
+            heating = 0.01f;
+
+            consumeLiquid(DTLiquids.liquidCrystal, heating / coolantPower).update(false);
+            liquidCapacity = 3f;
+            explosionMinWarmup = 0.5f;
+
+            ambientSound = Sounds.tractorbeam;
+            ambientSoundVolume = 0.13f;
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawPlasma(), new DrawSoftParticles(){{
+                alpha = 0.2f;
+                particleRad = 12f;
+                particleSize = 9f;
+                particleLife = 100f;
+                particles = 10;
+            }}, new DrawDefault(), new DrawFusion());
+            requirements(Category.power, with(DTItems.iron, 300, Items.silicon, 200, Items.graphite, 300, Items.surgeAlloy, 100));
         }};
         //factory
         boiler = new TemperatureCrafter("boiler"){{

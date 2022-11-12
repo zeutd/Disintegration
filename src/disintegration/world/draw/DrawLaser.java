@@ -12,10 +12,11 @@ import mindustry.gen.Building;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.world.Block;
+import mindustry.world.draw.DrawBlock;
 
 import static arc.Core.atlas;
 
-public class DrawLaser extends DrawDTBlock {
+public class DrawLaser extends DrawBlock {
     public TextureRegion laser, laserEnd, arrowRegion;
 
     public boolean drawArrow;

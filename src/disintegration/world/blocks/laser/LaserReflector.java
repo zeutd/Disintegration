@@ -9,6 +9,7 @@ import arc.struct.IntSet;
 import arc.util.Eachable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import disintegration.util.MathDef;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 import mindustry.graphics.Drawf;
@@ -96,12 +97,12 @@ public class LaserReflector extends Block {
     public void setBars(){
         super.setBars();
 
-        addBar("laser", (LaserReflectorBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", (float)(Math.round(entity.luminosity * 10)) / 10), () -> Pal.redLight, () -> entity.luminosity / 15));
+        addBar("laser", (LaserReflectorBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity, 10)), () -> Pal.redLight, () -> entity.luminosity / 15));
     }
 
     public class LaserReflectorBuild extends Building implements LaserBlock {
-        float[] sideLaser = new float[4];
-        float[] callFrom = new float[4];
+        float[] sideLaser = new float[getEdges().length];
+        float[] callFrom = new float[getEdges().length];
 
         IntSet came = new IntSet();
         IntSet otherCame = new IntSet();
@@ -140,17 +141,18 @@ public class LaserReflector extends Block {
 
         @Override
         public void updateTile(){
+            proximity.forEach(b -> {});
             came.clear();
             came.addAll(otherCame);
             came.add(id);
             sideLaser = callFrom.clone();
-            callFrom = new float[4];
+            callFrom = new float[getEdges().length];
             luminosity = 0;
-            lable:
+            label:
             {
-                if(otherCame.contains(id)) break lable;
+                if(otherCame.contains(id)) break label;
                 if (!split) {
-                    for (int i = 0; i <= 3; i++) {
+                    for (int i = 0; i < sideLaser.length; i++) {
                         float side = sideLaser[i];
                         if (i != rotation) {
                             luminosity += side;

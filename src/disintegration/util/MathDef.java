@@ -1,6 +1,10 @@
 package disintegration.util;
 
 public class MathDef {
+    public static float round(float value, int step){
+        return (float) Math.round(value * step) / step;
+    }
+
     /**Better Mathf.lerp*/
     public static float lerp(float value, float target, float power, float speed){
         return (((target / speed - value / speed) / power / 5 + value / speed) * speed + (target - value) / speed / 5);

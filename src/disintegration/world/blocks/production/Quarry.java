@@ -1,7 +1,6 @@
 package disintegration.world.blocks.production;
 
 import arc.Core;
-import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
@@ -76,12 +75,11 @@ public class Quarry extends Block {
         quickRotate = false;
         ambientSoundVolume = 0.05f;
         ambientSound = Sounds.minebeam;
-        clipSize = (areaSize + size) * 8;
     }
 
     @Override
     public void init(){
-        updateClipRadius((size + areaSize) * 8);
+        updateClipRadius((size + areaSize + 1) * 8);
         super.init();
     }
     @Override
@@ -208,9 +206,9 @@ public class Quarry extends Block {
         float warmup;
         Color fullColor;
         float boostWarmup;
-        float areaAlpha;
-        float armAlphaAni;
-        float armAlpha;
+        boolean drawArea;
+        boolean armAlphaAni;
+        boolean drawArm;
         float drillAlpha;
         float angle;
         boolean empty;
@@ -249,10 +247,10 @@ public class Quarry extends Block {
             if(items.total() < itemCapacity && efficiency > 0) {
                 speed = Mathf.lerp(1f, liquidBoostIntensity, optionalEfficiency) * efficiency;
             }
-            if (efficiency > 0 && armAlphaAni == 0) {
+            if (efficiency > 0 && !armAlphaAni) {
                 progress += delta() * speed;
             }
-            if(empty && progress >= mineTime && items.total() < itemCapacity && armAlphaAni == 0){
+            if(empty && progress >= mineTime && items.total() < itemCapacity && !armAlphaAni){
                 progress %= mineTime;
                 DrillPos = new Vec2(mxM + mx, myM + my);
                 Item tileItem;
@@ -269,12 +267,12 @@ public class Quarry extends Block {
                         }
                     }
                 }
-                if (1 - drillAlpha <= 0.01 && Mathf.range(1) >= 0 && efficiency > 0 && items.total() < itemCapacity) {
-                    angle = rand.random(0, 360f);
-                    drillEffect.at(mxM + mx, myM + my, angle, fullColor);
-                }
             }
-            areaAlpha = efficiency > 0 && empty ? 1 : Math.abs(myP - 0.1) <= 0.1 ? 0 : 1;
+            if (1 - drillAlpha <= 0.01 && Mathf.range(1) >= 0 && efficiency > 0 && items.total() < itemCapacity) {
+                angle = rand.random(0, 360f);
+                drillEffect.at(mxM + mx, myM + my, angle, fullColor);
+            }
+            drawArea = Math.abs(myP) > 0.1;
             if (empty) {
                 if (efficiency > 0 || items.total() >= itemCapacity) {
                     mxS = MathDef.lerp(mxS, mx - fulls - x, 4, 2);
@@ -288,8 +286,8 @@ public class Quarry extends Block {
                             if (mL + fulls >= -0.01) {
                                 drillAlpha = MathDef.lerp(drillAlpha, 1, 4, 2);
                                 if (1 - drillAlpha <= 0.01) {
-                                    armAlphaAni = 0;
-                                    armAlpha = 1;
+                                    armAlphaAni = false;
+                                    drawArm = true;
                                     if (items.total() < itemCapacity) {
                                         if (Math.abs(mxM - mxR) <= 0.01) {
                                             mxR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
@@ -305,8 +303,8 @@ public class Quarry extends Block {
                                     }
                                 }
                             } else {
-                                armAlphaAni = 1;
-                                armAlpha = 0;
+                                armAlphaAni = true;
+                                drawArm = false;
                             }
                         }
                     }
@@ -318,8 +316,8 @@ public class Quarry extends Block {
                     if (Math.abs(mxM) <= 0.001) {
                         drillAlpha = MathDef.lerp(drillAlpha, 0, 4, 2);
                         if (drillAlpha <= 0.01) {
-                            armAlphaAni = 1;
-                            armAlpha = 0;
+                            armAlphaAni = true;
+                            drawArm = false;
                             mL = MathDef.lerp(mL, -2 * fulls, 4, 6);
                             if (mL <= -2 * fulls + 0.006) {
                                 if (mN <= -2 * fulls + 0.006) {
@@ -341,7 +339,8 @@ public class Quarry extends Block {
             array.forEach(this::dump);
         }
 
-        public void drawDrill(float x, float y, float mx, float my){
+        public void drawDrill(float x, float y, float mx, float my, float layer){
+            Draw.z(layer - 1f);
             Vec2 locator1 = new Vec2(mxS + x, myS + y);
             Vec2 locator2 = new Vec2(mxP + x, myS + y);
             Vec2 locator3 = new Vec2(mxS + x, myP + y);
@@ -351,7 +350,7 @@ public class Quarry extends Block {
             Draw.rect(locator, locator3.x, locator3.y);
             Draw.rect(locator, locator4.x, locator4.y);
             //Draw arm
-            Draw.z(Layer.flyingUnitLow - 1.1f);
+            Draw.z(layer - 1.1f);
             Lines.stroke(3.5f);
             //up
             Lines.line(armRegion,
@@ -406,9 +405,8 @@ public class Quarry extends Block {
                     -mN + my - fulls, false
             );
             //draw across arm animation
-            Draw.z(Layer.flyingUnitLow - 1.2f);
-            Draw.alpha(armAlphaAni);
-            if (armAlphaAni != 0) {
+            Draw.z(layer - 1.2f);
+            if (armAlphaAni) {
                 Lines.line(armRegion,
                         mx,
                         my - fulls,
@@ -435,23 +433,24 @@ public class Quarry extends Block {
                 );
             }
             //draw across arm
-            Draw.alpha(armAlpha);
-            Lines.line(armRegion,
-                    mxM + mx,
-                    my - fulls,
-                    mxM + mx,
-                    my + fulls, false
-            );
-            Lines.line(armRegion,
-                    mx - fulls,
-                    myM + my,
-                    mx + fulls,
-                    myM + my, false
-            );
+            if(drawArm) {
+                Lines.line(armRegion,
+                        mxM + mx,
+                        my - fulls,
+                        mxM + mx,
+                        my + fulls, false
+                );
+                Lines.line(armRegion,
+                        mx - fulls,
+                        myM + my,
+                        mx + fulls,
+                        myM + my, false
+                );
+            }
             //draw drill
-            Draw.z(Layer.flyingUnitLow - 1.1f);
+            Draw.z(layer - 1.1f);
 
-            Draw.alpha(drillAlpha);
+            Draw.alpha(drillAlpha * Draw.getColor().a);
 
             Draw.rect(drill, mxM + mx, myM + my);
         }
@@ -461,17 +460,14 @@ public class Quarry extends Block {
             Draw.rect(rotation >= 2 ? sideRegion2 : sideRegion1, x, y, rotdeg());
             Draw.reset();
             Draw.color();
-            Draw.alpha(areaAlpha);
-            Draw.z(Layer.flyingUnitLow - 1f);
             //draw locator
-            if (empty) {
+            if (drawArea) {
                 Draw.color(Pal.shadow);
-                Draw.blend(Blending.additive);
-                drawDrill(x - 8f, y - 8f, mx - 8f, my - 8f);
-                Draw.blend();
-                Draw.color();
-                drawDrill(x, y, mx, my);
+                drawDrill(x - 8f, y - 8f, mx - 8f, my - 8f, Layer.floor + 2);
 
+                Draw.color();
+                drawDrill(x, y, mx, my, Layer.flyingUnitLow - 0.01f);
+                Draw.reset();
                 //draw ore stroke
                 Draw.z(Layer.blockOver);
 

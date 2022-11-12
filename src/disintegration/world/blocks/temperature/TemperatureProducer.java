@@ -10,6 +10,7 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.DTVars;
 import disintegration.graphics.Pal2;
+import disintegration.util.MathDef;
 import disintegration.util.TileDef;
 import disintegration.world.draw.DrawAllRotate;
 import disintegration.world.draw.DrawTemperature;
@@ -69,7 +70,7 @@ public class TemperatureProducer extends Block {
     public void setBars(){
         super.setBars();
 
-        addBar("heat", (TemperatureProducerBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", (float)(Math.round(entity.temperature * 10)) / 10), () -> Pal.lightOrange, () -> entity.temperature / temperatureOutput));
+        addBar("heat", (TemperatureProducerBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", MathDef.round(entity.temperature, 10)), () -> Pal.lightOrange, () -> entity.temperature / temperatureOutput));
     }
 
     public class TemperatureProducerBuild extends Building implements TemperatureBlock{
