@@ -14,6 +14,7 @@ import disintegration.util.MathDef;
 import disintegration.util.TileDef;
 import disintegration.world.draw.DrawAllRotate;
 import disintegration.world.draw.DrawTemperature;
+import disintegration.world.meta.DTStatUnit;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 import mindustry.graphics.Pal;
@@ -22,18 +23,17 @@ import mindustry.world.Block;
 import mindustry.world.draw.DrawBlock;
 import mindustry.world.draw.DrawMulti;
 import mindustry.world.meta.Stat;
-import mindustry.world.meta.StatUnit;
 
 public class TemperatureProducer extends Block {
     public Color heatColor = Pal2.burn;
     public Color sideHeatColor = Pal2.heat;
 
     public float temperatureOutput;
-    public float temperturePercent = DTVars.temperaturePercent;
+    public float temperaturePercent = DTVars.temperaturePercent;
 
     public float warmupRate = 0.15f;
 
-    public DrawBlock drawer = new DrawMulti(new DrawAllRotate(), new DrawTemperature(heatColor, sideHeatColor, temperturePercent));
+    public DrawBlock drawer = new DrawMulti(new DrawAllRotate(), new DrawTemperature(heatColor, sideHeatColor, temperaturePercent));
 
     public TemperatureProducer(String name) {
         super(name);
@@ -63,7 +63,7 @@ public class TemperatureProducer extends Block {
     public void setStats(){
         super.setStats();
 
-        stats.add(Stat.output, temperatureOutput, StatUnit.heatUnits);
+        stats.add(Stat.output, temperatureOutput, DTStatUnit.temperatureUnitsPerSecond);
     }
 
     @Override

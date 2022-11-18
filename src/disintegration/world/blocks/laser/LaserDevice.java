@@ -5,6 +5,7 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
 import arc.struct.IntSet;
 import arc.util.Eachable;
 import arc.util.io.Reads;
@@ -18,8 +19,11 @@ import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
+import mindustry.world.Edges;
 import mindustry.world.draw.DrawBlock;
 import mindustry.world.meta.Stat;
+
+import java.util.Arrays;
 
 import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
@@ -95,7 +99,7 @@ public class LaserDevice extends Block {
         addBar("laser", (LaserDeviceBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity(), 10)), () -> Pal.redLight, () -> entity.luminosity / laserOutput));
     }
 
-    public class LaserDeviceBuild extends Building implements LaserBlock {
+    public class LaserDeviceBuild extends Building implements LaserProducer {
         IntSet came = new IntSet();
 
         float luminosity;
@@ -111,7 +115,7 @@ public class LaserDevice extends Block {
                 Building other = world.build(Geometry.d4x(rotation + a - 1) * i + tileX(), Geometry.d4y(rotation + a - 1) * i + tileY());
                 if (other != null && other.block.solid) {
                     if (other instanceof LaserBlock build) {
-                        build.call(luminosity, other.relativeTo(this), came);
+                        build.call(luminosity, Arrays.asList(Edges.getEdges(other.block.size)).indexOf(new Point2(Geometry.d4x(rotation + a - 1) * (i - 1) + tileX() - other.tileX(), Geometry.d4y(rotation + a - 1) * (i - 1) + tileY() - other.tileY())), came);
                     }
                     break;
                 }
@@ -126,6 +130,11 @@ public class LaserDevice extends Block {
         @Override
         public float[] l(){
             return new float[]{0, l, 0};
+        }
+
+        @Override
+        public IntSet cameFrom(){
+            return new IntSet();
         }
 
         @Override

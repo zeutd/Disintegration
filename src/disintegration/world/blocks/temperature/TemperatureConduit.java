@@ -87,6 +87,7 @@ public class TemperatureConduit extends Block {
     public class TemperatureConduitBuild extends Building implements TemperatureBlock{
 
         public float temperature = 0;
+        public boolean[] sides = new boolean[4];
 
         @Override
         public float temperature() {
@@ -121,6 +122,15 @@ public class TemperatureConduit extends Block {
         }
 
         @Override
+        public void onProximityUpdate(){
+            for (int i = 0; i < 4; i++){
+
+                Building build = nearby(i);
+                sides[i] = TileDef.conductSideTemperature(this, build);
+            }
+        }
+
+        @Override
         public void draw(){
 
             Draw.rect(bottomRegion, x, y);
@@ -143,9 +153,7 @@ public class TemperatureConduit extends Block {
             Draw.reset();
 
             for (int i = 0; i < 4; i++){
-
-                Building build = nearby(i);
-                if (!TileDef.conductSideTemperature(this, build)){
+                if (!sides[i]){
                     Draw.rect(edgeRegion, x, y, i * 90);
                     Draw.color(sideHeatColor);
                     Draw.blend(Blending.additive);

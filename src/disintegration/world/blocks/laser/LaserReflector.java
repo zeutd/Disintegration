@@ -5,6 +5,7 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
 import arc.struct.IntSet;
 import arc.util.Eachable;
 import arc.util.io.Reads;
@@ -17,7 +18,10 @@ import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
+import mindustry.world.Edges;
 import mindustry.world.draw.DrawBlock;
+
+import java.util.Arrays;
 
 import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
@@ -100,7 +104,7 @@ public class LaserReflector extends Block {
         addBar("laser", (LaserReflectorBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity, 10)), () -> Pal.redLight, () -> entity.luminosity / 15));
     }
 
-    public class LaserReflectorBuild extends Building implements LaserBlock {
+    public class LaserReflectorBuild extends Building implements LaserProducer {
         float[] sideLaser = new float[getEdges().length];
         float[] callFrom = new float[getEdges().length];
 
@@ -120,7 +124,7 @@ public class LaserReflector extends Block {
                 Building other = world.build(Geometry.d4x(rotation + a - 1) * i + tileX(), Geometry.d4y(rotation + a - 1) * i + tileY());
                 if (other != null && other.block.solid) {
                     if (other instanceof LaserBlock build) {
-                        build.call(split ? luminosity / 3 : luminosity, other.relativeTo(this), came);
+                        build.call(split ? luminosity / 3 : luminosity, Arrays.asList(Edges.getEdges(other.block.size)).indexOf(new Point2(Geometry.d4x(rotation + a - 1) * (i - 1) + tileX() - other.tileX(), Geometry.d4y(rotation + a - 1) * (i - 1) + tileY() - other.tileY())), came);
                     }
                     break;
                 }
@@ -135,13 +139,17 @@ public class LaserReflector extends Block {
         }
 
         @Override
+        public IntSet cameFrom(){
+            return came;
+        }
+
+        @Override
         public float[] l(){
             return l;
         }
 
         @Override
         public void updateTile(){
-            proximity.forEach(b -> {});
             came.clear();
             came.addAll(otherCame);
             came.add(id);

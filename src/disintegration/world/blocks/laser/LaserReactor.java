@@ -8,6 +8,8 @@ import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.struct.IntSet;
 import arc.util.Time;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import disintegration.util.MathDef;
 import disintegration.world.meta.DTStatUnit;
 import mindustry.content.Fx;
@@ -147,6 +149,22 @@ public class LaserReactor extends PowerGenerator {
         @Override
         public float warmup(){
             return warmup;
+        }
+
+        @Override
+        public void write(Writes write){
+            super.write(write);
+            write.f(warmup);
+            write.f(heat);
+        }
+
+        @Override
+        public void read(Reads read, byte revision){
+            super.read(read, revision);
+            if(revision >= 1) {
+                warmup = read.f();
+                heat = read.f();
+            }
         }
     }
 }

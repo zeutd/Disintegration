@@ -1,5 +1,7 @@
 package disintegration.util;
 
+import arc.math.Mathf;
+
 public class MathDef {
     public static float round(float value, int step){
         return (float) Math.round(value * step) / step;
@@ -28,5 +30,15 @@ public class MathDef {
         else{
             return value;
         }
+    }
+
+    public static int randomSeedRange(long seed){
+        int range = Mathf.randomSeed(seed, -1, 1);
+        int i = 0;
+        while(range == 0){
+            range = Mathf.randomSeed(seed + i, -1, 1);
+            i ++;
+        }
+        return range;
     }
 }

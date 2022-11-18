@@ -15,10 +15,7 @@ import disintegration.world.draw.DrawAllRotate;
 import disintegration.world.draw.DrawFusion;
 import disintegration.world.draw.DrawLaser;
 import disintegration.world.draw.DrawTemperature;
-import mindustry.content.Fx;
-import mindustry.content.Items;
-import mindustry.content.Liquids;
-import mindustry.content.StatusEffects;
+import mindustry.content.*;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.LaserBoltBulletType;
@@ -39,6 +36,9 @@ import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.StaticWall;
+import mindustry.world.blocks.environment.SteamVent;
+import mindustry.world.blocks.power.ThermalGenerator;
+import mindustry.world.blocks.production.Drill;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.consumers.ConsumeItemExplode;
 import mindustry.world.consumers.ConsumeItemFlammable;
@@ -56,6 +56,7 @@ public class DTBlocks {
     public static Block
     //environment
             iceWater,greenIce,greenFloor,
+            ethyleneVent,
             greenIceWall,
     //walls
             iridiumWall, iridiumWallLarge,
@@ -71,10 +72,11 @@ public class DTBlocks {
             laserReflector,
             laserRouter,
             laserSource,
-            excitationReactor,
-
     //factory
             boiler,
+    //power
+            excitationReactor,
+            stirlingGenerator,
     //turrets
             fracture,
             permeation,
@@ -82,6 +84,7 @@ public class DTBlocks {
             sparkover,
     //drills
             quarry,
+            pressureDrill,
     test
             ;
     public static void load() {
@@ -112,6 +115,12 @@ public class DTBlocks {
         greenIceWall = new StaticWall("green-ice-wall"){{
             greenIce.asFloor().wall = this;
             albedo = 0.6f;
+        }};
+
+        ethyleneVent = new SteamVent("ethylene-vent"){{
+            parent = blendGroup = Blocks.ice;
+            effect = DTFx.ethyleneVentSteam;
+            attributes.set(Attribute.steam, 1f);
         }};
 
         //defence
@@ -232,31 +241,6 @@ public class DTBlocks {
             drawer = new DrawMulti(new DrawRegion(""), new DrawLaser(true));
             requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
         }};
-        excitationReactor = new LaserReactor("excitation-reactor"){{
-            size = 5;
-            scaledHealth = 100;
-            maxLaser = 100f;
-            warmupSpeed = 0.003f;
-            powerProduction = 120f;
-            coolantPower = 0.5f;
-
-            heating = 0.01f;
-
-            consumeLiquid(DTLiquids.liquidCrystal, heating / coolantPower).update(false);
-            liquidCapacity = 3f;
-            explosionMinWarmup = 0.5f;
-
-            ambientSound = Sounds.tractorbeam;
-            ambientSoundVolume = 0.13f;
-            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawPlasma(), new DrawSoftParticles(){{
-                alpha = 0.2f;
-                particleRad = 12f;
-                particleSize = 9f;
-                particleLife = 100f;
-                particles = 10;
-            }}, new DrawDefault(), new DrawFusion());
-            requirements(Category.power, with(DTItems.iron, 300, Items.silicon, 200, Items.graphite, 300, Items.surgeAlloy, 100));
-        }};
         //factory
         boiler = new TemperatureCrafter("boiler"){{
             requirements(Category.crafting, with(DTItems.iron, 65, Items.silicon, 40, Items.graphite, 60));
@@ -289,6 +273,56 @@ public class DTBlocks {
             temperatureConsumes = 3f;
 
             consumeLiquid(Liquids.water, 12f / 60f);
+        }};
+        //power
+        excitationReactor = new LaserReactor("excitation-reactor"){{
+            size = 5;
+            scaledHealth = 100;
+            maxLaser = 100f;
+            warmupSpeed = 0.003f;
+            powerProduction = 120f;
+            coolantPower = 0.5f;
+
+            heating = 0.01f;
+
+            consumeLiquid(DTLiquids.liquidCrystal, heating / coolantPower).update(false);
+            liquidCapacity = 3f;
+            explosionMinWarmup = 0.5f;
+
+            ambientSound = Sounds.tractorbeam;
+            ambientSoundVolume = 0.13f;
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawPlasma(), new DrawSoftParticles(){{
+                alpha = 0.2f;
+                particleRad = 12f;
+                particleSize = 9f;
+                particleLife = 100f;
+                particles = 10;
+            }}, new DrawDefault(), new DrawFusion());
+            requirements(Category.power, with(DTItems.iron, 300, Items.silicon, 200, Items.graphite, 300, Items.surgeAlloy, 100));
+        }};
+
+        stirlingGenerator = new ThermalGenerator("stirling-generator"){{
+            requirements(Category.power, with(DTItems.iron, 60));
+            attribute = Attribute.steam;
+            displayEfficiencyScale = 1f / 9f;
+            minEfficiency = 9f - 0.0001f;
+            powerProduction = 5f / 9f;
+            displayEfficiency = false;
+            generateEffect = DTFx.ethylenegenerate;
+            effectChance = 0.04f;
+            size = 3;
+            ambientSound = Sounds.hum;
+            ambientSoundVolume = 0.06f;
+
+            drawer = new DrawMulti(new DrawDefault(), new DrawBlurSpin("-rotator", 0.6f * 9f){{
+                blurThresh = 0.01f;
+            }});
+
+            hasLiquids = true;
+            outputLiquid = new LiquidStack(Liquids.water, 5f / 60f / 9f);
+            liquidCapacity = 20f;
+            fogRadius = 3;
+            researchCost = with(DTItems.iron, 15);
         }};
         //turret
 
@@ -543,10 +577,21 @@ public class DTBlocks {
            size = 3;
            regionRotated1 = 1;
            itemCapacity = 100;
+           acceptsItems = true;
            consumePower(20);
            consumeLiquid(Liquids.hydrogen, 5f / 60f);
            consumeLiquid(Liquids.nitrogen, 6f / 60f).boost();
            requirements(Category.production, with(DTItems.iridium, 1));
+        }};
+        pressureDrill = new Drill("pressure-drill"){{
+            requirements(Category.production, with(DTItems.iron, 12), true);
+            tier = 2;
+            drillTime = 600;
+            size = 2;
+
+            envEnabled ^= Env.space;
+
+            consumeLiquid(Liquids.water, 0.05f).boost();
         }};
         /*awa = new Wall("awa"){{
             size = 2;

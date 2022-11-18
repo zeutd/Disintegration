@@ -7,6 +7,7 @@ import arc.util.io.Writes;
 import disintegration.DTVars;
 import disintegration.util.MathDef;
 import disintegration.world.draw.DrawTemperature;
+import disintegration.world.meta.DTStatUnit;
 import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.blocks.production.GenericCrafter;
@@ -15,11 +16,10 @@ import mindustry.world.draw.DrawLiquidOutputs;
 import mindustry.world.draw.DrawLiquidRegion;
 import mindustry.world.draw.DrawMulti;
 import mindustry.world.meta.Stat;
-import mindustry.world.meta.StatUnit;
 
 public class TemperatureCrafter extends GenericCrafter {
     public float temperatureConsumes;
-    public float temperturePercent = DTVars.temperaturePercent;
+    public float temperaturePercent = DTVars.temperaturePercent;
 
     public TemperatureCrafter(String name) {
         super(name);
@@ -33,7 +33,7 @@ public class TemperatureCrafter extends GenericCrafter {
     public void setStats(){
         super.setStats();
 
-        stats.add(Stat.input, String.valueOf(temperatureConsumes), StatUnit.heatUnits ,StatUnit.perSecond);
+        stats.add(Stat.input, temperatureConsumes, DTStatUnit.temperatureUnitsPerSecond);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class TemperatureCrafter extends GenericCrafter {
     public void setBars(){
         super.setBars();
 
-        addBar("heat", (TemperatureCrafterBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", MathDef.round(entity.temperature, 10)), () -> Pal.lightOrange, () -> entity.temperature / temperturePercent));
+        addBar("heat", (TemperatureCrafterBuild entity) -> new Bar(() -> Core.bundle.format("bar.heatamount", MathDef.round(entity.temperature, 10)), () -> Pal.lightOrange, () -> entity.temperature / temperaturePercent));
     }
 
     public class TemperatureCrafterBuild extends GenericCrafterBuild implements TemperatureBlock{
