@@ -10,7 +10,7 @@ public class DrawFusion extends DrawBlock {
     public int spikes = 5;
     public float radius = 32f;
     public float width = 10f;
-    public float minSpeed = 2f;
+    public float minSpeed = 1f;
     public float maxSpeed = 6f;
     public float scl = 1.5f;
 
@@ -27,6 +27,6 @@ public class DrawFusion extends DrawBlock {
 
     @Override
     public void draw(Building build){
-        DrawDef.drawFusion(build.x, build.y, spikes, minSpeed * build.warmup(), maxSpeed * build.warmup(), scl, radius * build.warmup(), width * build.warmup(), build.id, color1, color2);
+        DrawDef.drawFusion(build.x, build.y, spikes, minSpeed, maxSpeed, scl, radius * build.warmup(), width * build.warmup(), build.id, color1, color2);
     }
 }

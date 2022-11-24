@@ -5,7 +5,7 @@ import mindustry.world.meta.StatUnit;
 
 public class DTStatUnit {
     public static final StatUnit
-            laserUnits = new StatUnit("laserUnits", "[#ff4444ff]" + Iconc.grid + "[]"),
-            temperatureUnitsPerSecond = new StatUnit("temperatureUnitsPerSecond", "[#ffdd66ff]" + Iconc.statusBurning + "[]")
+            laserUnits = new StatUnit("laserUnits", "[#ff4444ff]" + Iconc.add + "[]"),
+            temperatureUnitsPerSecond = new StatUnit("temperatureUnitsPerSecond", "[#ffdd66ff]" + Iconc.pause + "[]")
     ;
 }

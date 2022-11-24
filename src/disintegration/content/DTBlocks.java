@@ -37,6 +37,7 @@ import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.environment.SteamVent;
+import mindustry.world.blocks.power.ConsumeGenerator;
 import mindustry.world.blocks.power.ThermalGenerator;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.blocks.storage.CoreBlock;
@@ -75,6 +76,7 @@ public class DTBlocks {
     //factory
             boiler,
     //power
+            neoplasmGenerator,
             excitationReactor,
             stirlingGenerator,
     //turrets
@@ -273,6 +275,48 @@ public class DTBlocks {
             temperatureConsumes = 3f;
 
             consumeLiquid(Liquids.water, 12f / 60f);
+        }};
+        neoplasmGenerator = new ConsumeGenerator("neoplasm-generator"){{
+            requirements(Category.power, with(Items.tungsten, 500, Items.carbide, 100, Items.oxide, 150, Items.silicon, 400, Items.phaseFabric, 200));
+
+            size = 4;
+            liquidCapacity = 30f;
+            squareSprite = false;
+
+            consumeLiquid(Liquids.neoplasm, 5f / 60f);
+
+            powerProduction = 10f;
+            rebuildable = true;
+
+            ambientSound = Sounds.bioLoop;
+            ambientSoundVolume = 0.2f;
+
+            drawer = new DrawMulti(
+                    new DrawRegion("-bottom"),
+                    new DrawLiquidTile(Liquids.neoplasm, 3f),
+                    new DrawCircles(){{
+                        color = Color.valueOf("feb380").a(0.8f);
+                        strokeMax = 3.25f;
+                        radius = 55f / 4f;
+                        amount = 5;
+                        timeScl = 200f;
+                    }},
+
+                    new DrawBubbles(Pal.neoplasm2),
+
+                    new DrawCells(){{
+                        color = Color.valueOf("c33e2b");
+                        particleColorFrom = Color.valueOf("e8803f");
+                        particleColorTo = Color.valueOf("8c1225");
+                        particles = 50;
+                        range = 7f;
+                    }},
+                    new DrawDefault(),
+                    new DrawGlowRegion("-glow"){{
+                        color = Color.valueOf("70170b");
+                        alpha = 0.7f;
+                    }}
+            );
         }};
         //power
         excitationReactor = new LaserReactor("excitation-reactor"){{

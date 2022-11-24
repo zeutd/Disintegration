@@ -15,9 +15,12 @@ import disintegration.util.MathDef;
 import disintegration.util.TileDef;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
+import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
+
+import java.util.Arrays;
 
 import static arc.Core.atlas;
 import static mindustry.Vars.world;
@@ -29,9 +32,15 @@ public class TemperatureConduit extends Block {
     public TextureRegion heatRegion;
     public TextureRegion edgeHeatRegion;
     public TextureRegion topHeatRegion;
+    public TextureRegion edgeHeatTopRegion;
+    public TextureRegion edgeHeatTopRegionInverted;
 
     public float conductionSpeed;
     public float temperaturePercent;
+
+    public Boolean[][][] drawEdgeTopHeatRegions;
+
+    public Seq<String> edges;
 
     public Color heatColor = Pal2.burn;
     public Color sideHeatColor = Pal2.heat;
@@ -52,6 +61,48 @@ public class TemperatureConduit extends Block {
         heatRegion = atlas.find(name + "-heat");
         edgeHeatRegion = atlas.find(name + "-edge-heat");
         topHeatRegion = atlas.find(name + "-top-heat");
+        edgeHeatTopRegion = atlas.find(name + "-edge-heat-top");
+        edgeHeatTopRegionInverted = atlas.find(name + "-edge-heat-top-inverted");
+        //  2
+        //3 O 1
+        //  4
+        drawEdgeTopHeatRegions = new Boolean[][][]{
+                /*0000*/{{false, false, false, false}, {false, false, false, false}},
+                /*0001*/{{false, true , false, false}, {false, false, false, true }},
+                /*0010*/{{false, false, true , false}, {true , false, false, false}},
+                /*0011*/{{false, false, true , false}, {false, false, false, true }},
+                /*0100*/{{false, false, false, true }, {false, true , false, false}},
+                /*0101*/{{false, true , false, true }, {false, true , false, true }},
+                /*0110*/{{false, false, false, true }, {true , false, false, false}},
+                /*0111*/{{false, false, false, true }, {false, false, false, true }},
+                /*1000*/{{true , false, false, false}, {false, false, true , false}},
+                /*1001*/{{false, true , false, false}, {false, false, true , false}},
+                /*1010*/{{true , false, true , false}, {true , false, true , false}},
+                /*1011*/{{false, false, true , false}, {false, false, true , false}},
+                /*1100*/{{true , false, false, false}, {false, true , false, false}},
+                /*1101*/{{false, true , false, false}, {false, true , false, false}},
+                /*1110*/{{true , false, false, false}, {true , false, false, false}},
+                /*1111*/{{false, false, false, false}, {false, false, false, false}}
+        };
+        edges = new Seq<>();
+        edges.addAll(
+                "[false, false, false, false]",
+                "[true, false, false, false]",
+                "[false, true, false, false]",
+                "[true, true, false, false]",
+                "[false, false, true, false]",
+                "[true, false, true, false]",
+                "[false, true, true, false]",
+                "[true, true, true, false]",
+                "[false, false, false, true]",
+                "[true, false, false, true]",
+                "[false, true, false, true]", 
+                "[true, true, false, true]", 
+                "[false, false, true, true]", 
+                "[true, false, true, true]", 
+                "[false, true, true, true]",
+                "[true, true, true, true]"
+        );
     }
 
 
@@ -87,7 +138,12 @@ public class TemperatureConduit extends Block {
     public class TemperatureConduitBuild extends Building implements TemperatureBlock{
 
         public float temperature = 0;
-        public boolean[] sides = new boolean[4];
+
+        public int side;
+        public Boolean[] sides = new Boolean[4];
+
+        public Boolean[] drawEdgeTopHeatRegion = drawEdgeTopHeatRegions[side][0].clone();
+        public Boolean[] drawEdgeTopHeatRegionInverted = drawEdgeTopHeatRegions[side][1].clone();
 
         @Override
         public float temperature() {
@@ -124,46 +180,53 @@ public class TemperatureConduit extends Block {
         @Override
         public void onProximityUpdate(){
             for (int i = 0; i < 4; i++){
-
                 Building build = nearby(i);
                 sides[i] = TileDef.conductSideTemperature(this, build);
             }
+            side = edges.indexOf(Arrays.toString(sides));
+            drawEdgeTopHeatRegion = drawEdgeTopHeatRegions[side][0].clone();
+            drawEdgeTopHeatRegionInverted = drawEdgeTopHeatRegions[side][1].clone();
         }
 
         @Override
         public void draw(){
-
             Draw.rect(bottomRegion, x, y);
-
-            Draw.color(heatColor);
-            Draw.blend(Blending.additive);
-            Draw.alpha(Math.min(temperature, 0.9f * temperaturePercent) / temperaturePercent);
-            Draw.rect(heatRegion, x, y);
-
-            Draw.blend();
-            Draw.reset();
-
+            Draw.z(Layer.block + 0.002f);
             Draw.rect(topRegion, x, y);
-            Draw.color(sideHeatColor);
-            Draw.blend(Blending.additive);
-            Draw.alpha(Math.min(temperature, 0.9f * temperaturePercent) / temperaturePercent / 5);
-            Draw.rect(topHeatRegion, x, y);
 
-            Draw.blend();
-            Draw.reset();
-
+            Draw.z(Layer.block + 0.0022f);
             for (int i = 0; i < 4; i++){
                 if (!sides[i]){
                     Draw.rect(edgeRegion, x, y, i * 90);
-                    Draw.color(sideHeatColor);
-                    Draw.blend(Blending.additive);
-                    Draw.alpha(Math.min(temperature, 0.9f * temperaturePercent) / temperaturePercent / 5);
-                    Draw.rect(edgeHeatRegion, x, y, i * 90);
-
-                    Draw.blend();
-                    Draw.reset();
                 }
             }
+
+            Draw.blend(Blending.additive);
+            Draw.color(heatColor);
+            Draw.alpha(Math.min(temperature, 0.9f * temperaturePercent) / temperaturePercent);
+            Draw.z(Layer.block + 0.001f);
+            Draw.rect(heatRegion, x, y);
+
+            Draw.color(sideHeatColor);
+            Draw.alpha(Math.min(temperature, 0.9f * temperaturePercent) / temperaturePercent / 5);
+            Draw.z(Layer.block + 0.0021f);
+            Draw.rect(topHeatRegion, x, y);
+
+            Draw.z(Layer.block + 0.003f);
+            for (int i = 0; i < 4; i++){
+                if (!sides[i]){
+                    Draw.rect(edgeHeatRegion, x, y, i * 90);
+                }
+                if(drawEdgeTopHeatRegion[i]) {
+                    Draw.rect(edgeHeatTopRegion, x, y, i * 90);
+                }
+                if(drawEdgeTopHeatRegionInverted[i]) {
+                    Draw.rect(edgeHeatTopRegionInverted, x, y, i * 90);
+                }
+            }
+
+            Draw.blend();
+            Draw.reset();
         }
         @Override
         public void write(Writes write){

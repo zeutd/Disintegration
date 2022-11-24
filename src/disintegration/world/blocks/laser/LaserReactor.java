@@ -78,10 +78,12 @@ public class LaserReactor extends PowerGenerator {
         float[] sideLaser = new float[getEdges().length];
         float[] callFrom = new float[getEdges().length];
 
-        float luminosity;
+        public float luminosity;
         public float heat;
         public float flash;
         public float warmup;
+
+        public boolean flushed;
 
         @Override
         public float luminosity() {
@@ -112,24 +114,28 @@ public class LaserReactor extends PowerGenerator {
             for (float side : sideLaser) {
                 luminosity += side;
             }
-
             float fullness = Mathf.clamp(luminosity / maxLaser);
-            if(luminosity > 0 && enabled){
-                productionEfficiency = Mathf.lerpDelta(productionEfficiency, fullness, warmupSpeed);
+            if(flushed) {
+                if(fullness > productionEfficiency + 0.1f && enabled && fullness != 0) {
+                    productionEfficiency = Mathf.lerpDelta(productionEfficiency, fullness, warmupSpeed * timeScale);
+                    heat += fullness * heating * Math.min(delta(), 4f);
+                } else {
+                    productionEfficiency = Mathf.lerpDelta(productionEfficiency, fullness, warmupSpeed * 20);
+                }
+                if (Mathf.equal(productionEfficiency, fullness, 0.001f)) {
+                    productionEfficiency = fullness;
+                }
                 warmup = productionEfficiency;
-                heat += fullness * heating * Math.min(delta(), 4f);
-            }else{
-                productionEfficiency = 0f;
-                warmup = Mathf.lerpDelta(warmup, 0, warmupSpeed * 10);
+                if (heat > 0) {
+                    float maxUsed = Math.min(liquids.currentAmount(), heat / coolantPower);
+                    heat -= maxUsed * coolantPower;
+                    liquids.remove(liquids.current(), maxUsed);
+                }
+                if (heat >= 1) {
+                    kill();
+                }
             }
-            if(heat > 0){
-                float maxUsed = Math.min(liquids.currentAmount(), heat / coolantPower);
-                heat -= maxUsed * coolantPower;
-                liquids.remove(liquids.current(), maxUsed);
-            }
-            if(heat >= 1){
-                kill();
-            }
+            flushed = true;
         }
         @Override
         public void draw(){
@@ -155,16 +161,18 @@ public class LaserReactor extends PowerGenerator {
         public void write(Writes write){
             super.write(write);
             write.f(warmup);
+            write.f(productionEfficiency);
             write.f(heat);
+            write.f(luminosity);
         }
 
         @Override
         public void read(Reads read, byte revision){
             super.read(read, revision);
-            if(revision >= 1) {
-                warmup = read.f();
-                heat = read.f();
-            }
+            warmup = read.f();
+            productionEfficiency = read.f() + 0.01f;
+            heat = read.f();
+            luminosity = read.f();
         }
     }
 }
