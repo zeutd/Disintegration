@@ -9,6 +9,7 @@ import disintegration.world.blocks.defence.turrets.ElectricTowerTurret;
 import disintegration.world.blocks.laser.LaserDevice;
 import disintegration.world.blocks.laser.LaserReactor;
 import disintegration.world.blocks.laser.LaserReflector;
+import disintegration.world.blocks.power.SpreadGenerator;
 import disintegration.world.blocks.production.Quarry;
 import disintegration.world.blocks.temperature.*;
 import disintegration.world.draw.DrawAllRotate;
@@ -30,6 +31,7 @@ import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.type.Category;
+import mindustry.type.Liquid;
 import mindustry.type.LiquidStack;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
@@ -37,7 +39,6 @@ import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.environment.SteamVent;
-import mindustry.world.blocks.power.ConsumeGenerator;
 import mindustry.world.blocks.power.ThermalGenerator;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.blocks.storage.CoreBlock;
@@ -128,37 +129,20 @@ public class DTBlocks {
         //defence
         iridiumWall = new ShardWall("iridium-wall"){{
             shardChance = 0.1f;
-            shard = new BasicBulletType(4f,10f){{
-                frontColor = Color.white;
-                backColor = Color.white;
-                pierce = true;
-                pierceBuilding = false;
-                drag = 0.1f;
-                width = 3f;
-                height = 4f;
-            }};
+            shard = DTBullets.shard;
             size = 1;
             health = 700;
             requirements(Category.defense, with(DTItems.iridium, 8));
         }};
         iridiumWallLarge = new ShardWall("iridium-wall-large"){{
             shardChance = 0.1f;
-            shard = new BasicBulletType(4f,10f){{
-                frontColor = Color.white;
-                backColor = Color.white;
-                pierce = true;
-                pierceBuilding = false;
-                drag = 0.1f;
-                width = 3f;
-                height = 4f;
-            }};
+            shard = DTBullets.shard;
             size = 2;
             health = 2800;
             requirements(Category.defense, with(DTItems.iridium, 24));
         }};
         //storage
-        corePedestal = new CoreBlock("core-pedestal"){
-            {
+        corePedestal = new CoreBlock("core-pedestal"){{
             requirements(Category.effect, BuildVisibility.editorOnly, with(DTItems.iron, 1300));
             alwaysUnlocked = true;
 
@@ -167,6 +151,7 @@ public class DTBlocks {
             health = 1300;
             itemCapacity = 4000;
             size = 3;
+            generateIcons = true;
 
             unitCapModifier = 8;
         }};
@@ -276,16 +261,19 @@ public class DTBlocks {
 
             consumeLiquid(Liquids.water, 12f / 60f);
         }};
-        neoplasmGenerator = new ConsumeGenerator("neoplasm-generator"){{
+        neoplasmGenerator = new SpreadGenerator("neoplasm-generator"){{
             requirements(Category.power, with(Items.tungsten, 500, Items.carbide, 100, Items.oxide, 150, Items.silicon, 400, Items.phaseFabric, 200));
 
             size = 4;
             liquidCapacity = 30f;
             squareSprite = false;
 
+            spreadLiquids = new Liquid[]{Liquids.neoplasm};
+            spreadMinWarmup = 0.5f;
+
             consumeLiquid(Liquids.neoplasm, 5f / 60f);
 
-            powerProduction = 10f;
+            powerProduction = 900 / 60f;
             rebuildable = true;
 
             ambientSound = Sounds.bioLoop;
@@ -311,11 +299,7 @@ public class DTBlocks {
                         particles = 50;
                         range = 7f;
                     }},
-                    new DrawDefault(),
-                    new DrawGlowRegion("-glow"){{
-                        color = Color.valueOf("70170b");
-                        alpha = 0.7f;
-                    }}
+                    new DrawDefault()
             );
         }};
         //power

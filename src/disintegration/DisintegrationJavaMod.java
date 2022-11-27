@@ -13,10 +13,10 @@ public class DisintegrationJavaMod extends Mod{
         Log.info("Loading disintegration content.");
         DTItems.load();
         DTLiquids.load();
+        DTStatusEffects.load();
+        DTBullets.load();
         DTUnitTypes.load();
         DTBlocks.load();
-        DTBullets.load();
         DTPlanets.load();
-        DTStatusEffects.load();
     }
 }

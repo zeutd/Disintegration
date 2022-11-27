@@ -1,7 +1,7 @@
 package disintegration.world.blocks.temperature;
 
 import arc.struct.Seq;
-import disintegration.util.TileDef;
+import disintegration.util.WorldDef;
 import mindustry.gen.Building;
 import mindustry.world.Block;
 
@@ -29,7 +29,7 @@ public class TemperatureVoid extends Block {
             Seq<Building> proximityBuilds = this.proximity();
 
             for(Building build : proximityBuilds){
-                if(TileDef.conductSideTemperature(this, build)){
+                if(WorldDef.conductSideTemperature(this, build)){
                     ((TemperatureBlock)build).setTemperature(0);
                 }
             }

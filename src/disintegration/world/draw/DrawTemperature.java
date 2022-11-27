@@ -6,7 +6,7 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.struct.Seq;
 import arc.util.Eachable;
-import disintegration.util.TileDef;
+import disintegration.util.WorldDef;
 import disintegration.world.blocks.temperature.TemperatureBlock;
 import disintegration.world.blocks.temperature.TemperatureConduit;
 import disintegration.world.blocks.temperature.TemperatureCrafter;
@@ -49,11 +49,11 @@ public class DrawTemperature extends DrawBlock {
         Seq<Building> proximityBuilds = build.proximity();
 
         for(Building block : proximityBuilds) {
-            if (TileDef.toBlock(block, build) && TileDef.toBlock(build, block) && (block instanceof TemperatureConduit.TemperatureConduitBuild other)) {
+            if (WorldDef.toBlock(block, build) && WorldDef.toBlock(build, block) && (block instanceof TemperatureConduit.TemperatureConduitBuild other)) {
                 otherTemperature = other.temperature();
                 break;
             }
-            else if (!(build instanceof TemperatureProducer.TemperatureProducerBuild) && TileDef.toBlock(block, build) && TileDef.toBlock(build, block) && (block instanceof TemperatureProducer.TemperatureProducerBuild other)) {
+            else if (!(build instanceof TemperatureProducer.TemperatureProducerBuild) && WorldDef.toBlock(block, build) && WorldDef.toBlock(build, block) && (block instanceof TemperatureProducer.TemperatureProducerBuild other)) {
                 float temperatureOutput = other.temperatureOutput();
                 otherTemperature = other.temperature() * percent * 60 / temperatureOutput;
                 break;

@@ -58,7 +58,7 @@ public class DTUnitTypes {
         */
         //air-Hyper
         //T1 lancet
-        lancet = new UnitType("lancet"){{
+        lancet = new UnitType("lanceto"){{
             constructor = UnitEntity::create;
             speed = 2.7f;
             accel = 0.08f;
@@ -66,7 +66,7 @@ public class DTUnitTypes {
             armor = 2;
             flying = true;
             health = 200;
-            engineOffset = 10;
+            engineOffset = 12;
             engineSize = 3.7f;
             hitSize = 11;
             weapons.add(new Weapon(){{
@@ -76,6 +76,7 @@ public class DTUnitTypes {
                     ejectEffect = Fx.hitLancer;
                     bullet = new EmpBulletType(){{
                             float rad = 48f;
+                            recoil = 1;
                             shootSound = Sounds.laser;
                             scaleLife = true;
                             lightOpacity = 0.7f;
@@ -134,6 +135,11 @@ public class DTUnitTypes {
                                     Drawf.tri(e.x + Angles.trnsx(angle, rad), e.y + Angles.trnsy(angle, rad), 6f, 15f * e.fout(), angle/* + s*180f*/);
                                     //}
                                 }
+                                if(weapons.contains(u -> {
+                                    return u.aiControllable;
+                                })){
+
+                                }
 
                                 Fill.circle(e.x, e.y, 12f * e.fout());
                                 color();
@@ -168,7 +174,6 @@ public class DTUnitTypes {
                 x = 2f;
                 y = 0f;
                 top = false;
-                ejectEffect = Fx.casing1;
                 shootSound = Sounds.lasershoot;
                 bullet = new LaserBoltBulletType(2.5f, 10){{
                     collidesTeam = true;

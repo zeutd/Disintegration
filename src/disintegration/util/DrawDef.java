@@ -12,6 +12,42 @@ import mindustry.graphics.Drawf;
 public class DrawDef {
     public static TextureRegion noneRegion = Core.atlas.find("disintegration-none");
 
+    public static int[][] dir4 = {
+                    {0, 1},
+            {-1, 0},/*{X}*/{1, 0},
+                    {0,-1}
+    };
+
+    public static TextureRegion[] splitRegionTile(TextureRegion region, int w, int h, int tilesize){
+        int size = w * h;
+        TextureRegion[] regions = new TextureRegion[size];
+
+        float tileW = (region.u2 - region.u) / w;
+        float tileH = (region.v2 - region.v) / h;
+
+        for(int i = 0; i < size; i++){
+            float tileX = ((float)(i % w)) / w;
+            float tileY = ((float)(i / w)) / h;
+            TextureRegion reg = new TextureRegion(region);
+
+            //start coordinate
+            reg.u = Mathf.map(tileX, 0f, 1f, reg.u, reg.u2) + tileW * 0.01f;
+            reg.v = Mathf.map(tileY, 0f, 1f, reg.v, reg.v2) + tileH * 0.01f;
+            //end coordinate
+            reg.u2 = reg.u + tileW * 0.98f;
+            reg.v2 = reg.v + tileH * 0.98f;
+
+            reg.width = reg.height = tilesize;
+
+            regions[i] = reg;
+        }
+        return regions;
+    }
+
+    public static TextureRegion[] splitRegionTile(TextureRegion region, int w, int h){
+        return splitRegionTile(region,w,h,32);
+    }
+
     public static void drawFusion(float x, float y, int spikes, float minSpeed, float maxSpeed, float scl, float radius, float width, long seed, Color color1, Color color2){
         float[] speeds = new float[spikes];
         float[] lengths = new float[spikes];

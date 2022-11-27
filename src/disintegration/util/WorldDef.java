@@ -9,7 +9,7 @@ import mindustry.world.Tile;
 
 import static mindustry.Vars.world;
 
-public class TileDef {
+public class WorldDef {
     public static boolean toBlock(Building block, Building other){
         return !other.block().rotate || (block.relativeTo(other) + 2) % 4 == other.rotation;
     }
@@ -19,7 +19,7 @@ public class TileDef {
             return true;
         }
         else if(other instanceof TemperatureProducer.TemperatureProducerBuild || other instanceof TemperatureCrafter.TemperatureCrafterBuild){
-            return TileDef.toBlock(block, other);
+            return WorldDef.toBlock(block, other);
         }
         return false;
     }

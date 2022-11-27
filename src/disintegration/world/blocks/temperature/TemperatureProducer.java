@@ -11,7 +11,7 @@ import arc.util.io.Writes;
 import disintegration.DTVars;
 import disintegration.graphics.Pal2;
 import disintegration.util.MathDef;
-import disintegration.util.TileDef;
+import disintegration.util.WorldDef;
 import disintegration.world.draw.DrawAllRotate;
 import disintegration.world.draw.DrawTemperature;
 import disintegration.world.meta.DTStatUnit;
@@ -100,7 +100,7 @@ public class TemperatureProducer extends Block {
             for(Point2 edge : edges) {
                 Building build = nearby(edge.x, edge.y);
                 if (build != null && build.team == team && build instanceof TemperatureBlock other) {
-                    if(TileDef.toBlock(this, build) && TileDef.toBlock(build, this)){
+                    if(WorldDef.toBlock(this, build) && WorldDef.toBlock(build, this)){
                         other.addTemperature(temperature() / build.block.size);
                     }
                 }

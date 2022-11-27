@@ -17,7 +17,7 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.content.DTFx;
 import disintegration.util.MathDef;
-import disintegration.util.TileDef;
+import disintegration.util.WorldDef;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.core.World;
@@ -108,11 +108,11 @@ public class Quarry extends Block {
         int mx = (int) (x + Geometry.d4x(rotation) * (areaSize / 2f - (areaSize % 2) / 2f - sizeOffset * 2) - areaSize / 2f + (areaSize % 2));
         int my = (int) (y + Geometry.d4y(rotation) * (areaSize / 2f - (areaSize % 2) / 2f - sizeOffset * 2) - areaSize / 2f + (areaSize % 2));
 
-        Seq<Tile> tiles = TileDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
+        Seq<Tile> tiles = WorldDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
         Seq<Item> items = getDropArray(tiles);
 
-        Seq<Item> itemList = TileDef.listItem(items);
+        Seq<Item> itemList = WorldDef.listItem(items);
 
         drawDrillText(itemList, items, x, y, valid);
         x *= tilesize;
@@ -131,10 +131,10 @@ public class Quarry extends Block {
         int mx = (int) (tile.x + Geometry.d4x(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
         int my = (int) (tile.y + Geometry.d4y(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
 
-        Seq<Tile> tiles = TileDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
+        Seq<Tile> tiles = WorldDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
         Seq<Item> items = getDropArray(tiles);
-        Seq<Item> itemList = TileDef.listItem(items);
+        Seq<Item> itemList = WorldDef.listItem(items);
         return !itemList.isEmpty();
     }
 
@@ -229,13 +229,13 @@ public class Quarry extends Block {
 
             Vec2 MiningPos = new Vec2(World.conv(mx - fulls), World.conv(my - fulls));
 
-            tiles = TileDef.getAreaTile(MiningPos, areaSize, areaSize);
+            tiles = WorldDef.getAreaTile(MiningPos, areaSize, areaSize);
 
             itemsArray = getDropArray(tiles);
 
             empty = !itemsArray.isEmpty();
 
-            itemList = TileDef.listItem(itemsArray);
+            itemList = WorldDef.listItem(itemsArray);
 
             Vec2 mineCentre = getMiningArea(x, y, rotation);
 
