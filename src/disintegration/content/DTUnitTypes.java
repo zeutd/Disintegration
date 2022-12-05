@@ -9,8 +9,10 @@ import disintegration.graphics.Pal2;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
 import mindustry.entities.Effect;
+import mindustry.entities.bullet.BulletType;
 import mindustry.entities.bullet.EmpBulletType;
 import mindustry.entities.bullet.LaserBoltBulletType;
+import mindustry.entities.part.RegionPart;
 import mindustry.gen.Sounds;
 import mindustry.gen.UnitEntity;
 import mindustry.graphics.Drawf;
@@ -18,9 +20,12 @@ import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
 import mindustry.type.Weapon;
 import mindustry.type.ammo.PowerAmmoType;
+import mindustry.type.unit.ErekirUnitType;
+import mindustry.type.weapons.RepairBeamWeapon;
 
 import static arc.graphics.g2d.Draw.color;
 import static arc.graphics.g2d.Lines.stroke;
+import static mindustry.Vars.tilesize;
 
 public class DTUnitTypes {
     public static UnitType
@@ -35,8 +40,7 @@ public class DTUnitTypes {
             //ground-subsidiary
             //core-unit
             separate,
-            //special-unit
-            test
+            spaceStationDrone
             ;
     public static void load(){
         /*
@@ -58,7 +62,7 @@ public class DTUnitTypes {
         */
         //air-Hyper
         //T1 lancet
-        lancet = new UnitType("lanceto"){{
+        lancet = new UnitType("lancet"){{
             constructor = UnitEntity::create;
             speed = 2.7f;
             accel = 0.08f;
@@ -135,11 +139,6 @@ public class DTUnitTypes {
                                     Drawf.tri(e.x + Angles.trnsx(angle, rad), e.y + Angles.trnsy(angle, rad), 6f, 15f * e.fout(), angle/* + s*180f*/);
                                     //}
                                 }
-                                if(weapons.contains(u -> {
-                                    return u.aiControllable;
-                                })){
-
-                                }
 
                                 Fill.circle(e.x, e.y, 12f * e.fout());
                                 color();
@@ -185,6 +184,70 @@ public class DTUnitTypes {
                     hitEffect = DTFx.hitLaserYellow;
                     buildingDamageMultiplier = 0.01f;
                     healColor = Pal.bulletYellow;
+                }};
+            }});
+        }};
+
+        float coreFleeRange = 500f;
+        spaceStationDrone = new ErekirUnitType("space-station-drone"){{
+            constructor = UnitEntity::create;
+            coreUnitDock = true;
+            controller = u -> new BuilderAI(true, coreFleeRange);
+            isEnemy = false;
+            envDisabled = 0;
+
+            targetPriority = -2;
+            lowAltitude = false;
+            mineWalls = true;
+            mineFloor = true;
+            mineHardnessScaling = false;
+            flying = true;
+            mineSpeed = 6f;
+            mineTier = 3;
+            buildSpeed = 1.2f;
+            drag = 0.03f;
+            speed = 4.6f;
+            rotateSpeed = 7f;
+            accel = 0.09f;
+            itemCapacity = 60;
+            health = 300f;
+            armor = 1f;
+            hitSize = 9f;
+            engineSize = 2f;
+            engineOffset = 4.8f;
+            payloadCapacity = 2f * 2f * tilesize * tilesize;
+            pickupUnits = false;
+            parts.add(
+                    new RegionPart("-side"){{
+                        moveRot = -10f;
+                        progress = PartProgress.warmup;
+                        mirror = true;
+                    }}
+            );
+            weapons.add(new RepairBeamWeapon(){{
+                widthSinMag = 0.11f;
+                reload = 20f;
+                x = 0f;
+                y = 6.5f;
+                rotate = false;
+                shootY = 0f;
+                beamWidth = 0.7f;
+                repairSpeed = 3.1f;
+                fractionRepairSpeed = 0.06f;
+                aimDst = 0f;
+                shootCone = 15f;
+                mirror = false;
+
+                targetUnits = true;
+                targetBuildings = true;
+                autoTarget = false;
+                controllable = true;
+                laserColor = Pal.techBlue;
+                laserTopColor = Pal.regen;
+                healColor = Pal.regen;
+
+                bullet = new BulletType(){{
+                    maxRange = 60f;
                 }};
             }});
         }};

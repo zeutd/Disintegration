@@ -4,19 +4,30 @@ import arc.graphics.Color;
 import disintegration.maps.planet.OmurloPlanetGenerator;
 import mindustry.content.Items;
 import mindustry.content.Planets;
-import mindustry.content.TechTree;
 import mindustry.game.Team;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.HexSkyMesh;
 import mindustry.graphics.g3d.MultiMesh;
-import mindustry.type.ItemStack;
+import mindustry.graphics.g3d.PlanetGrid;
 import mindustry.type.Planet;
+import mindustry.type.Sector;
+import mindustry.world.meta.Env;
 
 public class DTPlanets {
     public static Planet omurlo;
     public static void load(){
-        new TechTree.TechNode(Planets.serpulo.techTree.children.get(1), Items.dormantCyst, ItemStack.with());
-        omurlo = new Planet("omurlo", Planets.sun, 1f, 2){{
+        Planet sun = Planets.sun;
+        sun.alwaysUnlocked = true;
+        sun.hasAtmosphere = false;
+        sun.updateLighting = false;
+        sun.sectors.add(new Sector(sun, PlanetGrid.Ptile.empty));
+        sun.accessible = true;
+        sun.defaultEnv = Env.space | Env.scorching;
+
+
+        Planets.erekir.hiddenItems.addAll(DTItems.moddedItems);
+        Planets.serpulo.hiddenItems.addAll(DTItems.moddedItems);
+        omurlo = new Planet("omurlo", sun, 1f, 2){{
                 generator = new OmurloPlanetGenerator();
                 meshLoader = () -> new HexMesh(this, 5);
                 cloudMeshLoader = () -> new MultiMesh(
@@ -35,7 +46,7 @@ public class DTPlanets {
                 lightSrcTo = 0.5f;
                 lightDstFrom = 0.2f;
                 clearSectorOnLose = true;
-                hiddenItems.addAll(DTItems.omurloItems).removeAll(Items.serpuloItems);
+                hiddenItems.addAll(Items.erekirOnlyItems).addAll(Items.serpuloItems).removeAll(DTItems.omurloItems);
                 updateLighting = false;
 
                 ruleSetter = r -> {

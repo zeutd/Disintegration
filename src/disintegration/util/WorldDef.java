@@ -35,15 +35,12 @@ public class WorldDef {
 
     public static Seq<Tile> getAreaTile(Vec2 pos, int width, int height){
         Seq<Tile> tilesGet = new Seq<>();
-        for (int i = 0; i < width * height; i++) {
-            tilesGet.add((Tile)null);
-        }
         int dx = (int) pos.x;
         int dy = (int) pos.y;
         for (int ix = 0; ix < width; ix ++){
             for (int iy = 0; iy < height; iy ++){
                 Tile other = world.tile(ix + dx + 1, iy + dy + 1);
-                tilesGet.set(ix * width + iy, other);
+                tilesGet.add(other);
             }
         }
         return tilesGet;

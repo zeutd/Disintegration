@@ -7,10 +7,14 @@ import mindustry.type.Item;
 import static mindustry.content.Items.*;
 
 public class DTItems {
-    public static Item iridium, iron, heavite, ionicAlloy, silver, concussionAlloy;
-    public static final Seq<Item> omurloItems = new Seq<>();
+    public static Item iridium, iron, heavite, ionicAlloy, silver, concussionAlloy, spaceStationPanel;
+    public static final Seq<Item>
+            omurloItems = new Seq<>(),
+            omurloOnlyItems = new Seq<>(),
+            spaceStationItems = new Seq<>(),
+            moddedItems = new Seq<>();
     public static void load() {
-        iridium = new Item("iridium", Color.valueOf("00ffff")){{
+        iridium = new Item("iridium", Color.valueOf("BDCFE6")){{
              hardness = 4;
              cost = 2;
         }};
@@ -30,6 +34,11 @@ public class DTItems {
             hardness = 2;
             cost = 2;
         }};
+        spaceStationPanel = new Item("space-station-panel", Color.valueOf("F5F6FF")){{
+            hardness = 2;
+            cost = 2;
+        }};
+
         concussionAlloy = new Item("concussion-alloy", Color.valueOf("EFEAEA")){{
             hardness = 2;
             cost = 2;
@@ -37,5 +46,12 @@ public class DTItems {
         omurloItems.addAll(
                 iridium, iron, heavite, ionicAlloy, silver, concussionAlloy, sand, silicon, graphite, coal
         );
+        omurloOnlyItems.addAll(
+                iridium, iron, heavite, ionicAlloy, silver, concussionAlloy
+        );
+        spaceStationItems.addAll(
+                spaceStationPanel
+        );
+        moddedItems.addAll(omurloOnlyItems).addAll(spaceStationItems);
     }
 }
