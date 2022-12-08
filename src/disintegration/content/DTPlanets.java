@@ -2,6 +2,7 @@ package disintegration.content;
 
 import arc.graphics.Color;
 import disintegration.maps.planet.OmurloPlanetGenerator;
+import disintegration.maps.planet.SpaceStationGenerator;
 import mindustry.content.Items;
 import mindustry.content.Planets;
 import mindustry.game.Team;
@@ -20,10 +21,11 @@ public class DTPlanets {
         sun.alwaysUnlocked = true;
         sun.hasAtmosphere = false;
         sun.updateLighting = false;
-        sun.sectors.add(new Sector(sun, PlanetGrid.Ptile.empty));
         sun.accessible = true;
-        sun.defaultEnv = Env.space | Env.scorching;
-
+        sun.sectors.add(new Sector(sun, PlanetGrid.Ptile.empty));
+        sun.defaultEnv = Env.space;
+        sun.generator = new SpaceStationGenerator();
+        sun.hiddenItems.removeAll(DTItems.spaceStationItems);
 
         Planets.erekir.hiddenItems.addAll(DTItems.moddedItems);
         Planets.serpulo.hiddenItems.addAll(DTItems.moddedItems);

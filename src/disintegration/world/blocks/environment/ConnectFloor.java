@@ -2,6 +2,7 @@ package disintegration.world.blocks.environment;
 
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
+import mindustry.graphics.Layer;
 import mindustry.world.Tile;
 import mindustry.world.blocks.environment.Floor;
 
@@ -23,6 +24,7 @@ public class ConnectFloor extends Floor {
     @Override
     public void drawBase(Tile tile){
         Draw.rect(region, tile.worldx(), tile.worldy());
+        Draw.z(Layer.plans + 1);
         for (int i = 0; i < 4; i++) {
             Tile other = tile.nearby(i);
             if (other != null && other.floor().id != id){

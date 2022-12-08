@@ -18,5 +18,6 @@ public class DisintegrationJavaMod extends Mod{
         DTUnitTypes.load();
         DTBlocks.load();
         DTPlanets.load();
+        DTSectorPresets.load();
     }
 }

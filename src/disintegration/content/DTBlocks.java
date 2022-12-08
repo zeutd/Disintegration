@@ -6,7 +6,6 @@ import arc.math.Mathf;
 import disintegration.DTVars;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.debug.DebugBlock;
-import disintegration.world.blocks.debug.SectorResetBlock;
 import disintegration.world.blocks.defence.ShardWall;
 import disintegration.world.blocks.defence.turrets.ElectricTowerTurret;
 import disintegration.world.blocks.effect.FloorBuilder;
@@ -42,9 +41,11 @@ import mindustry.type.unit.MissileUnitType;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.PowerTurret;
+import mindustry.world.blocks.environment.EmptyFloor;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.environment.SteamVent;
+import mindustry.world.blocks.power.ConsumeGenerator;
 import mindustry.world.blocks.power.ThermalGenerator;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.blocks.storage.CoreBlock;
@@ -87,6 +88,7 @@ public class DTBlocks {
             neoplasmGenerator,
             excitationReactor,
             stirlingGenerator,
+            solarPanel,
     //turrets
             fracture,
             blade,
@@ -115,16 +117,7 @@ public class DTBlocks {
             placeableOn = false;
             solid = true;
         }};
-        lightSpace = new Floor("light-space"){{
-            cacheLayer = CacheLayer.space;
-            placeableOn = false;
-            solid = true;
-            variants = 0;
-            canShadow = false;
-            albedo = 1f;
-            lightRadius = 8f;
-            lightColor = Blocks.space.mapColor;
-        }};
+        lightSpace = new EmptyFloor("light-space");
 
         spaceStationFloor = new ConnectFloor("space-station-floor"){{
             variants = 0;
@@ -304,6 +297,7 @@ public class DTBlocks {
 
             consumeLiquid(Liquids.water, 12f / 60f);
         }};
+        //power
         neoplasmGenerator = new SpreadGenerator("neoplasm-generator"){{
             requirements(Category.power, with(Items.tungsten, 500, Items.carbide, 100, Items.oxide, 150, Items.silicon, 400, Items.phaseFabric, 200));
 
@@ -344,7 +338,6 @@ public class DTBlocks {
                     new DrawDefault()
             );
         }};
-        //power
         excitationReactor = new LaserReactor("excitation-reactor"){{
             size = 5;
             scaledHealth = 100;
@@ -393,6 +386,14 @@ public class DTBlocks {
             liquidCapacity = 20f;
             fogRadius = 3;
             researchCost = with(DTItems.iron, 15);
+        }};
+        solarPanel = new ConsumeGenerator("solar-panel"){{
+            requirements(Category.power, with(DTItems.spaceStationPanel, 60));
+            powerProduction = 5f;
+            rotate = true;
+            rotateDraw = false;
+            envEnabled = envRequired = Env.space;
+            drawer = new DrawMulti(new DrawDefault(), new DrawSideRegion());
         }};
         //turret
 
@@ -762,9 +763,10 @@ public class DTBlocks {
             new FloorBuilder("space-station-builder-" + finalI){{
                 requirements(Category.effect, with(DTItems.spaceStationPanel, 5 * finalI * finalI));
                 size = 1;
+                envEnabled = envRequired = Env.space;
                 range = finalI;
                 rotate = true;
-                buildOffset = range;
+                floorOffset = range + 1;
                 rotateDraw = false;
                 floor = (Floor)spaceStationFloor;
             }};
@@ -775,6 +777,7 @@ public class DTBlocks {
             new FloorBuilder("space-station-breaker-" + finalI){{
                 requirements(Category.effect, with(DTItems.spaceStationPanel, 5 * finalI * finalI));
                 size = 1;
+                envEnabled = envRequired = Env.space;
                 range = finalI;
                 floor = (Floor)lightSpace;
             }};
@@ -783,12 +786,8 @@ public class DTBlocks {
         //debug
         debugBlock = new DebugBlock("debug-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
+            envEnabled = envRequired = Env.space;
             requirements(Category.effect, with(), true);
         }};
-        sectorResetBlock = new SectorResetBlock("sector-reset-block"){{
-            buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
-            requirements(Category.effect, with(), true);
-        }};
-
     }
 }
