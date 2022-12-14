@@ -4,10 +4,13 @@ import arc.graphics.Color;
 import mindustry.type.Liquid;
 
 public class DTLiquids {
-    public static Liquid steam, liquidCrystal;
+    public static Liquid steam, liquidCrystal, oxygen;
 
     public static void load(){
-        steam = new Liquid("steam", Color.valueOf("fafafa")){{
+        steam = new Liquid("steam", Color.valueOf("f1f4ff")){{
+            gas = true;
+        }};
+        oxygen = new Liquid("oxygen", Color.valueOf("9eaefd")){{
             gas = true;
         }};
 

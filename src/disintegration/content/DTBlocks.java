@@ -1,6 +1,8 @@
 package disintegration.content;
 
 import arc.graphics.Color;
+import arc.graphics.g2d.Fill;
+import arc.graphics.g2d.Lines;
 import arc.math.Interp;
 import arc.math.Mathf;
 import disintegration.DTVars;
@@ -16,10 +18,7 @@ import disintegration.world.blocks.laser.LaserReflector;
 import disintegration.world.blocks.power.SpreadGenerator;
 import disintegration.world.blocks.production.Quarry;
 import disintegration.world.blocks.temperature.*;
-import disintegration.world.draw.DrawAllRotate;
-import disintegration.world.draw.DrawFusion;
-import disintegration.world.draw.DrawLaser;
-import disintegration.world.draw.DrawTemperature;
+import disintegration.world.draw.*;
 import mindustry.content.*;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.*;
@@ -48,6 +47,7 @@ import mindustry.world.blocks.environment.SteamVent;
 import mindustry.world.blocks.power.ConsumeGenerator;
 import mindustry.world.blocks.power.ThermalGenerator;
 import mindustry.world.blocks.production.Drill;
+import mindustry.world.blocks.production.GenericCrafter;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.consumers.ConsumeItemExplode;
 import mindustry.world.consumers.ConsumeItemFlammable;
@@ -58,6 +58,7 @@ import mindustry.world.meta.BuildVisibility;
 import mindustry.world.meta.Env;
 
 import static arc.graphics.g2d.Draw.color;
+import static arc.graphics.g2d.Lines.stroke;
 import static mindustry.type.ItemStack.with;
 
 public class DTBlocks {
@@ -84,6 +85,7 @@ public class DTBlocks {
             laserSource,
     //factory
             boiler,
+            electrolyser,
     //power
             neoplasmGenerator,
             excitationReactor,
@@ -92,6 +94,7 @@ public class DTBlocks {
     //turrets
             fracture,
             blade,
+            encourage,
             permeation,
             holy,
             sparkover,
@@ -297,6 +300,49 @@ public class DTBlocks {
 
             consumeLiquid(Liquids.water, 12f / 60f);
         }};
+
+        electrolyser = new GenericCrafter("electrolyser"){{
+            requirements(Category.crafting, with(Items.silicon, 50, Items.graphite, 40, Items.beryllium, 130, Items.tungsten, 80));
+            size = 3;
+
+            researchCostMultiplier = 1.2f;
+            craftTime = 10f;
+            rotate = true;
+            invertFlip = true;
+
+            hasLiquids = true;
+
+            liquidCapacity = 50f;
+
+            consumeLiquid(Liquids.water, 12f / 60f);
+            consumePower(1f);
+
+            drawer = new DrawMulti(
+                    new DrawRegion("-bottom"),
+                    new DrawDTLiquidRegion(DTLiquids.oxygen){{
+                        suffix = "-liquid1";
+                        rotate = true;
+                    }},
+                    new DrawDTLiquidRegion(Liquids.hydrogen){{
+                        suffix = "-liquid2";
+                        rotate = true;
+                    }},
+                    new DrawAllRotate(),
+                    new DrawGlowRegion(){{
+                        alpha = 0.7f;
+                        color = Color.valueOf("c4bdf3");
+                        glowIntensity = 0.3f;
+                        glowScale = 6f;
+                    }}
+            );
+
+            ambientSound = Sounds.electricHum;
+            ambientSoundVolume = 0.08f;
+            squareSprite = false;
+
+            outputLiquids = LiquidStack.with(DTLiquids.oxygen, 4f / 60, Liquids.hydrogen, 8f / 60);
+            liquidOutputDirections = new int[]{4, 2};
+        }};
         //power
         neoplasmGenerator = new SpreadGenerator("neoplasm-generator"){{
             requirements(Category.power, with(Items.tungsten, 500, Items.carbide, 100, Items.oxide, 150, Items.silicon, 400, Items.phaseFabric, 200));
@@ -371,7 +417,7 @@ public class DTBlocks {
             minEfficiency = 9f - 0.0001f;
             powerProduction = 5f / 9f;
             displayEfficiency = false;
-            generateEffect = DTFx.ethylenegenerate;
+            generateEffect = DTFx.ethyleneGenerate;
             effectChance = 0.04f;
             size = 3;
             ambientSound = Sounds.hum;
@@ -438,7 +484,7 @@ public class DTBlocks {
 
             reload = 17f;
             shootY = 15f;
-            rotateSpeed = 5f;
+            rotateSpeed = 2f;
             shootCone = 30f;
             consumeAmmoOnce = true;
             shootSound = Sounds.laser;
@@ -558,17 +604,18 @@ public class DTBlocks {
             limitRange(-5f);
         }};
 
-        blade = new ItemTurret("blade") {{
+         blade = new ItemTurret("blade") {{
             requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
 
-            reload = 240f;
+            reload = 300f;
             shake = 4f;
             range = 360f;
             recoil = 2f;
+            rotateSpeed = 3f;
 
             heatColor = Pal.berylShot.cpy().a(0.9f);
 
-            shootCone = 0;
+            shootCone = 5;
             size = 3;
             envEnabled |= Env.space;
 
@@ -576,7 +623,7 @@ public class DTBlocks {
             shootSound = Sounds.missileSmall;
 
             shoot = new ShootBarrel(){{
-                shots = 8;
+                shots = 4;
                 shotDelay = 5;
                 barrels = new float[]{
                         5.5f, -5f, 0f,
@@ -595,7 +642,7 @@ public class DTBlocks {
                     strokeFrom = 3f;
                 }});
 
-                smokeEffect = Fx.shootBigSmoke2;
+                smokeEffect = new MultiEffect(Fx.shootBigSmoke2, DTFx.shootSmokeMissileBeryl);
                 shake = 2f;
                 speed = 0f;
                 keepVelocity = false;
@@ -640,15 +687,103 @@ public class DTBlocks {
                     progress = PartProgress.recoil;
                     mirror = false;
                     under = true;
-                    //moveY = -0.5f;
-                    heatColor = Color.sky.cpy().a(0.8f);
+                    heatColor = Pal.berylShot.cpy().a(0.8f);
                 }}, new RegionPart("-side") {{
                     progress = PartProgress.warmup;
                     mirror = true;
                     moveX = 2f;
-                    //moveY = -0.5f;
                     under = true;
-                    heatColor = Color.sky.cpy().a(0.8f);
+                    heatColor = Pal.berylShot.cpy().a(0.8f);
+                }});
+            }};
+        }};
+
+        encourage = new ItemTurret("encourage"){{
+            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
+
+            reload = 300f;
+            shake = 5f;
+            range = 300f;
+            recoil = 3f;
+
+            shootCone = 10;
+            size = 3;
+            envEnabled |= Env.space;
+
+            scaledHealth = 300;
+            shootSound = Sounds.lasershoot;
+
+            coolantMultiplier = 6f;
+            coolant = consume(new ConsumeLiquid(Liquids.water, 15f / 60f));
+            ammo(Items.tungsten, new BasicBulletType(7, 50){{
+                float rad = 20;
+                scaleLife = true;
+                splashDamage = 150;
+                width = height = 15f;
+                sprite = "circle-bullet";
+                backColor = Pal.redLight;
+                frontColor = Color.white;
+                shrinkY = 0;
+                keepVelocity = true;
+                trailColor = Pal.redLight;
+                trailLength = 15;
+                trailWidth = 5;
+                hitSound = Sounds.release;
+
+                reflectable = false;
+                splashDamageRadius = 20;
+                ammoMultiplier = 1f;
+                shootEffect = smokeEffect = new MultiEffect(Fx.shootBigSmoke, DTFx.shootEncourage);
+                hitEffect = new Effect(50f, 100f, e -> {
+                    e.scaled(7f, b -> {
+                        color(Pal.redLight, b.fout());
+                        Fill.circle(e.x, e.y, rad);
+                    });
+
+                    color(Pal.redLight);
+                    stroke(e.fout() * 3f);
+                    Lines.circle(e.x, e.y, rad);
+                });
+                fragBullet = new ShrapnelBulletType(){{
+                    damage = 50;
+                    length = 15;
+                    width = 6;
+                    lifetime = 100;
+                    toColor = Pal.redLight;
+                }};
+                ammoPerShot = 5;
+
+                fragBullets = 3;
+                fragSpread = 120;
+                fragRandomSpread = 0;
+
+                limitRange();
+            }});
+            drawer = new DrawTurret("reinforced-"){{
+                parts.addAll(new RegionPart("-blade"){{
+                    heatProgress = PartProgress.recoil.add(-0.1f).clamp();
+                    progress = PartProgress.warmup;
+                    mirror = true;
+                    moveX = 1f;
+                    moves.add(new PartMove(PartProgress.recoil, 0f, 0f, -10f));
+                    under = true;
+                    children.addAll(
+                            new RegionPart("-front"){{
+                                progress = PartProgress.warmup;
+                                mirror = true;
+                                under = true;
+                                moveX = 2;
+                                moveY = -2;
+                                moves.add(new PartMove(PartProgress.recoil, 0f, 0f, 0f));
+                            }},
+                            new RegionPart("-back"){{
+                                progress = PartProgress.warmup;
+                                mirror = true;
+                                under = true;
+                                moveX = moveY = -0.5f;
+                                moves.add(new PartMove(PartProgress.recoil, 0f, 0f, 0f));
+                            }}
+                    );
                 }});
             }};
         }};
