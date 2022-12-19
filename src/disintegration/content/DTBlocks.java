@@ -6,7 +6,10 @@ import arc.graphics.g2d.Lines;
 import arc.math.Interp;
 import arc.math.Mathf;
 import disintegration.DTVars;
+import disintegration.entities.bullet.ConnectBulletType;
+import disintegration.entities.bullet.RandomSpreadBulletType;
 import disintegration.graphics.Pal2;
+import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
 import disintegration.world.blocks.defence.ShardWall;
 import disintegration.world.blocks.defence.turrets.ElectricTowerTurret;
@@ -22,6 +25,7 @@ import disintegration.world.draw.*;
 import mindustry.content.*;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.*;
+import mindustry.entities.effect.ExplosionEffect;
 import mindustry.entities.effect.MultiEffect;
 import mindustry.entities.effect.WaveEffect;
 import mindustry.entities.effect.WrapEffect;
@@ -32,10 +36,7 @@ import mindustry.graphics.CacheLayer;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
-import mindustry.type.Category;
-import mindustry.type.Liquid;
-import mindustry.type.LiquidStack;
-import mindustry.type.Weapon;
+import mindustry.type.*;
 import mindustry.type.unit.MissileUnitType;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
@@ -95,16 +96,20 @@ public class DTBlocks {
             fracture,
             blade,
             encourage,
+            aegis,
             permeation,
             holy,
             sparkover,
+            voltage,
+            axe,
     //drills
             quarry,
             pressureDrill,
+            rockExtractor,
     //effect
     //debug
             debugBlock,
-            sectorResetBlock
+            dpsBlock
             ;
     public static void load() {
         //environment
@@ -591,6 +596,7 @@ public class DTBlocks {
             minWarmup = 0.96f;
 
             outlineColor = Pal.darkOutline;
+            squareSprite = false;
 
             scaledHealth = 280;
             range = 310f;
@@ -632,6 +638,7 @@ public class DTBlocks {
                 firstShotDelay = 100f;
             }};
 
+            squareSprite = false;
             coolantMultiplier = 6f;
             coolant = consume(new ConsumeLiquid(Liquids.water, 15f / 60f));
             ammo(Items.silicon, new BulletType(){{
@@ -705,8 +712,9 @@ public class DTBlocks {
             shake = 5f;
             range = 300f;
             recoil = 3f;
+            squareSprite = false;
 
-            shootCone = 10;
+            shootCone = 1;
             size = 3;
             envEnabled |= Env.space;
 
@@ -715,10 +723,10 @@ public class DTBlocks {
 
             coolantMultiplier = 6f;
             coolant = consume(new ConsumeLiquid(Liquids.water, 15f / 60f));
-            ammo(Items.tungsten, new BasicBulletType(7, 50){{
+            ammo(Items.tungsten, new BasicBulletType(7, 150){{
                 float rad = 20;
                 scaleLife = true;
-                splashDamage = 150;
+                splashDamage = 250;
                 width = height = 15f;
                 sprite = "circle-bullet";
                 backColor = Pal.redLight;
@@ -731,7 +739,7 @@ public class DTBlocks {
                 hitSound = Sounds.release;
 
                 reflectable = false;
-                splashDamageRadius = 20;
+                splashDamageRadius = rad;
                 ammoMultiplier = 1f;
                 shootEffect = smokeEffect = new MultiEffect(Fx.shootBigSmoke, DTFx.shootEncourage);
                 hitEffect = new Effect(50f, 100f, e -> {
@@ -751,7 +759,7 @@ public class DTBlocks {
                     lifetime = 100;
                     toColor = Pal.redLight;
                 }};
-                ammoPerShot = 5;
+                ammoPerShot = 6;
 
                 fragBullets = 3;
                 fragSpread = 120;
@@ -788,6 +796,54 @@ public class DTBlocks {
             }};
         }};
 
+        aegis = new PowerTurret("aegis"){{
+            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
+
+            reload = 60f;
+            shake = 4f;
+            range = 150f;
+            recoil = 1f;
+            squareSprite = false;
+
+            shootCone = 3;
+            size = 2;
+            envEnabled |= Env.space;
+            targetAir = targetGround = targetHealing = true;
+
+            scaledHealth = 300;
+            shootSound = Sounds.lasershoot;
+
+            consumePower(1f);
+            shootType = new LaserBoltBulletType(5f, 10f){{
+                lifetime = 30f;
+                healPercent = 5f;
+                collidesTeam = true;
+                backColor = Pal.heal;
+                frontColor = Color.white;
+                shootEffect = Fx.none;
+            }};
+
+            shoot = new ShootBarrel(){{
+                shots = 4;
+                barrels = new float[]{
+                        3f, -2f, 0f,
+                        -3f, -2f, 0f
+                };
+                shotDelay = 5f;
+            }};
+            minWarmup = 0.7f;
+            drawer = new DrawTurret("reinforced-"){{
+                parts.add(new RegionPart("-side"){{
+                    progress = PartProgress.warmup;
+                    mirror = true;
+                    moveX = 0.8f;
+                    moves.add(new PartMove(PartProgress.recoil, 0f, -0.5f, 0f));
+                    under = true;
+                }});
+            }};
+            limitRange(2);
+        }};
+
         permeation = new ItemTurret("permeation"){{
             requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
 
@@ -795,6 +851,7 @@ public class DTBlocks {
             shake = 4f;
             range = 60f;
             recoil = 2f;
+            squareSprite = false;
 
             heatColor = Color.sky.cpy().a(0.9f);
 
@@ -844,12 +901,12 @@ public class DTBlocks {
             reload = 10;
             maxAmmo = 10;
             range = 180;
-            shootSound = Sounds.sap;
+            shootSound = Sounds.lasershoot;
             inaccuracy = 3;
             shootEffect = Fx.shootHeal;
             shootType = new LaserBoltBulletType(5,10){{
                 lifetime = 40;
-                healPercent = 4;
+                healPercent = 2;
                 status = StatusEffects.corroded;
                 frontColor = Color.white;
                 backColor = Pal.heal;
@@ -872,6 +929,131 @@ public class DTBlocks {
 
             requirements(Category.turret, with(DTItems.iron, 200, Items.silicon, 110, DTItems.iridium, 90));
         }};
+        axe = new ItemTurret("axe") {{
+            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, DTItems.iron, 90));
+
+            reload = 300f;
+            shake = 4f;
+            range = 540f;
+            recoil = 2f;
+            rotateSpeed = 3f;
+
+            shootCone = 6;
+            size = 2;
+            envEnabled |= Env.space;
+
+            scaledHealth = 300;
+            shootSound = Sounds.missileSmall;
+
+            shoot = new ShootBarrel(){{
+                shots = 4;
+                shotDelay = 10;
+                barrels = new float[]{
+                        3f, -6f, 0f,
+                        -3f, -6f, 0f
+                };
+            }};
+
+            coolant = consumeCoolant(0.2f);
+            ammo(Items.blastCompound, new BulletType(){{
+                shootEffect = Fx.shootBig;
+
+                smokeEffect = Fx.shootBigSmoke2;
+                shake = 2f;
+                speed = 0f;
+                keepVelocity = false;
+                inaccuracy = 2f;
+
+                spawnUnit = new MissileUnitType("axe-missile"){{
+                    trailColor = engineColor = Pal.missileYellow;
+                    engineSize = 1.75f;
+                    engineOffset = 3.5f;
+                    engineLayer = Layer.effect;
+                    speed = 4.8f;
+                    maxRange = 6f;
+                    lifetime = 115;
+                    outlineColor = Pal.darkOutline;
+                    health = 5;
+                    lowAltitude = true;
+
+                    weapons.add(new Weapon(){{
+                        shootCone = 360f;
+                        mirror = false;
+                        reload = 0f;
+                        shootOnDeath = true;
+                        bullet = new ExplosionBulletType(70f, 25f){{
+                            shootEffect = new MultiEffect(Fx.massiveExplosion, new WrapEffect(Fx.dynamicSpikes, Pal.missileYellow, 24f));
+                        }};
+                    }});
+                }};
+                ammoPerShot = 5;
+            }});
+            drawer = new DrawTurret("framed-") {{
+                parts.addAll(new RegionPart("-bottom"){},
+                        new RegionPart("-display"){{
+                            progress = PartProgress.reload;
+                            moveY = -4f;
+                            moves.add(new PartMove(PartProgress.constant(1), 0, 1, 0));
+                        }},
+                        new RegionPart("-top"){}
+                );
+            }};
+            limitRange();
+        }};
+        voltage = new PowerTurret("voltage"){{
+            scaledHealth = 260;
+            size = 3;
+            targetAir = true;
+            targetGround = true;
+            rotateSpeed = 5;
+            coolant = consumeCoolant(0.2f);
+            consumePower(5f);
+            drawer = new DrawTurret("framed-");
+            reload = 420;
+            maxAmmo = 10;
+            range = 180;
+            shootSound = Sounds.laser;
+            inaccuracy = 3;
+            shootType = new RandomSpreadBulletType(1,120){{
+                shrinkY = 0;
+                drag = 0.005f;
+                lifetime = 360;
+                width = height = 15f;
+                status = StatusEffects.shocked;
+                sprite = "circle-bullet";
+                backColor = frontColor = Pal2.lightningWhite;
+                intervalChance = 0.05f;
+                scaleLife = false;
+
+                hittable = reflectable = false;
+
+                homingPower = 0.02f;
+                shootEffect = despawnEffect = hitEffect = new ExplosionEffect(){{
+                    waveColor = Pal.regen;
+                    waveStroke = 4f;
+                    waveRad = 40f;
+                }};
+                intervalBullet = new ConnectBulletType(){{
+                    damage = 40;
+                    lifetime = speed = 0;
+
+                    hitColor = Pal2.lightningWhite;
+                    chainHitEffect = Fx.lightning;
+                    chainEffect = Fx.chainLightning;
+                    hitEffect = Fx.none;
+                    radius = 50f;
+                    chainColor = Pal.lancerLaser;
+                    lightning = 2;
+                    lightningColor = Pal.lancerLaser;
+                    lightningLength = 7;
+                }};
+                lightning = 5;
+                lightningColor = Pal.lancerLaser;
+                lightningLength = 8;
+            }};
+            requirements(Category.turret, with(DTItems.iridium, 1));
+        }};
+
         quarry = new Quarry("quarry"){{
            size = 3;
            regionRotated1 = 1;
@@ -891,6 +1073,17 @@ public class DTBlocks {
             envEnabled ^= Env.space;
 
             consumeLiquid(Liquids.water, 0.05f).boost();
+        }};
+        rockExtractor = new GenericCrafter("rock-extractor"){{
+            requirements(Category.production, ItemStack.with(Items.graphite, 40, DTItems.iron, 50));
+            consumePower(0.6f);
+            size = 2;
+            ambientSound = Sounds.drill;
+            updateEffect = Fx.pulverizeSmall;
+            craftEffect = Fx.mine;
+            craftTime = 80;
+            drawer = new DrawMulti(new DrawDefault(), new DrawRegion("-rotator", 1.4f){{spinSprite = true;}}, new DrawRegion("-top"));
+            outputItem = new ItemStack(DTItems.stone, 1);
         }};
         //effect
         for (int i = 1; i <= 9; i+=2) {
@@ -917,11 +1110,15 @@ public class DTBlocks {
                 floor = (Floor)lightSpace;
             }};
         }
-        
         //debug
         debugBlock = new DebugBlock("debug-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
-            envEnabled = envRequired = Env.space;
+            requirements(Category.effect, with(), true);
+        }};
+        dpsBlock = new DPSBlock("dps-block"){{
+            size = 5;
+            health = 999999;
+            buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             requirements(Category.effect, with(), true);
         }};
     }

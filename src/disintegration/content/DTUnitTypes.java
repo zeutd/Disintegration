@@ -62,6 +62,7 @@ public class DTUnitTypes {
         */
         //air-Hyper
         //T1 lancet
+
         lancet = new UnitType("lancet"){{
             constructor = UnitEntity::create;
             speed = 2.7f;

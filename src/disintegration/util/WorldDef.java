@@ -4,7 +4,6 @@ import arc.math.geom.Vec2;
 import arc.struct.Seq;
 import disintegration.world.blocks.temperature.*;
 import mindustry.gen.Building;
-import mindustry.type.Item;
 import mindustry.world.Tile;
 
 import static mindustry.Vars.world;
@@ -23,8 +22,8 @@ public class WorldDef {
         }
         return false;
     }
-    public static Seq<Item> listItem(Seq<Item> array){
-        Seq<Item> result = new Seq<>();
+    public static <T> Seq<T> listItem(Seq<T> array){
+        Seq<T> result = new Seq<>();
         array.forEach(a -> {
             if(!result.contains(a) && a != null){
                 result.add(a);

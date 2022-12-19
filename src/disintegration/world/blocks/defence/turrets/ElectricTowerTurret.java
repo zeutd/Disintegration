@@ -48,7 +48,7 @@ public class ElectricTowerTurret extends BaseTurret {
     public TextureRegion baseRegion;
     public TextureRegion heatRegion;
 
-    public boolean targetAir = true, targetGround = false;
+    public boolean targetAir = true, targetGround = true;
 
     public Sound shootSound = Sounds.plasmaboom;
 
