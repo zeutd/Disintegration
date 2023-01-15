@@ -127,7 +127,6 @@ public class Quarry extends Block {
 
     @Override
     public boolean canPlaceOn(Tile tile, Team team, int rotation){
-        super.canPlaceOn(tile, team, rotation);
         int mx = (int) (tile.x + Geometry.d4x(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
         int my = (int) (tile.y + Geometry.d4y(rotation) * (areaSize/2f-(areaSize % 2)/2f-sizeOffset*2)-areaSize/2f+(areaSize % 2));
 
@@ -217,6 +216,7 @@ public class Quarry extends Block {
         Seq<Item> itemsArray;
 
         Seq<Item> itemList;
+
 
         @Override
         public void updateTile(){
@@ -495,6 +495,11 @@ public class Quarry extends Block {
                 }
             }
         }
+        @Override
+        public void drawSelect(){
+            Drawf.dashRect(Pal.accent, getRect(Tmp.r1, x, y, rotation));
+        }
+
         @Override
         public boolean shouldConsume(){
             return items.total() < itemCapacity && enabled;

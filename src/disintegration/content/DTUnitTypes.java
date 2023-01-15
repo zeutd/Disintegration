@@ -5,6 +5,7 @@ import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Mathf;
+import disintegration.ai.types.RepairDroneAI;
 import disintegration.graphics.Pal2;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
@@ -22,6 +23,7 @@ import mindustry.type.Weapon;
 import mindustry.type.ammo.PowerAmmoType;
 import mindustry.type.unit.ErekirUnitType;
 import mindustry.type.weapons.RepairBeamWeapon;
+import mindustry.world.meta.Env;
 
 import static arc.graphics.g2d.Draw.color;
 import static arc.graphics.g2d.Lines.stroke;
@@ -40,7 +42,9 @@ public class DTUnitTypes {
             //ground-subsidiary
             //core-unit
             separate,
-            spaceStationDrone
+            spaceStationDrone,
+            //special
+            repairDrone
             ;
     public static void load(){
         /*
@@ -249,6 +253,48 @@ public class DTUnitTypes {
 
                 bullet = new BulletType(){{
                     maxRange = 60f;
+                }};
+            }});
+        }};
+        //special
+        repairDrone = new ErekirUnitType("repair-drone"){{
+            constructor = UnitEntity::create;
+            controller = u -> new RepairDroneAI();
+            flying = true;
+            drag = 0.06f;
+            accel = 0.11f;
+            speed = 1.3f;
+            health = 90;
+            engineSize = 2f;
+            engineOffset = 3.75f;
+
+            outlineColor = Pal.darkOutline;
+            isEnemy = false;
+            hidden = true;
+            useUnitCap = false;
+            logicControllable = false;
+            playerControllable = false;
+            allowedInPayloads = false;
+            createWreck = false;
+            envEnabled = Env.any;
+            envDisabled = Env.none;
+            weapons.add(new Weapon(){{
+                reload = 10f;
+                x = 4.5f;
+                mirror = false;
+                ejectEffect = Fx.none;
+                recoil = 2f;
+                shootSound = Sounds.lasershoot;
+                range = 90f;
+
+                bullet = new LaserBoltBulletType(4f, 1){{
+                    lifetime = 23f;
+                    healPercent = 5f;
+                    collidesTeam = true;
+                    backColor = Pal.heal;
+                    frontColor = Color.white;
+                    collidesAir = false;
+                    collidesGround = false;
                 }};
             }});
         }};

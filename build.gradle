@@ -14,10 +14,10 @@ repositories{
 
 ext{
     //the build number that this mod is made for
-    mindustryVersion = 'v140.1'
-    jabelVersion = "93fde537c7"
+    mindustryVersion = 'v140.4'
+    jabelVersion = "0.9.0"
     sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-    gamePath = /*your own game path*/ "D:/mdt/140.2/Mindustry.exe"
+    gamePath = /*your own game path*/ "D:/mdt/141/Mindustry.exe"
     modPath = /*your own mod path*/ "C:/Users/yizhe/AppData/Roaming/Mindustry/mods"
 }
 

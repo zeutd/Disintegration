@@ -6,11 +6,13 @@ import arc.graphics.g2d.Lines;
 import arc.math.Interp;
 import arc.math.Mathf;
 import disintegration.DTVars;
+import disintegration.entities.bullet.BlockBulletType;
 import disintegration.entities.bullet.ConnectBulletType;
 import disintegration.entities.bullet.RandomSpreadBulletType;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
+import disintegration.world.blocks.defence.RepairDroneStation;
 import disintegration.world.blocks.defence.ShardWall;
 import disintegration.world.blocks.defence.turrets.ElectricTowerTurret;
 import disintegration.world.blocks.effect.FloorBuilder;
@@ -32,13 +34,11 @@ import mindustry.entities.effect.WrapEffect;
 import mindustry.entities.part.*;
 import mindustry.entities.pattern.ShootBarrel;
 import mindustry.gen.Sounds;
-import mindustry.graphics.CacheLayer;
-import mindustry.graphics.Drawf;
-import mindustry.graphics.Layer;
-import mindustry.graphics.Pal;
+import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.type.unit.MissileUnitType;
 import mindustry.world.Block;
+import mindustry.world.blocks.defense.ShockMine;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.environment.EmptyFloor;
@@ -69,7 +69,8 @@ public class DTBlocks {
             iceWater, greenIce, greenFloor, spaceStationFloor, lightSpace,
             ethyleneVent,
             greenIceWall,
-    //walls
+    //defence
+    repairDroneStation,
             iridiumWall, iridiumWallLarge,
     //storage
             corePedestal,
@@ -100,13 +101,15 @@ public class DTBlocks {
             permeation,
             holy,
             sparkover,
-            voltage,
             axe,
+            ambush,
+            voltage,
     //drills
             quarry,
             pressureDrill,
             rockExtractor,
     //effect
+            blastMine,
     //debug
             debugBlock,
             dpsBlock
@@ -157,6 +160,11 @@ public class DTBlocks {
         }};
 
         //defence
+        repairDroneStation = new RepairDroneStation("repair-drone-station"){{
+            size = 3;
+            requirements(Category.defense, ItemStack.with());
+        }};
+
         iridiumWall = new ShardWall("iridium-wall"){{
             shardChance = 0.1f;
             shard = DTBullets.shard;
@@ -324,14 +332,7 @@ public class DTBlocks {
 
             drawer = new DrawMulti(
                     new DrawRegion("-bottom"),
-                    new DrawDTLiquidRegion(DTLiquids.oxygen){{
-                        suffix = "-liquid1";
-                        rotate = true;
-                    }},
-                    new DrawDTLiquidRegion(Liquids.hydrogen){{
-                        suffix = "-liquid2";
-                        rotate = true;
-                    }},
+                    new DrawLiquidTile(Liquids.hydrogen),
                     new DrawAllRotate(),
                     new DrawGlowRegion(){{
                         alpha = 0.7f;
@@ -1000,6 +1001,42 @@ public class DTBlocks {
             }};
             limitRange();
         }};
+        ambush = new ItemTurret("ambush"){{
+            requirements(Category.turret, with(DTItems.iron, 90, Items.graphite, 40));
+            ammo(
+                    Items.silicon, new ArtilleryBulletType(3f, 1){{
+                        knockback = 0.8f;
+                        lifetime = 80f;
+                        width = height = 15f;
+                        collidesTiles = false;
+                        fragBullet = new BlockBulletType(){{
+                            shrinkY = shrinkX = 0;
+                            speed = 3f;
+                            damage = 1f;
+                            rotateSprite = false;
+                            hitEffect = Fx.coreBuildBlock;
+                        }};
+                        fragOnHit = true;
+                        fragOnAbsorb = true;
+                        fragBullets = 5;
+                        fragLifeMax = 0.2f;
+                        fragLifeMin = 0.5f;
+                        fragVelocityMax = 0.5f;
+                        fragVelocityMin = 0.1f;
+                    }}
+            );
+            targetAir = false;
+            reload = 80f;
+            size = 2;
+            recoil = 2f;
+            range = 235f;
+            inaccuracy = 1f;
+            shootCone = 10f;
+            health = 260;
+            shootSound = Sounds.bang;
+            coolant = consumeCoolant(0.3f);
+            limitRange(0f);
+        }};
         voltage = new PowerTurret("voltage"){{
             scaledHealth = 260;
             size = 3;
@@ -1086,6 +1123,21 @@ public class DTBlocks {
             outputItem = new ItemStack(DTItems.stone, 1);
         }};
         //effect
+        blastMine = new ShockMine("blast-mine"){{
+            requirements(Category.effect, with(DTItems.iron, 15, Items.silicon, 12));
+            hasShadow = false;
+            health = 50;
+            bullet = new ExplosionBulletType(100, 10){{
+                hitEffect = Fx.pointHit;
+            }};
+            tileDamage = 7f;
+            tendrils = 0;
+        }};
+
+        ((ItemTurret) ambush).ammoTypes.forEach(b -> {
+            ((BlockBulletType)b.value.fragBullet).bulletContent = blastMine;
+        });
+
         for (int i = 1; i <= 9; i+=2) {
             int finalI = i;
             new FloorBuilder("space-station-builder-" + finalI){{
