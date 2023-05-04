@@ -1,12 +1,12 @@
 package disintegration.maps.planet;
 
-import arc.math.Rand;
 import arc.math.geom.Vec2;
 import arc.math.geom.Vec3;
 import disintegration.content.DTBlocks;
+import disintegration.content.DTLoadouts;
 import disintegration.util.WorldDef;
+import mindustry.content.Blocks;
 import mindustry.game.Team;
-import mindustry.game.Waves;
 import mindustry.graphics.g3d.PlanetParams;
 import mindustry.maps.generators.BlankPlanetGenerator;
 import mindustry.type.Sector;
@@ -20,11 +20,11 @@ public class SpaceStationGenerator extends BlankPlanetGenerator {
     public Block core = DTBlocks.spaceStationCore;
     @Override
     public void generate(){
-        seed = state.rules.sector.planet.id;
-        int sx = width/2, sy = height/2;
-        rand = new Rand(seed);
 
-        Floor background = DTBlocks.lightSpace.asFloor();
+        defaultLoadout = DTLoadouts.basicSpacestations;
+        int sx = width/2, sy = height/2;
+
+        Floor background = Blocks.empty.asFloor();
         Floor ground = DTBlocks.spaceStationFloor.asFloor();
 
         tiles.eachTile(t -> t.setFloor(background));
@@ -35,17 +35,14 @@ public class SpaceStationGenerator extends BlankPlanetGenerator {
         world.tile(sx + core.size / 2 + 3, sy + core.size / 2 + 3).setBlock(core, Team.sharded);
 
         state.rules.planetBackground = new PlanetParams(){{
-            planet = sector.planet;
+            planet = sector.planet.parent;
             zoom = 1f;
             camPos = new Vec3(1.2388899f, 1.6047299f, /*2.4758825f*/0);
         }};
 
         state.rules.dragMultiplier = 0.7f; //yes, space actually has 0 drag but true 0% drag is very annoying
         state.rules.borderDarkness = false;
-        state.rules.waves = true;
-
-        state.rules.showSpawns = true;
-        state.rules.spawns = Waves.generate(0.5f, rand, false, true, false);
+        state.rules.waves = false;
     }
 
     @Override

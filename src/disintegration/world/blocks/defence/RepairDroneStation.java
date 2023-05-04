@@ -76,7 +76,7 @@ public class RepairDroneStation extends Block {
             units.removeAll(u -> !u.isAdded() || u.dead || !(u.controller() instanceof RepairDroneAI));
 
             if(!allowUpdate()){
-                units.each(Unit::kill);
+                units.each(Units::unitDespawn);
                 units.clear();
             }
 

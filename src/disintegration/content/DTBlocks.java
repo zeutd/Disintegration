@@ -9,6 +9,7 @@ import disintegration.DTVars;
 import disintegration.entities.bullet.BlockBulletType;
 import disintegration.entities.bullet.ConnectBulletType;
 import disintegration.entities.bullet.RandomSpreadBulletType;
+import disintegration.entities.unit.weapons.PortableBlockWeapon;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
@@ -21,9 +22,13 @@ import disintegration.world.blocks.laser.LaserDevice;
 import disintegration.world.blocks.laser.LaserReactor;
 import disintegration.world.blocks.laser.LaserReflector;
 import disintegration.world.blocks.power.SpreadGenerator;
+import disintegration.world.blocks.production.PortableDrill;
 import disintegration.world.blocks.production.Quarry;
 import disintegration.world.blocks.temperature.*;
-import disintegration.world.draw.*;
+import disintegration.world.draw.DrawAllRotate;
+import disintegration.world.draw.DrawFusion;
+import disintegration.world.draw.DrawLaser;
+import disintegration.world.draw.DrawTemperature;
 import mindustry.content.*;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.*;
@@ -33,15 +38,19 @@ import mindustry.entities.effect.WaveEffect;
 import mindustry.entities.effect.WrapEffect;
 import mindustry.entities.part.*;
 import mindustry.entities.pattern.ShootBarrel;
+import mindustry.gen.LegsUnit;
 import mindustry.gen.Sounds;
-import mindustry.graphics.*;
+import mindustry.graphics.CacheLayer;
+import mindustry.graphics.Drawf;
+import mindustry.graphics.Layer;
+import mindustry.graphics.Pal;
 import mindustry.type.*;
 import mindustry.type.unit.MissileUnitType;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.ShockMine;
+import mindustry.world.blocks.defense.turrets.ContinuousLiquidTurret;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.PowerTurret;
-import mindustry.world.blocks.environment.EmptyFloor;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.environment.SteamVent;
@@ -66,11 +75,11 @@ public class DTBlocks {
     //TODO check bundles
     public static Block
     //environment
-            iceWater, greenIce, greenFloor, spaceStationFloor, lightSpace,
+            iceWater, greenIce, greenFloor, spaceStationFloor,
             ethyleneVent,
             greenIceWall,
     //defence
-    repairDroneStation,
+            repairDroneStation,
             iridiumWall, iridiumWallLarge,
     //storage
             corePedestal,
@@ -95,6 +104,7 @@ public class DTBlocks {
             solarPanel,
     //turrets
             fracture,
+            dissolve,
             blade,
             encourage,
             aegis,
@@ -108,6 +118,7 @@ public class DTBlocks {
             quarry,
             pressureDrill,
             rockExtractor,
+            portableDrill,
     //effect
             blastMine,
     //debug
@@ -128,14 +139,12 @@ public class DTBlocks {
             placeableOn = false;
             solid = true;
         }};
-        lightSpace = new EmptyFloor("light-space");
 
         spaceStationFloor = new ConnectFloor("space-station-floor"){{
             variants = 0;
-            blendGroup = lightSpace;
+            blendGroup = Blocks.empty;
         }};
-
-        ((Floor)lightSpace).blendGroup = spaceStationFloor;
+        Blocks.empty.asFloor().blendGroup = spaceStationFloor;
 
         iceWater = new Floor("ice-water"){{
             speedMultiplier = 0.5f;
@@ -303,7 +312,7 @@ public class DTBlocks {
                         radius = 1.5f;
                         amount = 20;
                     }},
-                    new DrawLiquidTile(DTLiquids.steam){{drawLiquidLight = true;}},
+                    new DrawLiquidTile(DTLiquids.steam){},
                     new DrawDefault(),
                     new DrawTemperature(Pal2.burn, Pal2.heat, DTVars.temperaturePercent));
             liquidCapacity = 24f;
@@ -489,7 +498,7 @@ public class DTBlocks {
             }});
 
             reload = 17f;
-            shootY = 15f;
+            shootY = 10f;
             rotateSpeed = 2f;
             shootCone = 30f;
             consumeAmmoOnce = true;
@@ -609,6 +618,58 @@ public class DTBlocks {
             ammoPerShot = 1;
 
             limitRange(-5f);
+        }};
+        dissolve = new ContinuousLiquidTurret("dissolve"){{
+            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
+
+            reload = 300f;
+            shake = 5f;
+            range = 200f;
+            recoil = 2f;
+            squareSprite = false;
+            rotateSpeed = 2;
+            outlineColor = Pal.darkOutline;
+
+            shootCone = 1;
+            size = 5;
+            shootY = 15;
+            envEnabled |= Env.space;
+
+            scaledHealth = 300;
+            shootSound = Sounds.laser;
+            float r = range;
+            shootWarmupSpeed = 0.05f;
+            minWarmup = 0.9f;
+            ammo(Liquids.hydrogen, new ContinuousLaserBulletType(100){{
+                length = r;
+                width = 10;
+                hitEffect = Fx.hitMeltdown;
+                hitColor = Pal.meltdownHit;
+                status = StatusEffects.melting;
+                drawSize = 420f;
+
+                incendChance = 0f;
+                incendSpread = 0f;
+                incendAmount = 0;
+                ammoMultiplier = 1f;
+            }});
+            drawer = new DrawTurret("reinforced-"){{
+                parts.addAll(
+                        new RegionPart("-side"){{
+                            heatProgress = PartProgress.warmup;
+                            progress = PartProgress.warmup;
+                            mirror = true;
+                            moveX = 2f;
+                            moveY = -2f;
+                        }},
+                        new RegionPart("-back"){{
+                            heatProgress = PartProgress.warmup;
+                            progress = PartProgress.warmup;
+                            mirror = true;
+                            moveX = 1f;
+                            moveY = 1f;
+                        }});
+            }};
         }};
 
          blade = new ItemTurret("blade") {{
@@ -1122,6 +1183,35 @@ public class DTBlocks {
             drawer = new DrawMulti(new DrawDefault(), new DrawRegion("-rotator", 1.4f){{spinSprite = true;}}, new DrawRegion("-top"));
             outputItem = new ItemStack(DTItems.stone, 1);
         }};
+
+        portableDrill = new PortableDrill("portable-drill"){{
+            hasItems = true;
+            hasLiquids = true;
+            liquidBoostIntensity = 2.56f;
+            consumeLiquid(Liquids.water, 0.02f).boost();
+            portableUnitType = new UnitType("portable-drill-unit"){{
+                speed = 0.5f;
+                legStraightness = 0f;
+                legLength = 8f;
+                lockLegBase = true;
+                legContinuousMove = true;
+                legExtension = -4f;
+                legBaseOffset = 2f;
+                legMaxLength = 1.1f;
+                legMinLength = 0.2f;
+                legLengthScl = 0.96f;
+                legForwardScl = 1.1f;
+                legGroupSize = 2;
+                rippleScale = 0f;
+                rotateSpeed = 0;
+                constructor = LegsUnit::create;
+                legCount = 4;
+                drawCell = true;
+                weapons.add(new PortableBlockWeapon(){});
+            }};
+            requirements(Category.production, with(Items.copper, 12));
+        }};
+        ((PortableBlockWeapon)((PortableDrill)portableDrill).portableUnitType.weapons.get(0)).unitContent = portableDrill;
         //effect
         blastMine = new ShockMine("blast-mine"){{
             requirements(Category.effect, with(DTItems.iron, 15, Items.silicon, 12));
@@ -1134,7 +1224,7 @@ public class DTBlocks {
             tendrils = 0;
         }};
 
-        ((ItemTurret) ambush).ammoTypes.forEach(b -> {
+        ((ItemTurret)ambush).ammoTypes.forEach(b -> {
             ((BlockBulletType)b.value.fragBullet).bulletContent = blastMine;
         });
 
@@ -1148,7 +1238,7 @@ public class DTBlocks {
                 rotate = true;
                 floorOffset = range + 1;
                 rotateDraw = false;
-                floor = (Floor)spaceStationFloor;
+                floor = spaceStationFloor.asFloor();
             }};
         }
 
@@ -1159,17 +1249,19 @@ public class DTBlocks {
                 size = 1;
                 envEnabled = envRequired = Env.space;
                 range = finalI;
-                floor = (Floor)lightSpace;
+                floor = Blocks.empty.asFloor();
             }};
         }
         //debug
         debugBlock = new DebugBlock("debug-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
+            envEnabled = Env.any;
             requirements(Category.effect, with(), true);
         }};
         dpsBlock = new DPSBlock("dps-block"){{
             size = 5;
             health = 999999;
+            envEnabled = Env.any;
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             requirements(Category.effect, with(), true);
         }};

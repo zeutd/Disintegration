@@ -6,6 +6,7 @@ import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Mathf;
 import disintegration.ai.types.RepairDroneAI;
+import disintegration.entities.abilities.DTArmorPlateAbility;
 import disintegration.graphics.Pal2;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
@@ -152,6 +153,7 @@ public class DTUnitTypes {
                             });
                     }};
                 }});
+            abilities.add(new DTArmorPlateAbility(){});
         }};
         separate = new UnitType("separate"){{
             constructor = UnitEntity::create;
@@ -280,10 +282,9 @@ public class DTUnitTypes {
             envDisabled = Env.none;
             weapons.add(new Weapon(){{
                 reload = 10f;
-                x = 4.5f;
+                x = 0;
                 mirror = false;
                 ejectEffect = Fx.none;
-                recoil = 2f;
                 shootSound = Sounds.lasershoot;
                 range = 90f;
 
@@ -293,8 +294,7 @@ public class DTUnitTypes {
                     collidesTeam = true;
                     backColor = Pal.heal;
                     frontColor = Color.white;
-                    collidesAir = false;
-                    collidesGround = false;
+                    recoil = 0.5f;
                 }};
             }});
         }};

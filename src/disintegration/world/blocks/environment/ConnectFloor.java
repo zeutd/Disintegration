@@ -22,12 +22,12 @@ public class ConnectFloor extends Floor {
     }
 
     @Override
-    public void drawBase(Tile tile){
-        Draw.rect(region, tile.worldx(), tile.worldy());
+    public void drawBase(Tile tile) {
         Draw.z(Layer.plans + 1);
+        Draw.rect(region, tile.worldx(), tile.worldy());
         for (int i = 0; i < 4; i++) {
             Tile other = tile.nearby(i);
-            if (other != null && other.floor().id != id){
+            if (other != null && other.floor().id != id) {
                 Draw.rect(sideRegion, other.worldx(), other.worldy(), i * 90);
             }
         }

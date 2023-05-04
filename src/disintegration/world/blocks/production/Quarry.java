@@ -17,6 +17,7 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.content.DTFx;
 import disintegration.util.MathDef;
+import disintegration.util.DTUtil;
 import disintegration.util.WorldDef;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
@@ -112,7 +113,7 @@ public class Quarry extends Block {
 
         Seq<Item> items = getDropArray(tiles);
 
-        Seq<Item> itemList = WorldDef.listItem(items);
+        Seq<Item> itemList = DTUtil.listItem(items);
 
         drawDrillText(itemList, items, x, y, valid);
         x *= tilesize;
@@ -133,7 +134,7 @@ public class Quarry extends Block {
         Seq<Tile> tiles = WorldDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
         Seq<Item> items = getDropArray(tiles);
-        Seq<Item> itemList = WorldDef.listItem(items);
+        Seq<Item> itemList = DTUtil.listItem(items);
         return !itemList.isEmpty();
     }
 
@@ -235,7 +236,7 @@ public class Quarry extends Block {
 
             empty = !itemsArray.isEmpty();
 
-            itemList = WorldDef.listItem(itemsArray);
+            itemList = DTUtil.listItem(itemsArray);
 
             Vec2 mineCentre = getMiningArea(x, y, rotation);
 

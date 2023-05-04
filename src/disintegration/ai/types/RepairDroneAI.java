@@ -1,6 +1,7 @@
 package disintegration.ai.types;
 
 import disintegration.world.blocks.defence.RepairDroneStation;
+import mindustry.entities.Units;
 import mindustry.entities.units.AIController;
 import mindustry.gen.Building;
 import mindustry.world.blocks.ConstructBlock;
@@ -13,8 +14,8 @@ public class RepairDroneAI extends AIController {
 
     @Override
     public void updateMovement(){
-        if (parent == null || parent.dead()) {
-            unit.kill();
+        if (parent == null || parent.dead() || !parent.allowUpdate() || !parent.enabled) {
+            Units.unitDespawn(unit);
             return;
         }
         if (parent.repairing) {
@@ -46,8 +47,8 @@ public class RepairDroneAI extends AIController {
         else{
             unit.lookAt(parent);
             moveTo(parent,0);
-            if(unit.within(parent,1)){
-                unit.kill();
+            if(unit.within(parent,parent.block.size)){
+                Units.unitDespawn(unit);
             }
         }
     }
@@ -55,7 +56,7 @@ public class RepairDroneAI extends AIController {
     @Override
     public void updateTargeting(){
         if (parent == null || parent.dead()){
-            unit.kill();
+            Units.unitDespawn(unit);
             return;
         }
         if(timer.get(timerTarget, 15)){

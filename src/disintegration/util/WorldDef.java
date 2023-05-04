@@ -22,15 +22,6 @@ public class WorldDef {
         }
         return false;
     }
-    public static <T> Seq<T> listItem(Seq<T> array){
-        Seq<T> result = new Seq<>();
-        array.forEach(a -> {
-            if(!result.contains(a) && a != null){
-                result.add(a);
-            }
-        });
-        return result;
-    }
 
     public static Seq<Tile> getAreaTile(Vec2 pos, int width, int height){
         Seq<Tile> tilesGet = new Seq<>();

@@ -116,7 +116,7 @@ public class LaserReactor extends PowerGenerator {
             }
             float fullness = Mathf.clamp(luminosity / maxLaser);
             if(flushed) {
-                if(fullness > productionEfficiency + 0.1f && enabled && fullness != 0) {
+                if(fullness > productionEfficiency && enabled && fullness != 0) {
                     productionEfficiency = Mathf.lerpDelta(productionEfficiency, fullness, warmupSpeed * timeScale);
                     heat += fullness * heating * Math.min(delta(), 4f);
                 } else {
