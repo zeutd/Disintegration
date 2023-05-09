@@ -18,17 +18,18 @@ import disintegration.world.blocks.defence.ShardWall;
 import disintegration.world.blocks.defence.turrets.ElectricTowerTurret;
 import disintegration.world.blocks.effect.FloorBuilder;
 import disintegration.world.blocks.environment.ConnectFloor;
+import disintegration.world.blocks.heat.ConsumeHeatProducer;
+import disintegration.world.blocks.heat.HeatConduit;
+import disintegration.world.blocks.heat.HeatConduitRouter;
 import disintegration.world.blocks.laser.LaserDevice;
 import disintegration.world.blocks.laser.LaserReactor;
 import disintegration.world.blocks.laser.LaserReflector;
 import disintegration.world.blocks.power.SpreadGenerator;
 import disintegration.world.blocks.production.PortableDrill;
 import disintegration.world.blocks.production.Quarry;
-import disintegration.world.blocks.temperature.*;
 import disintegration.world.draw.DrawAllRotate;
 import disintegration.world.draw.DrawFusion;
 import disintegration.world.draw.DrawLaser;
-import disintegration.world.draw.DrawTemperature;
 import mindustry.content.*;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.*;
@@ -58,6 +59,7 @@ import mindustry.world.blocks.power.ConsumeGenerator;
 import mindustry.world.blocks.power.ThermalGenerator;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.blocks.production.GenericCrafter;
+import mindustry.world.blocks.production.HeatCrafter;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.consumers.ConsumeItemExplode;
 import mindustry.world.consumers.ConsumeItemFlammable;
@@ -85,9 +87,8 @@ public class DTBlocks {
             corePedestal,
             spaceStationCore,
     //temperature
-            temperatureConduit,
-            temperatureSource,
-            temperatureVoid,
+            heatConduit,
+            heatConduitRouter,
             burningHeater,
     //laser
             laserDevice,
@@ -216,58 +217,58 @@ public class DTBlocks {
         }};
         
         //temperature
-        temperatureConduit = new TemperatureConduit("temperature-conduit"){{
-            health = 50;
-            underBullets = true;
-            conductionSpeed = 0.4f;
-            temperaturePercent = DTVars.temperaturePercent;
-            requirements(Category.distribution, with(DTItems.iron, 2));
+        heatConduit = new HeatConduit("heat-conduit"){{
+            researchCostMultiplier = 10f;
+            size = 1;
+            drawer = new DrawBlock(){};
+            //regionRotated1 = 1;
+            requirements(Category.crafting, with(DTItems.iron, 2));
         }};
 
-        temperatureSource = new TemperatureSource("temperature-source"){{
-            health = 200;
-            requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
-            alwaysUnlocked = true;
+        heatConduitRouter = new HeatConduitRouter("heat-conduit-router"){{
+            researchCostMultiplier = 10f;
+            size = 1;
+            drawer = new DrawBlock(){};
+            //regionRotated1 = 1;
+            requirements(Category.crafting, with(DTItems.iron, 2));
         }};
 
-        temperatureVoid = new TemperatureVoid("temperature-void"){{
-            health = 200;
-            requirements(Category.distribution, BuildVisibility.sandboxOnly, with());
-            alwaysUnlocked = true;
-        }};
+        burningHeater = new ConsumeHeatProducer("burning-heater"){{
+            requirements(Category.crafting, with(DTItems.iron, 30));
 
-        burningHeater = new ConsumeTemperatureProducer("burning-heater"){{
+            researchCostMultiplier = 4f;
+
+
+            rotateDraw = false;
             size = 2;
-            health = 150;
-            temperatureOutput = 3f;
+            craftTime = 90;
+            heatOutput = 3f;
             itemCapacity = 10;
+            updateEffect = Fx.generatespark;
+            updateEffectChance = 0.01f;
 
-            itemDuration = 120f;
-
-            effectChance = 0.01f;
-
-            productEffect = Fx.generatespark;
             ambientSound = Sounds.smelter;
             ambientSoundVolume = 0.06f;
 
             consume(new ConsumeItemFlammable());
             consume(new ConsumeItemExplode());
-            requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
+
+            drawer = new DrawMulti(new DrawAllRotate(), new DrawHeatOutput());
         }};
 
         laserSource = new LaserDevice("laser-source"){{
             range = 10;
             health = 400;
             laserOutput = 1000;
-            drawer = new DrawMulti(new DrawAllRotate(1), new DrawLaser(false));
+            drawer = new DrawMulti(new DrawAllRotate(), new DrawLaser(false));
             requirements(Category.crafting, BuildVisibility.sandboxOnly, with());
         }};
 
         laserDevice = new LaserDevice("laser-device"){{
            range = 7;
            health = 200;
-           laserOutput = 5;
-           drawer = new DrawMulti(new DrawAllRotate(1), new DrawLaser(false));
+           laserOutput = 1;
+           drawer = new DrawMulti(new DrawAllRotate(), new DrawLaser(false));
            consumePower(3);
            requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
         }};
@@ -290,13 +291,13 @@ public class DTBlocks {
             requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
         }};
         //factory
-        boiler = new TemperatureCrafter("boiler"){{
+        boiler = new HeatCrafter("boiler"){{
             requirements(Category.crafting, with(DTItems.iron, 65, Items.silicon, 40, Items.graphite, 60));
             outputLiquid = new LiquidStack(DTLiquids.steam, 12f / 60f);
             size = 2;
+            heatRequirement = 3f;
+            maxEfficiency = 2f;
             rotateDraw = false;
-            hasPower = true;
-            hasItems = true;
             hasLiquids = true;
             outputsLiquid = true;
             envEnabled = Env.any;
@@ -314,11 +315,10 @@ public class DTBlocks {
                     }},
                     new DrawLiquidTile(DTLiquids.steam){},
                     new DrawDefault(),
-                    new DrawTemperature(Pal2.burn, Pal2.heat, DTVars.temperaturePercent));
+                    new DrawHeatInput()
+            );
             liquidCapacity = 24f;
-            regionRotated1 = 1;
             craftTime = 120;
-            temperatureConsumes = 3f;
 
             consumeLiquid(Liquids.water, 12f / 60f);
         }};
@@ -1207,6 +1207,7 @@ public class DTBlocks {
                 constructor = LegsUnit::create;
                 legCount = 4;
                 drawCell = true;
+                hidden = true;
                 weapons.add(new PortableBlockWeapon(){});
             }};
             requirements(Category.production, with(Items.copper, 12));

@@ -2,7 +2,6 @@ package disintegration.util;
 
 import arc.math.geom.Vec2;
 import arc.struct.Seq;
-import disintegration.world.blocks.temperature.*;
 import mindustry.gen.Building;
 import mindustry.world.Tile;
 
@@ -10,17 +9,7 @@ import static mindustry.Vars.world;
 
 public class WorldDef {
     public static boolean toBlock(Building block, Building other){
-        return !other.block().rotate || (block.relativeTo(other) + 2) % 4 == other.rotation;
-    }
-
-    public static boolean conductSideTemperature(Building block, Building other){
-        if(other instanceof TemperatureConduit.TemperatureConduitBuild || other instanceof TemperatureVoid.TemperatureVoidBuild || other instanceof TemperatureSource.TemperatureSourceBuild){
-            return true;
-        }
-        else if(other instanceof TemperatureProducer.TemperatureProducerBuild || other instanceof TemperatureCrafter.TemperatureCrafterBuild){
-            return WorldDef.toBlock(block, other);
-        }
-        return false;
+        return !other.block().rotate || other.relativeTo(block) == other.rotation;
     }
 
     public static Seq<Tile> getAreaTile(Vec2 pos, int width, int height){

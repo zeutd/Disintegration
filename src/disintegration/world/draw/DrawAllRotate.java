@@ -14,18 +14,9 @@ public class DrawAllRotate extends DrawBlock {
     public TextureRegion region1, region2, region3, region4;
     public TextureRegion[] regions;
 
-    public int iconRot = 0;
 
     public DrawAllRotate(){}
 
-    public DrawAllRotate(int iconRot){
-        this.iconRot = iconRot;
-    }
-
-    @Override
-    public TextureRegion[] icons(Block block){
-        return new TextureRegion[]{regions[iconRot]};
-    }
     @Override
     public void draw(Building build){
         Draw.rect(regions[build.rotation], build.x, build.y);

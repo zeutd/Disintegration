@@ -42,8 +42,9 @@ public class PortableDrill extends Drill {
                 portableUnit.add();
                 portableUnit.rotation(90);
                 unit.getPlayer().unit(portableUnit);
-                portableUnit.killed();
-                tile().setAir();
+                unit.remove();
+                unit.killed();
+                tile().remove();
             }
         }
     }

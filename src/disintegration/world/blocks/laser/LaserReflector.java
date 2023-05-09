@@ -10,6 +10,7 @@ import arc.struct.IntSet;
 import arc.util.Eachable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import disintegration.DTVars;
 import disintegration.util.MathDef;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
@@ -101,7 +102,7 @@ public class LaserReflector extends Block {
     public void setBars(){
         super.setBars();
 
-        addBar("laser", (LaserReflectorBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity, 10)), () -> Pal.redLight, () -> entity.luminosity / 15));
+        addBar("laser", (LaserReflectorBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity, 10)), () -> Pal.redLight, () -> entity.luminosity / DTVars.laserScale));
     }
 
     public class LaserReflectorBuild extends Building implements LaserProducer {

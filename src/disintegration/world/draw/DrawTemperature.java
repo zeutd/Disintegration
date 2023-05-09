@@ -1,16 +1,9 @@
 package disintegration.world.draw;
 
-import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
-import arc.struct.Seq;
 import arc.util.Eachable;
-import disintegration.util.WorldDef;
-import disintegration.world.blocks.temperature.TemperatureBlock;
-import disintegration.world.blocks.temperature.TemperatureConduit;
-import disintegration.world.blocks.temperature.TemperatureCrafter;
-import disintegration.world.blocks.temperature.TemperatureProducer;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 import mindustry.world.Block;
@@ -44,7 +37,7 @@ public class DrawTemperature extends DrawBlock {
 
     @Override
     public void draw(Building build){
-        float otherTemperature = 0;
+        /*float otherTemperature = 0;
 
         Seq<Building> proximityBuilds = build.proximity();
 
@@ -53,13 +46,13 @@ public class DrawTemperature extends DrawBlock {
                 otherTemperature = other.temperature();
                 break;
             }
-            else if (!(build instanceof TemperatureProducer.TemperatureProducerBuild) && WorldDef.toBlock(block, build) && WorldDef.toBlock(build, block) && (block instanceof TemperatureProducer.TemperatureProducerBuild other)) {
+            else if (!(build instanceof TemperatureHeater.TemperatureProducerBuild) && WorldDef.toBlock(block, build) && WorldDef.toBlock(build, block) && (block instanceof TemperatureHeater.TemperatureProducerBuild other)) {
                 float temperatureOutput = other.temperatureOutput();
                 otherTemperature = other.temperature() * percent * 60 / temperatureOutput;
                 break;
             }
-            else if(build instanceof TemperatureProducer.TemperatureProducerBuild) {
-                float temperatureOutput = ((TemperatureProducer.TemperatureProducerBuild)build).temperatureOutput();
+            else if(build instanceof TemperatureHeater.TemperatureProducerBuild) {
+                float temperatureOutput = ((TemperatureHeater.TemperatureProducerBuild)build).temperatureOutput();
                 otherTemperature = ((TemperatureBlock) build).temperature() * percent * 60 / temperatureOutput;
             }
             else if(build instanceof TemperatureCrafter.TemperatureCrafterBuild){
@@ -83,7 +76,7 @@ public class DrawTemperature extends DrawBlock {
         Draw.rect(sideHeatRegion, build.x, build.y, build.rotation * 90);
 
         Draw.blend();
-        Draw.reset();
+        Draw.reset();*/
     }
 
     @Override
