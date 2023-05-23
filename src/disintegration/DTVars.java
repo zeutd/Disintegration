@@ -10,7 +10,6 @@ import mindustry.Vars;
 import mindustry.type.Planet;
 
 public class DTVars {
-    public static float temperatureScale = 15f;
     public static float laserScale = 4f;
     public static int spaceStationRequire = 10000;
     public static boolean debugMode = true;

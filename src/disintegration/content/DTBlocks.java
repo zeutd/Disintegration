@@ -622,7 +622,7 @@ public class DTBlocks {
         dissolve = new ContinuousLiquidTurret("dissolve"){{
             requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
 
-            reload = 300f;
+            reload = 50f;
             shake = 5f;
             range = 200f;
             recoil = 2f;
@@ -639,7 +639,8 @@ public class DTBlocks {
             shootSound = Sounds.laser;
             float r = range;
             shootWarmupSpeed = 0.05f;
-            minWarmup = 0.9f;
+            minWarmup = 0.98f;
+            liquidConsumed = 40f / 60f;
             ammo(Liquids.hydrogen, new ContinuousLaserBulletType(100){{
                 length = r;
                 width = 10;
@@ -666,9 +667,131 @@ public class DTBlocks {
                             heatProgress = PartProgress.warmup;
                             progress = PartProgress.warmup;
                             mirror = true;
-                            moveX = 1f;
-                            moveY = 1f;
+                            moveX = 2f;
+                            moveY = 2f;
+                        }},
+                        new HaloPart(){{
+                            mirror = true;
+                            tri = true;
+                            triLength = 0f;
+                            triLengthTo = 17f;
+                            radius = 3f;
+                            radiusTo = 5f;
+                            shapes = 1;
+                            haloRotation = 9f;
+                            progress = PartProgress.warmup;
+                            x = 12;
+                            y = -6;
+                            moveX = 3f;
+                            layer = Layer.effect;
+                            color = Color.sky;
+                        }},
+                        new HaloPart(){{
+                            mirror = true;
+                            tri = true;
+                            triLength = 0f;
+                            triLengthTo = 3f;
+                            radius = 3f;
+                            radiusTo = 5f;
+                            shapes = 1;
+                            haloRotation = 9f;
+                            shapeRotation = 180f;
+                            progress = PartProgress.warmup;
+                            x = 12;
+                            y = -6;
+                            moveX = 3f;
+                            layer = Layer.effect;
+                            color = Color.sky;
+                        }},
+                        new ShapePart(){{
+                            progress = PartProgress.warmup;
+                            circle = true;
+                            hollow = true;
+                            y = -9f;
+                            radius = 5f;
+                            radiusTo = 8f;
+                            stroke = 0f;
+                            strokeTo = 1.2f;
+                            color = Color.sky;
+                            layer = Layer.effect;
+                        }},
+                        new HaloPart(){{
+                            progress = PartProgress.warmup;
+                            color = Color.sky;
+                            layer = Layer.effect;
+                            y = -9;
+                            haloRotateSpeed = -1;
+                            shapes = 4;
+                            triLength = 0f;
+                            triLengthTo = 3f;
+                            haloRotation = 45f;
+                            haloRadius = 5f;
+                            haloRadiusTo = 8f;
+                            tri = true;
+                            radius = 4f;
+                        }},
+                        new ShapePart(){{
+                            progress = PartProgress.warmup.delay(0.7f);
+                            circle = true;
+                            hollow = true;
+                            y = -9f;
+                            radius = 2f;
+                            radiusTo = 4f;
+                            stroke = 0f;
+                            strokeTo = 1f;
+                            color = Color.sky;
+                            layer = Layer.effect;
+                        }},
+                        new HaloPart(){{
+                            mirror = true;
+                            tri = true;
+                            triLength = 0f;
+                            triLengthTo = 13f;
+                            radius = 4f;
+                            shapes = 1;
+                            shapeRotation = 90f;
+                            progress = PartProgress.warmup.delay(0.7f);
+                            x = -5f;
+                            y = -19f;
+                            moveX = -3f;
+                            layer = Layer.effect;
+                            color = Color.sky;
+                        }},
+                        new HaloPart(){{
+                            mirror = true;
+                            tri = true;
+                            triLength = 0f;
+                            triLengthTo = 5f;
+                            radius = 4f;
+                            shapes = 1;
+                            shapeRotation = 270f;
+                            progress = PartProgress.warmup.delay(0.7f);
+                            x = -5f;
+                            y = -19f;
+                            moveX = -3f;
+                            layer = Layer.effect;
+                            color = Color.sky;
                         }});
+                for(int i = 0; i < 3; i++){
+                    int fi = i;
+                    parts.add(new RegionPart("-spine"){{
+                        progress = PartProgress.warmup;
+                        heatProgress = PartProgress.warmup;
+                        heatColor = Color.sky;
+                        mirror = true;
+                        under = true;
+                        layerOffset = -0.3f;
+                        turretHeatLayer = Layer.turret - 0.2f;
+                        moveY = -22f / 4f - fi * 1.5f + 10f;
+                        moveX = 52f / 4f - fi * 1f + 2f;
+                        moveRot = -fi * 30f;
+                        x = -5;
+                        y = -7;
+
+                        color = Color.sky.cpy();
+                        moves.add(new PartMove(PartProgress.recoil, 0f, 0f, 15f * (1f + fi / 3f) ));
+                    }});
+                }
             }};
         }};
 
@@ -784,6 +907,7 @@ public class DTBlocks {
             shootSound = Sounds.lasershoot;
 
             coolantMultiplier = 6f;
+            minWarmup = 0.9f;
             coolant = consume(new ConsumeLiquid(Liquids.water, 15f / 60f));
             ammo(Items.tungsten, new BasicBulletType(7, 150){{
                 float rad = 20;

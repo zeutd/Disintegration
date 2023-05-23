@@ -10,6 +10,8 @@ import arc.math.geom.Geometry;
 import arc.util.Eachable;
 import arc.util.Nullable;
 import disintegration.graphics.Pal2;
+import disintegration.util.WorldDef;
+import disintegration.world.blocks.BuildingTiler;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
 import mindustry.graphics.Layer;
@@ -72,10 +74,26 @@ public class HeatConduit extends HeatConductor implements Autotiler{
 
     @Override
     public boolean blends(Tile tile, int rotation, int otherx, int othery, int otherrot, Block otherblock) {
-       return (otherblock.buildType.get() instanceof HeatBlock && facing(otherx, othery, otherrot, tile.x, tile.y)) || (otherblock.buildType.get() instanceof HeatConsumer && (lookingAtEither(tile, rotation, otherx, othery, otherrot, otherblock))) || (otherblock instanceof HeatConduitRouter && tile.relativeTo(otherx, othery) != otherrot);
+        return (otherblock instanceof HeatConduit && (
+                Tile.relativeTo(tile.x, tile.y, otherx, othery) == rotation ||
+                Tile.relativeTo(otherx, othery, tile.x, tile.y) == otherrot
+            )
+        ) ||
+        otherblock instanceof HeatConduitRouter && (
+                (Tile.relativeTo(tile.x, tile.y, otherx, othery) == rotation && Tile.relativeTo(otherx, othery, tile.x, tile.y) == (otherrot + 2) % 4) ||
+                (Tile.relativeTo(tile.x, tile.y, otherx, othery) != rotation && Tile.relativeTo(otherx, othery, tile.x, tile.y) != (otherrot + 2) % 4)
+        );
     }
 
-    public class HeatConduitBuild extends HeatConductorBuild implements ChainedBuilding {
+    public class HeatConduitBuild extends HeatConductorBuild implements ChainedBuilding, BuildingTiler {
+
+        @Override
+        public boolean blendBuilds(Building block, Building other){
+            return blends(block.tile, block.rotation, other.tileX(), other.tileY(), other.rotation, other.block) || (
+                    ((other instanceof HeatBlock) && WorldDef.toBlock(block, other)) ||
+                    ((other instanceof HeatConsumer) && WorldDef.toBlock(other, block))
+            );
+        }
         public int blendbits, xscl = 1, yscl = 1, blending;
         public boolean capped, backCapped = false;
         @Override
@@ -116,15 +134,15 @@ public class HeatConduit extends HeatConductor implements Autotiler{
         public void onProximityUpdate(){
             super.onProximityUpdate();
 
-            int[] bits = buildBlending(tile, rotation, null, true);
+            int[] bits = buildBlending(this);
             blendbits = bits[0];
             xscl = bits[1];
             yscl = bits[2];
             blending = bits[4];
 
             Building next = front(), prev = back();
-            capped = next == null || next.team != team || !blends(tile, rotation, next.tileX(), next.tileY(), next.rotation, next.block);
-            backCapped = blendbits == 0 && (prev == null || prev.team != team || !blends(tile, rotation, prev.tileX(), prev.tileY(), prev.rotation, prev.block));
+            capped = next == null || next.team != team || !blendBuilds(this, next);
+            backCapped = blendbits == 0 && (prev == null || prev.team != team || !blendBuilds(this, prev));
         }
 
         @Nullable

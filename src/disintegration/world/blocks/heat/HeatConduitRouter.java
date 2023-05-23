@@ -9,14 +9,12 @@ import arc.math.Mathf;
 import arc.util.Eachable;
 import arc.util.Nullable;
 import disintegration.graphics.Pal2;
-import disintegration.util.WorldDef;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
+import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.blocks.distribution.ChainedBuilding;
-import mindustry.world.blocks.heat.HeatBlock;
 import mindustry.world.blocks.heat.HeatConductor;
-import mindustry.world.blocks.heat.HeatConsumer;
 
 public class HeatConduitRouter extends HeatConductor{
     public TextureRegion topRegion;
@@ -53,8 +51,16 @@ public class HeatConduitRouter extends HeatConductor{
 
     public class HeatConduitRouterBuild extends HeatConductorBuild implements ChainedBuilding {
         public boolean[] capped = new boolean[4];
-        boolean blend(Building other){
-            return (other instanceof HeatConsumer && relativeTo(other) != (rotation + 2) % 4 && !WorldDef.toBlock(this, other)) || (other instanceof HeatBlock && relativeTo(other) == (rotation + 2) % 4 && WorldDef.toBlock(this, other))  || (other instanceof HeatConduitRouterBuild && relativeTo(other) == (rotation + 2) % 4);
+        boolean blend(Tile tile, int rotation, int otherx, int othery, int otherrot, Block otherblock){
+            return (
+            otherblock instanceof HeatConduit && (
+                    (Tile.relativeTo(otherx, othery, tile.x, tile.y) != otherrot && Tile.relativeTo(tile.x, tile.y, otherx, othery) != (rotation + 2) % 4) ||
+                    (Tile.relativeTo(otherx, othery, tile.x, tile.y) == otherrot && Tile.relativeTo(tile.x, tile.y, otherx, othery) == (rotation + 2) % 4)
+            )) || (
+            otherblock instanceof HeatConduitRouter && (
+                    (Tile.relativeTo(tile.x, tile.y, otherx, othery) != (rotation + 2) % 4 && Tile.relativeTo(otherx, othery, tile.x, tile.y) == (otherrot + 2) % 4) ||
+                    (Tile.relativeTo(tile.x, tile.y, otherx, othery) == (rotation + 2) % 4 && Tile.relativeTo(otherx, othery, tile.x, tile.y) != (otherrot + 2) % 4)
+            ));
         }
         @Override
         public void draw(){
@@ -77,17 +83,14 @@ public class HeatConduitRouter extends HeatConductor{
             super.onProximityUpdate();
 
             for (int i = 0; i < 4; i++){
-                capped[i] = !blend(nearby(i));
+                Building b = nearby(i);
+                capped[i] = b == null || !blend(tile, rotation, b.tileX(), b.tileY(), b.rotation, b.block);
             }
         }
 
         @Override
         public float heat(){
-            float c = 0;
-            for (int i = 0; i < 4; i++){
-                c += !capped[i] && i != (rotation + 2) % 4 ? 1 : 0;
-            }
-            return heat / c * 3;
+            return heat;
         }
 
         @Nullable
