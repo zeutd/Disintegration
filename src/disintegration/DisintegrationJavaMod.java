@@ -2,7 +2,6 @@ package disintegration;
 
 import arc.Core;
 import arc.Events;
-import arc.util.Log;
 import disintegration.content.*;
 import mindustry.game.EventType;
 import mindustry.mod.Mod;
@@ -15,11 +14,9 @@ public class DisintegrationJavaMod extends Mod{
             Core.app.post(DTVars.spaceStationReader::read);
             Core.app.addListener(DTVars.spaceStationReader);
         });
-        Log.info("Loaded disintegrationMod constructor.");
     }
     @Override
     public void loadContent() {
-        Log.info("Loading disintegration content.");
         DTItems.load();
         DTLiquids.load();
         DTStatusEffects.load();

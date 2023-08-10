@@ -11,11 +11,18 @@ import mindustry.world.draw.DrawBlock;
 import static arc.Core.atlas;
 
 public class DrawAllRotate extends DrawBlock {
+    public int iconIndex = 0;
     public TextureRegion region1, region2, region3, region4;
     public TextureRegion[] regions;
 
 
     public DrawAllRotate(){}
+
+    public DrawAllRotate(int iconIndex){
+        this.iconIndex = iconIndex;
+    }
+    @Override
+    public TextureRegion[] icons(Block block){return new TextureRegion[]{regions[iconIndex]};}
 
     @Override
     public void draw(Building build){

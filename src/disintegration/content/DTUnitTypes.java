@@ -8,6 +8,7 @@ import arc.math.Mathf;
 import disintegration.ai.types.RepairDroneAI;
 import disintegration.entities.abilities.DTArmorPlateAbility;
 import disintegration.graphics.Pal2;
+import disintegration.util.DTUtil;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
 import mindustry.entities.Effect;
@@ -15,8 +16,8 @@ import mindustry.entities.bullet.BulletType;
 import mindustry.entities.bullet.EmpBulletType;
 import mindustry.entities.bullet.LaserBoltBulletType;
 import mindustry.entities.part.RegionPart;
+import mindustry.gen.EntityMapping;
 import mindustry.gen.Sounds;
-import mindustry.gen.UnitEntity;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
@@ -48,6 +49,10 @@ public class DTUnitTypes {
             repairDrone
             ;
     public static void load(){
+        EntityMapping.nameMap.put(DTUtil.name("lancet"), EntityMapping.map(3));
+        EntityMapping.nameMap.put(DTUtil.name("separate"), EntityMapping.map(3));
+        EntityMapping.nameMap.put(DTUtil.name("space-station-drone"), EntityMapping.map(3));
+        EntityMapping.nameMap.put(DTUtil.name("repair-drone"), EntityMapping.map(36));
         /*
         UnitTypes.gamma.weapons.get(0).bullet.homingPower = 0.1f;
         UnitTypes.gamma.weapons.get(0).bullet.homingRange = 1000f;
@@ -69,7 +74,6 @@ public class DTUnitTypes {
         //T1 lancet
 
         lancet = new UnitType("lancet"){{
-            constructor = UnitEntity::create;
             speed = 2.7f;
             accel = 0.08f;
             drag = 0.04f;
@@ -156,7 +160,6 @@ public class DTUnitTypes {
             abilities.add(new DTArmorPlateAbility(){});
         }};
         separate = new UnitType("separate"){{
-            constructor = UnitEntity::create;
             ammoType = new PowerAmmoType(900);
             aiController = BuilderAI::new;
             isEnemy = false;
@@ -196,8 +199,7 @@ public class DTUnitTypes {
         }};
 
         float coreFleeRange = 500f;
-        spaceStationDrone = new ErekirUnitType("space-station-drone"){{
-            constructor = UnitEntity::create;
+        spaceStationDrone = new UnitType("space-station-drone"){{
             coreUnitDock = true;
             controller = u -> new BuilderAI(true, coreFleeRange);
             isEnemy = false;
@@ -226,7 +228,7 @@ public class DTUnitTypes {
             pickupUnits = false;
             parts.add(
                     new RegionPart("-side"){{
-                        moveRot = -10f;
+                        moveRot = -20f;
                         progress = PartProgress.warmup;
                         mirror = true;
                     }}
@@ -260,7 +262,6 @@ public class DTUnitTypes {
         }};
         //special
         repairDrone = new ErekirUnitType("repair-drone"){{
-            constructor = UnitEntity::create;
             controller = u -> new RepairDroneAI();
             flying = true;
             drag = 0.06f;
@@ -280,6 +281,7 @@ public class DTUnitTypes {
             createWreck = false;
             envEnabled = Env.any;
             envDisabled = Env.none;
+            payloadCapacity = 0f;
             weapons.add(new Weapon(){{
                 reload = 10f;
                 x = 0;

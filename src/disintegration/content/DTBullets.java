@@ -9,13 +9,16 @@ public class DTBullets {
             shard;
     public static void load(){
         shard = new BasicBulletType(4f,10f){{
-            frontColor = Color.white;
-            backColor = Color.white;
+            frontColor = Color.valueOf("D0D3E7");
+            backColor = Color.valueOf("B5B9D5");
             pierce = true;
             pierceBuilding = false;
-            drag = 0.1f;
-            width = 3f;
-            height = 4f;
+            lightRadius = 0f;
+            drag = 0.13f;
+            width = 4f;
+            height = 5.5f;
+            speed = 7f;
+            lifetime = 30f;
         }};
     }
 }

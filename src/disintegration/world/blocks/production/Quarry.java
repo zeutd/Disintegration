@@ -16,8 +16,8 @@ import arc.util.Tmp;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.content.DTFx;
-import disintegration.util.MathDef;
 import disintegration.util.DTUtil;
+import disintegration.util.MathDef;
 import disintegration.util.WorldDef;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
@@ -38,6 +38,7 @@ import mindustry.world.meta.BlockGroup;
 import mindustry.world.meta.Env;
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
+import org.jetbrains.annotations.NotNull;
 
 import static arc.Core.atlas;
 import static arc.math.Mathf.rand;
@@ -58,6 +59,10 @@ public class Quarry extends Block {
     public Effect drillEffect = new MultiEffect(DTFx.quarryDrillEffect, Fx.mine);
 
     protected final float fulls = areaSize * tilesize/2f;
+
+    public float AniTolerance = 0.05f;
+    public float AniPower = 0.1f;
+    public float AniSpeed = 0.1f;
 
     public Quarry(String name){
         super(name);
@@ -273,34 +278,34 @@ public class Quarry extends Block {
                 angle = rand.random(0, 360f);
                 drillEffect.at(mxM + mx, myM + my, angle, fullColor);
             }
-            drawArea = Math.abs(myP) > 0.1;
+            drawArea = !Mathf.zero(myP, AniTolerance);
             if (empty) {
                 if (efficiency > 0 || items.total() >= itemCapacity) {
-                    mxS = MathDef.lerp(mxS, mx - fulls - x, 4, 2);
-                    mxP = MathDef.lerp(mxP, mx + fulls - x, 4, 2);
-                    myS = MathDef.lerp(myS, my - fulls - y, 4, 2);
-                    myP = MathDef.lerp(myP, my + fulls - y, 4, 2);
-                    if (Math.abs(myP - (my + fulls - y)) <= 0.1) {
-                        mN = MathDef.lerp(mN, -fulls, 4, 5);
-                        if (mN + fulls >= -0.01) {
-                            mL = MathDef.lerp(mL, -fulls, 4, 5);
-                            if (mL + fulls >= -0.01) {
-                                drillAlpha = MathDef.lerp(drillAlpha, 1, 4, 2);
-                                if (1 - drillAlpha <= 0.01) {
+                    mxS = MathDef.lerpDelta(mxS, mx - fulls - x, AniPower, AniSpeed);
+                    mxP = MathDef.lerpDelta(mxP, mx + fulls - x, AniPower, AniSpeed);
+                    myS = MathDef.lerpDelta(myS, my - fulls - y, AniPower, AniSpeed);
+                    myP = MathDef.lerpDelta(myP, my + fulls - y, AniPower, AniSpeed);
+                    if (Mathf.equal(myP, my + fulls - y, AniTolerance)) {
+                        mN = MathDef.lerpDelta(mN, -fulls, AniPower, AniSpeed);
+                        if (Mathf.equal(mN, -fulls, AniTolerance)) {
+                            mL = MathDef.lerpDelta(mL, -fulls, AniPower, AniSpeed);
+                            if (Mathf.equal(mL, -fulls, AniTolerance)) {
+                                drillAlpha = MathDef.lerpDelta(drillAlpha, 1, AniPower, AniSpeed);
+                                if (Mathf.equal(drillAlpha, 1, AniTolerance)) {
                                     armAlphaAni = false;
                                     drawArm = true;
                                     if (items.total() < itemCapacity) {
-                                        if (Math.abs(mxM - mxR) <= 0.01) {
+                                        if (Mathf.equal(mxM, mxR, AniTolerance)) {
                                             mxR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
                                             myR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
                                         }
-                                        mxM = MathDef.linear(mxM, mxR, 0.07f);
-                                        myM = MathDef.linear(myM, myR, 0.07f);
+                                        mxM = MathDef.linearDelta(mxM, mxR, 0.07f);
+                                        myM = MathDef.linearDelta(myM, myR, 0.07f);
                                     } else {
                                         mxR = 0;
                                         myR = 0;
-                                        mxM = MathDef.lerp(mxM, mxR, 4, 6);
-                                        myM = MathDef.lerp(myM, myR, 4, 6);
+                                        mxM = MathDef.lerpDelta(mxM, mxR, 2, 6);
+                                        myM = MathDef.lerpDelta(myM, myR, 2, 6);
                                     }
                                 }
                             } else {
@@ -312,22 +317,22 @@ public class Quarry extends Block {
                 } else {
                     mxR = 0;
                     myR = 0;
-                    mxM = MathDef.lerp(mxM, mxR, 4, 5);
-                    myM = MathDef.lerp(myM, myR, 4, 5);
-                    if (Math.abs(mxM) <= 0.001) {
-                        drillAlpha = MathDef.lerp(drillAlpha, 0, 4, 2);
+                    mxM = MathDef.lerpDelta(mxM, mxR, 2, 5);
+                    myM = MathDef.lerpDelta(myM, myR, 2, 5);
+                    if (Mathf.zero(mxM, AniTolerance)) {
+                        drillAlpha = MathDef.lerpDelta(drillAlpha, 0, 2, 2);
                         if (drillAlpha <= 0.01) {
                             armAlphaAni = true;
                             drawArm = false;
-                            mL = MathDef.lerp(mL, -2 * fulls, 4, 6);
+                            mL = MathDef.lerpDelta(mL, -2 * fulls, 2, 6);
                             if (mL <= -2 * fulls + 0.006) {
                                 if (mN <= -2 * fulls + 0.006) {
-                                    mxS = MathDef.lerp(mxS, 0, 4, 2);
-                                    mxP = MathDef.lerp(mxP, 0, 4, 2);
-                                    myS = MathDef.lerp(myS, 0, 4, 2);
-                                    myP = MathDef.lerp(myP, 0, 4, 2);
+                                    mxS = MathDef.lerpDelta(mxS, 0, 2, 2);
+                                    mxP = MathDef.lerpDelta(mxP, 0, 2, 2);
+                                    myS = MathDef.lerpDelta(myS, 0, 2, 2);
+                                    myP = MathDef.lerpDelta(myP, 0, 2, 2);
                                 }
-                                mN = MathDef.lerp(mN, -2 * fulls, 4, 5);
+                                mN = MathDef.lerpDelta(mN, -2 * fulls, 2, 5);
                             }
                         }
                     }
@@ -336,7 +341,7 @@ public class Quarry extends Block {
             dumpOutputs(itemList);
         }
 
-        public void dumpOutputs(Seq<Item> array){
+        public void dumpOutputs(@NotNull Seq<Item> array){
             array.forEach(this::dump);
         }
 
@@ -459,9 +464,6 @@ public class Quarry extends Block {
         public void draw(){
             Draw.rect(region, x, y);
             Draw.rect(rotation >= 2 ? sideRegion2 : sideRegion1, x, y, rotdeg());
-            Draw.reset();
-            Draw.color();
-            //draw locator
             if (drawArea) {
                 Draw.color(Pal.shadow);
                 drawDrill(x - 8f, y - 8f, mx - 8f, my - 8f, Layer.floor + 2);

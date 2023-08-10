@@ -2,6 +2,7 @@ package disintegration.util;
 
 import arc.files.Fi;
 import arc.struct.Seq;
+import disintegration.DTVars;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,5 +34,9 @@ public class DTUtil {
             }
         }
         return file;
+    }
+
+    public static String name(String name){
+        return DTVars.modName + "-" + name;
     }
 }

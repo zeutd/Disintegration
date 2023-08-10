@@ -10,6 +10,7 @@ import mindustry.Vars;
 import mindustry.type.Planet;
 
 public class DTVars {
+    public static String modName = "disintegration";
     public static float laserScale = 4f;
     public static int spaceStationRequire = 10000;
     public static boolean debugMode = true;
@@ -17,7 +18,7 @@ public class DTVars {
     public static DTUI DTUI = new DTUI();
     public static SpaceStationReader spaceStationReader = new SpaceStationReader();
 
-    public static Fi DTRoot = DTUtil.getFiChild(Vars.dataDirectory, "disintegration/");
+    public static Fi DTRoot = DTUtil.getFiChild(Vars.dataDirectory, modName + "/");
     public static Fi SpaceStationFi = DTUtil.createFi(DTRoot, "spaceStations.txt");
 
     public static Seq<SpaceStation> spaceStations = new Seq<>();

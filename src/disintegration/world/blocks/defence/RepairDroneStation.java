@@ -5,18 +5,17 @@ import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.math.Mathf;
+import arc.struct.IntSeq;
 import arc.struct.Seq;
 import arc.util.Time;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import disintegration.ai.types.RepairDroneAI;
-import disintegration.content.DTUnitTypes;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.entities.Units;
 import mindustry.game.Team;
-import mindustry.gen.Building;
-import mindustry.gen.BuildingTetherc;
-import mindustry.gen.Sounds;
-import mindustry.gen.Unit;
+import mindustry.gen.*;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
@@ -27,10 +26,10 @@ import mindustry.world.Tile;
 import static mindustry.Vars.*;
 
 public class RepairDroneStation extends Block {
-    public UnitType unitType = DTUnitTypes.repairDrone;
+    public UnitType unitType;
     public int dronesCreated = 4;
 
-    public float intervalTime = 25f;
+    public float intervalTime = 10f;
     public float repairRange = 200;
 
     public float polyStroke = 1.8f, polyRadius = 8f;
@@ -71,19 +70,31 @@ public class RepairDroneStation extends Block {
 
         public Seq<Unit> units = new Seq<>();
 
+        public IntSeq readUnits = new IntSeq();
+
         @Override
         public void updateTile() {
             units.removeAll(u -> !u.isAdded() || u.dead || !(u.controller() instanceof RepairDroneAI));
 
-            if(!allowUpdate()){
+            if(!allowUpdate() || dead()){
                 units.each(Units::unitDespawn);
                 units.clear();
             }
 
-            float powerStatus = power == null ? 1f : power.status;
+            if(!readUnits.isEmpty()){
+                units.clear();
+                readUnits.each(i -> {
+                    var unit = Groups.unit.getByID(i);
+                    if(unit != null){
+                        units.add(unit);
+                    }
+                });
+                readUnits.clear();
+            }
+
             repairing = !indexer.getDamaged(team).copy().removeAll(b -> b.dst(x, y) > repairRange || b.id == id).isEmpty();
 
-            if(repairing && units.size < dronesCreated && (droneProgress += delta() * state.rules.unitBuildSpeed(team) * powerStatus / intervalTime) >= 1f){
+            if(repairing && units.size < dronesCreated && (droneProgress += delta() * state.rules.unitBuildSpeed(team) * efficiency / intervalTime) >= 1f){
                 if(!net.client()){
                     var unit = unitType.create(team);
                     if(unit instanceof BuildingTetherc bt){
@@ -95,6 +106,7 @@ public class RepairDroneStation extends Block {
                     unit.add();
                     units.add(unit);
                 }
+                droneProgress = 0;
             }
 
             if(units.size >= dronesCreated){
@@ -103,8 +115,9 @@ public class RepairDroneStation extends Block {
 
             for(int i = 0; i < units.size; i++){
                 var unit = units.get(i);
-                var ai = (RepairDroneAI)unit.controller();
-                ai.parent = this;
+                if(unit instanceof BuildingTetherc bt){
+                    bt.building(this);
+                }
             }
 
             readyness = Mathf.approachDelta(readyness, !units.isEmpty() ? 1f : 0f, 1f / 60f);
@@ -124,6 +137,31 @@ public class RepairDroneStation extends Block {
         @Override
         public void drawSelect(){
             Drawf.dashCircle(x, y, repairRange, Pal.accent);
+        }
+
+        @Override
+        public boolean shouldConsume(){
+            return repairing || units.size > 0;
+        }
+
+        @Override
+        public void write(Writes write){
+            super.write(write);
+
+            write.b(units.size);
+            for(var unit : units){
+                write.i(unit.id);
+            }
+        }
+
+        @Override
+        public void read(Reads read, byte revision){
+            super.read(read, revision);
+            int count = read.b();
+            readUnits.clear();
+            for (int i = 0; i < count; i++) {
+                readUnits.add(read.i());
+            }
         }
     }
 }

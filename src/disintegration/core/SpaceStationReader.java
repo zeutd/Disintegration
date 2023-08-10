@@ -1,6 +1,7 @@
 package disintegration.core;
 
 import arc.ApplicationListener;
+import arc.Core;
 import disintegration.DTVars;
 import disintegration.type.SpaceStation;
 import mindustry.Vars;
@@ -14,7 +15,9 @@ public class SpaceStationReader implements ApplicationListener {
         for (String s : DTVars.SpaceStationFi.readString().split("/")) {
             Planet parent = Vars.content.planet(s);
             if(parent != null){
-                DTVars.spaceStations.add(new SpaceStation(parent.name + "-spacestation", parent));
+                SpaceStation spaceStation = new SpaceStation(parent.name + "-spacestation", parent);
+                spaceStation.localizedName = parent.localizedName + " " + Core.bundle.get("spacestation");
+                DTVars.spaceStations.add(spaceStation);
                 DTVars.spaceStationPlanets.add(parent);
             }
         }
