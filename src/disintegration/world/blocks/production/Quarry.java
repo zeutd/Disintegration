@@ -62,7 +62,7 @@ public class Quarry extends Block {
 
     public float AniTolerance = 0.05f;
     public float AniPower = 0.1f;
-    public float AniSpeed = 0.1f;
+    public float DrillMoveSpeed = 0.07f;
 
     public Quarry(String name){
         super(name);
@@ -239,7 +239,7 @@ public class Quarry extends Block {
 
             itemsArray = getDropArray(tiles);
 
-            empty = !itemsArray.isEmpty();
+            empty = itemsArray.isEmpty();
 
             itemList = DTUtil.listItem(itemsArray);
 
@@ -256,7 +256,7 @@ public class Quarry extends Block {
             if (efficiency > 0 && !armAlphaAni) {
                 progress += delta() * speed;
             }
-            if(empty && progress >= mineTime && items.total() < itemCapacity && !armAlphaAni){
+            if(!empty && progress >= mineTime && items.total() < itemCapacity && !armAlphaAni){
                 progress %= mineTime;
                 DrillPos = new Vec2(mxM + mx, myM + my);
                 Item tileItem;
@@ -278,19 +278,20 @@ public class Quarry extends Block {
                 angle = rand.random(0, 360f);
                 drillEffect.at(mxM + mx, myM + my, angle, fullColor);
             }
-            drawArea = !Mathf.zero(myP, AniTolerance);
-            if (empty) {
+            //drawArea = !Mathf.zero(myP, AniTolerance);
+            drawArea = true;
+            if (!empty) {
                 if (efficiency > 0 || items.total() >= itemCapacity) {
-                    mxS = MathDef.lerpDelta(mxS, mx - fulls - x, AniPower, AniSpeed);
-                    mxP = MathDef.lerpDelta(mxP, mx + fulls - x, AniPower, AniSpeed);
-                    myS = MathDef.lerpDelta(myS, my - fulls - y, AniPower, AniSpeed);
-                    myP = MathDef.lerpDelta(myP, my + fulls - y, AniPower, AniSpeed);
+                    mxS = Mathf.lerpDelta(mxS, mx - fulls - x, AniPower);
+                    mxP = Mathf.lerpDelta(mxP, mx + fulls - x, AniPower);
+                    myS = Mathf.lerpDelta(myS, my - fulls - y, AniPower);
+                    myP = Mathf.lerpDelta(myP, my + fulls - y, AniPower);
                     if (Mathf.equal(myP, my + fulls - y, AniTolerance)) {
-                        mN = MathDef.lerpDelta(mN, -fulls, AniPower, AniSpeed);
+                        mN = Mathf.lerpDelta(mN, -fulls, AniPower);
                         if (Mathf.equal(mN, -fulls, AniTolerance)) {
-                            mL = MathDef.lerpDelta(mL, -fulls, AniPower, AniSpeed);
+                            mL = Mathf.lerpDelta(mL, -fulls, AniPower);
                             if (Mathf.equal(mL, -fulls, AniTolerance)) {
-                                drillAlpha = MathDef.lerpDelta(drillAlpha, 1, AniPower, AniSpeed);
+                                drillAlpha = Mathf.lerpDelta(drillAlpha, 1, AniPower);
                                 if (Mathf.equal(drillAlpha, 1, AniTolerance)) {
                                     armAlphaAni = false;
                                     drawArm = true;
@@ -299,13 +300,13 @@ public class Quarry extends Block {
                                             mxR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
                                             myR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
                                         }
-                                        mxM = MathDef.linearDelta(mxM, mxR, 0.07f);
-                                        myM = MathDef.linearDelta(myM, myR, 0.07f);
+                                        mxM = MathDef.linearDelta(mxM, mxR, DrillMoveSpeed);
+                                        myM = MathDef.linearDelta(myM, myR, DrillMoveSpeed);
                                     } else {
                                         mxR = 0;
                                         myR = 0;
-                                        mxM = MathDef.lerpDelta(mxM, mxR, 2, 6);
-                                        myM = MathDef.lerpDelta(myM, myR, 2, 6);
+                                        mxM = Mathf.lerpDelta(mxM, mxR, AniPower);
+                                        myM = Mathf.lerpDelta(myM, myR, AniPower);
                                     }
                                 }
                             } else {
@@ -317,22 +318,22 @@ public class Quarry extends Block {
                 } else {
                     mxR = 0;
                     myR = 0;
-                    mxM = MathDef.lerpDelta(mxM, mxR, 2, 5);
-                    myM = MathDef.lerpDelta(myM, myR, 2, 5);
+                    mxM = Mathf.lerpDelta(mxM, mxR, 2);
+                    myM = Mathf.lerpDelta(myM, myR, 2);
                     if (Mathf.zero(mxM, AniTolerance)) {
-                        drillAlpha = MathDef.lerpDelta(drillAlpha, 0, 2, 2);
+                        drillAlpha = Mathf.lerpDelta(drillAlpha, 0, 2);
                         if (drillAlpha <= 0.01) {
                             armAlphaAni = true;
                             drawArm = false;
-                            mL = MathDef.lerpDelta(mL, -2 * fulls, 2, 6);
+                            mL = Mathf.lerpDelta(mL, -2 * fulls, 2);
                             if (mL <= -2 * fulls + 0.006) {
                                 if (mN <= -2 * fulls + 0.006) {
-                                    mxS = MathDef.lerpDelta(mxS, 0, 2, 2);
-                                    mxP = MathDef.lerpDelta(mxP, 0, 2, 2);
-                                    myS = MathDef.lerpDelta(myS, 0, 2, 2);
-                                    myP = MathDef.lerpDelta(myP, 0, 2, 2);
+                                    mxS = Mathf.lerpDelta(mxS, 0, 2);
+                                    mxP = Mathf.lerpDelta(mxP, 0, 2);
+                                    myS = Mathf.lerpDelta(myS, 0, 2);
+                                    myP = Mathf.lerpDelta(myP, 0, 2);
                                 }
-                                mN = MathDef.lerpDelta(mN, -2 * fulls, 2, 5);
+                                mN = Mathf.lerpDelta(mN, -2 * fulls, 2);
                             }
                         }
                     }
@@ -505,7 +506,7 @@ public class Quarry extends Block {
 
         @Override
         public boolean shouldConsume(){
-            return items.total() < itemCapacity && enabled;
+            return items.total() < itemCapacity && enabled && !empty;
         }
 
         @Override

@@ -17,7 +17,7 @@ ext{
     mindustryVersion = 'v145'
     jabelVersion = "0.9.0"
     sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-    gamePath = /*your own game path*/ "D:/mdt/V7-be/Mindustry.exe"
+    gamePath = /*your own game path*/ "D:/mdt/V7/Mindustry.exe"
     modPath = /*your own mod path*/ "C:/Users/yizhe/AppData/Roaming/Mindustry/mods"
 }
 

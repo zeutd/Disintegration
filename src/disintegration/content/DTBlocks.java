@@ -130,6 +130,8 @@ public class DTBlocks {
             ;
     public static void load() {
         //environment
+        Blocks.ice.mapColor.add(0.1f, 0.1f, 0.2f);
+        Blocks.snow.mapColor.add(0.1f, 0.1f, 0.2f);
         greenIce = new Floor("green-ice"){{
             dragMultiplier = 0.35f;
             speedMultiplier = 0.9f;
@@ -159,6 +161,7 @@ public class DTBlocks {
             cacheLayer = CacheLayer.water;
             albedo = 0.9f;
             supportsOverlay = true;
+            wall = Blocks.iceWall;
         }};
         greenIceWall = new StaticWall("green-ice-wall"){{
             greenIce.asFloor().wall = this;
@@ -1455,6 +1458,7 @@ public class DTBlocks {
             hasLiquids = true;
             liquidBoostIntensity = 2.56f;
             consumeLiquid(Liquids.water, 0.02f).boost();
+            removalEffect = Fx.mineHuge;
             portableUnitType = new UnitType("portable-drill-unit"){{
                 speed = 0.5f;
                 legStraightness = 0f;
@@ -1474,7 +1478,10 @@ public class DTBlocks {
                 legCount = 4;
                 drawCell = true;
                 hidden = true;
-                weapons.add(new PortableBlockWeapon(){});
+                weapons.add(new PortableBlockWeapon(){{
+                    placeEffect = Fx.mineImpactWave;
+                    placeSound = Sounds.drillImpact;
+                }});
             }};
             requirements(Category.production, with(Items.copper, 12));
         }};

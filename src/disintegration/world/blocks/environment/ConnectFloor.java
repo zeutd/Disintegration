@@ -11,6 +11,8 @@ import static arc.Core.atlas;
 public class ConnectFloor extends Floor {
     public TextureRegion sideRegion;
 
+    public float sideLayer = Layer.floor + 0.1f;
+
     public ConnectFloor(String name) {
         super(name);
     }
@@ -28,6 +30,7 @@ public class ConnectFloor extends Floor {
         for (int i = 0; i < 4; i++) {
             Tile other = tile.nearby(i);
             if (other != null && other.floor().id != id) {
+                Draw.z(sideLayer);
                 Draw.rect(sideRegion, other.worldx(), other.worldy(), i * 90);
             }
         }

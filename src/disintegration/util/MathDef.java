@@ -10,15 +10,12 @@ public class MathDef {
 
     /**Better Mathf.lerp*/
 
-    public static float lerp(float value, float target, float power, float speed){
-        return (((target / speed - value / speed) / power + value / speed) * speed + (target - value) / speed);
-    }
-    public static float lerpDelta(float value, float target, float power, float speed){
-        return lerp(value, target, Mathf.clamp(power * Time.delta), speed);
-    }
+    //public static float lerp(float value, float target, float power, float speed){
+        //return (((target / speed - value / speed) / power + value / speed) * speed + (target - value) / speed);
+    //}
 
     public static float linear(float value, float target, float power) {
-        return Math.abs(value - target) <= 0.1 ? target : value + power * (value < target ? 1 : -1);
+        return Math.abs(value - target) <= power ? target : value + power * (value < target ? 1 : -1);
     }
     public static float linearDelta(float value, float target, float power) {
         return linear(value, target, Mathf.clamp(power * Time.delta));
