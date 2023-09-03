@@ -68,6 +68,7 @@ public class HeatConduitRouter extends HeatConductor{
         public void draw(){
             Draw.color(botColor);
             Draw.rect(botRegion, x, y, rotdeg());
+            Draw.color();
             Draw.rect(topRegion, x, y, rotdeg());
             Draw.blend(Blending.additive);
             Draw.tint(heatColor1, heatColor2, Mathf.clamp(heatFrac() / 4));

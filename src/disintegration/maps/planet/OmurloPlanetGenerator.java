@@ -12,6 +12,7 @@ import arc.struct.FloatSeq;
 import arc.struct.ObjectMap;
 import arc.struct.ObjectSet;
 import arc.struct.Seq;
+import arc.util.Structs;
 import arc.util.Tmp;
 import arc.util.noise.Noise;
 import arc.util.noise.Ridged;
@@ -31,13 +32,13 @@ import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.TileGen;
 import mindustry.world.Tiles;
+import mindustry.world.blocks.environment.Floor;
 
 import static mindustry.Vars.*;
 
 public class OmurloPlanetGenerator extends PlanetGenerator{
     //alternate, less direct generation (wip)
     public static boolean alt = false;
-
     BaseGenerator basegen = new BaseGenerator();
     float scl = 5f;
     float waterOffset = 0.07f;
@@ -45,19 +46,19 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
 
     Block[][] arr =
             {
-                    {Blocks.water, DTBlocks.iceWater, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, DTBlocks.iceWater, Blocks.stone, Blocks.stone},
-                    {Blocks.water, DTBlocks.iceWater, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, DTBlocks.iceWater, Blocks.stone, Blocks.stone, Blocks.stone},
-                    {Blocks.water, DTBlocks.iceWater, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, DTBlocks.iceWater, Blocks.stone, Blocks.stone, Blocks.stone},
-                    {Blocks.water, DTBlocks.iceWater, Blocks.sand, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.stone, Blocks.stone, Blocks.stone, Blocks.snow, Blocks.iceSnow, Blocks.ice},
-                    {Blocks.deepwater, Blocks.water, DTBlocks.iceWater, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice},
-                    {Blocks.deepwater, Blocks.water, DTBlocks.iceWater, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.iceSnow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.snow, Blocks.ice},
-                    {Blocks.deepwater, DTBlocks.iceWater, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice},
-                    {Blocks.water, DTBlocks.iceWater, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.hotrock, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice, Blocks.ice},
-                    {DTBlocks.iceWater, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice, Blocks.ice},
-                    {DTBlocks.iceWater, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice},
-                    {Blocks.water, DTBlocks.iceWater, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice},
-                    {DTBlocks.iceWater, DTBlocks.iceWater, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.iceSnow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice},
-                    {DTBlocks.iceWater, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.iceSnow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice}
+                    {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.stone, Blocks.stone},
+                    {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.stone, Blocks.stone, Blocks.stone},
+                    {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.stone, Blocks.stone, Blocks.stone},
+                    {Blocks.ice, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.stone, Blocks.stone, Blocks.stone, Blocks.snow, Blocks.iceSnow, Blocks.ice},
+                    {Blocks.deepwater, Blocks.ice, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice},
+                    {Blocks.deepwater, Blocks.ice, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.iceSnow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.snow, Blocks.ice},
+                    {Blocks.deepwater, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice},
+                    {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.hotrock, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice, Blocks.ice},
+                    {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice, Blocks.ice},
+                    {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice},
+                    {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice},
+                    {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.iceSnow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice},
+                    {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.iceSnow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice}
             };
 
     ObjectMap<Block, Block> dec = ObjectMap.of(
@@ -85,7 +86,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
 
         boolean any = false;
         float poles = Math.abs(tile.v.y);
-        float noise = Noise.snoise3(tile.v.x, tile.v.y, tile.v.z, 0.001f, 0.58f);
+        float noise = Noise.snoise3(tile.v.x, tile.v.y, tile.v.z, 0.001f, 0.6f);
 
         if(noise + poles/7.1 > 0.12 && poles > 0.23){
             any = true;
@@ -144,18 +145,19 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
         height *= 1.2f;
         height = Mathf.clamp(height);
 
-        float tar = Simplex.noise3d(seed, 4, 0.55f, 1f/10f, position.x, position.y + 999f, position.z) * 0.3f + Tmp.v31.dst(0, 0, 1f) * 0.2f;
+        float tar = Simplex.noise3d(seed, 4, 0.6f, 1f/10f, position.x, position.y + 999f, position.z) * 0.3f + Tmp.v31.dst(0, 0, 1f) * 0.2f;
 
         Block res = arr[Mathf.clamp((int)(temp * arr.length), 0, arr[0].length - 1)][Mathf.clamp((int)(height * arr[0].length), 0, arr[0].length - 1)];
         if(tar > 0.8f && res == Blocks.ice){
             return DTBlocks.greenIce;
-        }else if(tar > 0.3f && res == Blocks.sand){
-            return Blocks.snow;
-        }else if(tar > 0.5f && res == Blocks.snow){
-            return Blocks.ice;
-        }else {
-            return res;
         }
+        if(tar > 0.3f && res == Blocks.sand){
+            return Blocks.snow;
+        }
+        if(tar > 0.4f && res == Blocks.snow){
+            return Blocks.ice;
+        }
+        return res;
     }
 
     @Override
@@ -203,6 +205,49 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
 
                 join(x, y, mx, my);
                 join(mx, my, to.x, to.y);
+            }
+
+            void joinFloor(int x1, int y1, int x2, int y2){
+                float nscl = rand.random(100f, 140f) * 6f;
+                int rad = rand.random(7, 11);
+                int avoid = 0;
+                var path = pathfind(x1, y1, x2, y2, tile -> (70f) + noise(tile.x, tile.y, 2, 0.4f, 1f / nscl) * 500, Astar.manhattan);
+                path.each(t -> {
+                    /*don't place liquid paths near the core
+                    if(Mathf.dst2(t.x, t.y, x2, y2) <= avoid * avoid){
+                        return;
+                    }*/
+
+                    for(int x = -rad; x <= rad; x++){
+                        for(int y = -rad; y <= rad; y++){
+                            int wx = t.x + x, wy = t.y + y;
+                            if(Structs.inBounds(wx, wy, width, height) && Mathf.within(x, y, rad)){
+                                Tile other = tiles.getn(wx, wy);
+                                other.setBlock(Blocks.air);
+                                if(Mathf.within(x, y, rad - 1)){
+                                    Floor floor = other.floor();
+                                    other.setFloor((Floor) (floor == Blocks.ice ? floor : (floor.isLiquid ? DTBlocks.floatIce : Blocks.snow)));
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            void connectFloor(Room to){
+                if(to == this) return;
+
+                Vec2 midpoint = Tmp.v1.set(to.x, to.y).add(x, y).scl(0.5f);
+                rand.nextFloat();
+
+                //add randomized offset to avoid straight lines
+                midpoint.add(Tmp.v2.setToRandomDirection(rand).scl(Tmp.v1.dst(x, y)));
+                midpoint.sub(width/2f, height/2f).limit(width / 2f / Mathf.sqrt3).add(width/2f, height/2f);
+
+                int mx = (int)midpoint.x, my = (int)midpoint.y;
+
+                joinFloor(x, y, mx, my);
+                joinFloor(mx, my, to.x, to.y);
             }
         }
 
@@ -308,7 +353,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
             Vec3 v = sector.rect.project(x, y);
 
             float rr = Simplex.noise2d(sector.id, (float)2, 0.6f, 1f / 7f, x, y) * 0.1f;
-            float value = Ridged.noise3d(2, v.x, v.y, v.z, 1, 1f / 55f) + rr - rawHeight(v) * 0f;
+            float value = Ridged.noise3d(2, v.x, v.y, v.z, 1, 1f / 60f) + rr - rawHeight(v) * 0f;
             float rrscl = rr * 44 - 2;
 
             if(value > 0.17f && !Mathf.within(x, y, fspawn.x, fspawn.y, 12 + rrscl)){
@@ -324,28 +369,68 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
 
         //shoreline setup
         pass((x, y) -> {
-            int deepRadius = 3;
+            int deepRadius = 2;
 
-            if(floor.asFloor().isLiquid && floor.asFloor().shallow){
+            if(floor.asFloor().isLiquid) {
+                if (floor.asFloor().shallow) {
 
-                for(int cx = -deepRadius; cx <= deepRadius; cx++){
-                    for(int cy = -deepRadius; cy <= deepRadius; cy++){
-                        if((cx) * (cx) + (cy) * (cy) <= deepRadius * deepRadius){
-                            int wx = cx + x, wy = cy + y;
+                    for (int cx = -deepRadius; cx <= deepRadius; cx++) {
+                        for (int cy = -deepRadius; cy <= deepRadius; cy++) {
+                            if ((cx) * (cx) + (cy) * (cy) <= deepRadius * deepRadius) {
+                                int wx = cx + x, wy = cy + y;
 
-                            Tile tile = tiles.get(wx, wy);
-                            if(tile != null && (!tile.floor().isLiquid || tile.block() != Blocks.air)){
-                                //found something solid, skip replacing anything
-                                return;
+                                Tile tile = tiles.get(wx, wy);
+                                if (tile != null && (!tile.floor().isLiquid || tile.block() != Blocks.air)) {
+                                    //found something solid, skip replacing anything
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    //floor = floor == Blocks.darksandTaintedWater ? Blocks.taintedWater : Blocks.water;
+                    floor = Blocks.deepwater;
+                }
+                Tile t = tiles.get(x, y);
+                if(t.floor() == Blocks.water) {
+                    for (int cx = -deepRadius; cx <= deepRadius; cx++) {
+                        for (int cy = -deepRadius; cy <= deepRadius; cy++) {
+                            if ((cx) * (cx) + (cy) * (cy) <= deepRadius * deepRadius) {
+                                int wx = cx + x, wy = cy + y;
+
+                                Tile tile = tiles.get(wx, wy);
+                                if (tile != null && (!tile.floor().isLiquid && tile.block() == Blocks.air)) {
+                                    tile.setFloor((Floor) DTBlocks.iceWater);
+                                }
                             }
                         }
                     }
                 }
-
-                //floor = floor == Blocks.darksandTaintedWater ? Blocks.taintedWater : Blocks.water;
-                floor = Blocks.water;
             }
         });
+
+        pass((x, y) -> {
+            int rad = 3;
+            Tile t = tiles.get(x, y);
+            if(t.floor() == DTBlocks.iceWater) {
+                for (int cx = -rad; cx <= rad; cx++) {
+                    for (int cy = -rad; cy <= rad; cy++) {
+                        if ((cx) * (cx) + (cy) * (cy) <= rad * rad) {
+                            int wx = cx + x, wy = cy + y;
+
+                            Tile tile = tiles.get(wx, wy);
+                            if (tile != null && (!tile.floor().isLiquid && tile.block() == Blocks.air)) {
+                                tile.setFloor((Floor) Blocks.ice);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        for (Room room : enemies){
+            room.connectFloor(spawn);
+        }
 
         /*if(naval){
             //int deepRadius = 2;

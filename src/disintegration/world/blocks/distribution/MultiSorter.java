@@ -16,6 +16,8 @@ import mindustry.world.blocks.distribution.Sorter;
 
 import static mindustry.Vars.content;
 
+
+/**Broken because it won't save data*/
 public class MultiSorter extends Sorter {
     TextureRegion invertRegion;
     public MultiSorter(String name) {

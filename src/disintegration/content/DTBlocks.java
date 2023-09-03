@@ -18,7 +18,6 @@ import disintegration.world.blocks.defence.RepairDroneStation;
 import disintegration.world.blocks.defence.ShardWall;
 import disintegration.world.blocks.defence.turrets.ElectricTowerTurret;
 import disintegration.world.blocks.distribution.MultiOverflowGate;
-import disintegration.world.blocks.distribution.MultiSorter;
 import disintegration.world.blocks.effect.FloorBuilder;
 import disintegration.world.blocks.environment.ConnectFloor;
 import disintegration.world.blocks.heat.ConsumeHeatProducer;
@@ -30,7 +29,8 @@ import disintegration.world.blocks.laser.LaserReflector;
 import disintegration.world.blocks.power.SpreadGenerator;
 import disintegration.world.blocks.production.PortableDrill;
 import disintegration.world.blocks.production.Quarry;
-import disintegration.world.blocks.units.AssemblyConstructModule;
+import disintegration.world.blocks.units.UnitAssemblerConstructModule;
+import disintegration.world.blocks.units.UnitAssemblerInterfaceModule;
 import disintegration.world.draw.DrawAllRotate;
 import disintegration.world.draw.DrawFusion;
 import disintegration.world.draw.DrawLaser;
@@ -58,13 +58,14 @@ import mindustry.world.blocks.defense.ShockMine;
 import mindustry.world.blocks.defense.turrets.ContinuousLiquidTurret;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.PowerTurret;
-import mindustry.world.blocks.distribution.BufferedItemBridge;
-import mindustry.world.blocks.distribution.Conveyor;
-import mindustry.world.blocks.distribution.Junction;
-import mindustry.world.blocks.distribution.Router;
+import mindustry.world.blocks.distribution.*;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.environment.SteamVent;
+import mindustry.world.blocks.payloads.Constructor;
+import mindustry.world.blocks.payloads.PayloadDeconstructor;
+import mindustry.world.blocks.payloads.PayloadLoader;
+import mindustry.world.blocks.payloads.PayloadUnloader;
 import mindustry.world.blocks.power.ConsumeGenerator;
 import mindustry.world.blocks.power.ThermalGenerator;
 import mindustry.world.blocks.production.Drill;
@@ -87,27 +88,29 @@ public class DTBlocks {
     //TODO check bundles
     public static Block
     //environment
-            iceWater, greenIce, greenFloor, spaceStationFloor,
+            iceWater, greenIce, greenFloor, spaceStationFloor, floatIce,
             ethyleneVent,
             greenIceWall,
     //defence
             iridiumWall, iridiumWallLarge,
     //transport
-            ironConveyor, alternateOverflowGate, alternateSorter, fastRouter, fastJunction, ironItemBridge,
+            ironConveyor, alternateOverflowGate, ironSorter, invertedIronSorter, fastRouter, fastJunction, ironItemBridge,
             iridiumConveyor,
     //storage
             corePedestal, spaceStationCore,
-    //temperature
+    //heat
             heatConduit, heatConduitRouter, burningHeater,
     //laser
             laserDevice, laserReflector, laserRouter, laserSource,
     //factory
             boiler, electrolyser, siliconRefiner, graphiteCompressor,
+    //payload
+            payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
     //power
             neoplasmGenerator, excitationReactor, stirlingGenerator, solarPanel,
     //units
 
-            AssemblyConstructModule,
+            AssemblerConstructModule, AssemblerExpandInterfaceModule,
     //turrets
             fracture, dissolve,
             blade, encourage,
@@ -133,6 +136,13 @@ public class DTBlocks {
         Blocks.ice.mapColor.add(0.1f, 0.1f, 0.2f);
         Blocks.snow.mapColor.add(0.1f, 0.1f, 0.2f);
         greenIce = new Floor("green-ice"){{
+            dragMultiplier = 0.35f;
+            speedMultiplier = 0.9f;
+            attributes.set(Attribute.water, 0.4f);
+            albedo = 0.65f;
+        }};
+
+        floatIce = new Floor("float-ice"){{
             dragMultiplier = 0.35f;
             speedMultiplier = 0.9f;
             attributes.set(Attribute.water, 0.4f);
@@ -201,11 +211,17 @@ public class DTBlocks {
 
         alternateOverflowGate = new MultiOverflowGate("alternate-overflow-gate"){{
             requirements(Category.distribution, with(DTItems.iron, 3));
-            health = 45;
+            health = 60;
+            saveConfig = true;
         }};
-        alternateSorter = new MultiSorter("alternate-sorter"){{
+        ironSorter = new Sorter("iron-sorter"){{
             requirements(Category.distribution, with(DTItems.iron, 3));
-            health = 45;
+            health = 60;
+        }};
+        invertedIronSorter = new Sorter("inverted-iron-sorter"){{
+            requirements(Category.distribution, with(DTItems.iron, 3));
+            health = 60;
+            invert = true;
         }};
         fastRouter = new Router("fast-router"){{
             requirements(Category.distribution, with(DTItems.iron, 3));
@@ -231,7 +247,7 @@ public class DTBlocks {
         }};
         iridiumConveyor = new Conveyor("iridium-conveyor"){{
             requirements(Category.distribution, with(DTItems.iron, 1));
-            health = 60;
+            health = 65;
             speed = 0.09f;
             displayedSpeed = 13f;
             buildCostMultiplier = 2f;
@@ -313,7 +329,7 @@ public class DTBlocks {
         laserDevice = new LaserDevice("laser-device"){{
            range = 7;
            health = 200;
-           laserOutput = 1;
+           laserOutput = 2;
            drawer = new DrawMulti(new DrawAllRotate(1), new DrawLaser(false));
            consumePower(3);
            requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
@@ -439,6 +455,54 @@ public class DTBlocks {
 
             consumeItem(Items.coal, 5);
         }};
+        //payload
+        /*payloadPropulsionTower = new PayloadMassDriver("payload-propulsion-tower"){{
+            requirements(Category.units, with(Items.thorium, 300, Items.silicon, 200, Items.plastanium, 200, Items.phaseFabric, 50));
+            size = 5;
+            reload = 130f;
+            chargeTime = 100f;
+            range = 1000f;
+            maxPayloadSize = 3.5f;
+            consumePower(6f);
+        }};*/
+
+        payloadDeconstructor = new PayloadDeconstructor("payload-deconstructor"){{
+            requirements(Category.units, with(Items.thorium, 250, Items.silicon, 200, Items.graphite, 250));
+            itemCapacity = 250;
+            consumePower(3f);
+            size = 5;
+            deconstructSpeed = 2f;
+        }};
+
+        payloadConstructor = new Constructor("payload-constructor"){{
+            requirements(Category.units, with(Items.silicon, 50, Items.thorium, 70, Items.graphite, 50));
+            hasPower = true;
+            consumePower(2f);
+            size = 3;
+        }};
+
+        largePayloadConstructor = new Constructor("large-payload-constructor"){{
+            requirements(Category.units, with(Items.silicon, 100, Items.thorium, 150, Items.graphite, 50, Items.phaseFabric, 40));
+            hasPower = true;
+            consumePower(2f);
+            maxBlockSize = 4;
+            minBlockSize = 3;
+            size = 5;
+        }};
+
+        payloadLoader = new PayloadLoader("payload-loader"){{
+            requirements(Category.units, with(Items.graphite, 50, Items.silicon, 50, Items.lead, 100));
+            hasPower = true;
+            consumePower(2f);
+            size = 3;
+        }};
+
+        payloadUnloader = new PayloadUnloader("payload-unloader"){{
+            requirements(Category.units, with(Items.graphite, 50, Items.silicon, 50, Items.lead, 100));
+            hasPower = true;
+            consumePower(2f);
+            size = 3;
+        }};
         //power
         neoplasmGenerator = new SpreadGenerator("neoplasm-generator"){{
             requirements(Category.power, with(Items.tungsten, 500, Items.carbide, 100, Items.oxide, 150, Items.silicon, 400, Items.phaseFabric, 200));
@@ -456,6 +520,10 @@ public class DTBlocks {
 
             ambientSound = Sounds.bioLoop;
             ambientSoundVolume = 0.2f;
+
+            spreadAmount = 0.03f;
+
+            spreadTarget = b -> b.liquids != null && !Mathf.zero(b.liquids.get(Liquids.water));
 
             drawer = new DrawMulti(
                     new DrawRegion("-bottom"),
@@ -483,7 +551,7 @@ public class DTBlocks {
         excitationReactor = new LaserReactor("excitation-reactor"){{
             size = 5;
             scaledHealth = 100;
-            maxLaser = 100f;
+            maxLaser = 200f;
             warmupSpeed = 0.003f;
             powerProduction = 120f;
             coolantPower = 0.5f;
@@ -538,13 +606,21 @@ public class DTBlocks {
             drawer = new DrawMulti(new DrawDefault(), new DrawSideRegion());
         }};
         //units
-        AssemblyConstructModule = new AssemblyConstructModule("assembly-construct-module"){{
+        AssemblerConstructModule = new UnitAssemblerConstructModule("assembler-construct-module"){{
             size = 3;
             squareSprite = false;
             buildSpeed = 1.1f;
             consumeLiquid(Liquids.hydrogen, 3f / 60f);
             consumePower(20f/60f);
             requirements(Category.units, ItemStack.with(Items.tungsten, 60));
+        }};
+
+        AssemblerExpandInterfaceModule = new UnitAssemblerInterfaceModule("assembler-expand-interface-module"){{
+            requirements(Category.units, with(Items.oxide, 200, Items.tungsten, 400, Items.silicon,200, Items.graphite, 200));
+            regionSuffix = "-dark";
+            researchCostMultiplier = 0.75f;
+
+            size = 3;
         }};
         //turret
 
@@ -1449,7 +1525,7 @@ public class DTBlocks {
             updateEffect = Fx.pulverizeSmall;
             craftEffect = Fx.mine;
             craftTime = 60f / 2f;
-            drawer = new DrawMulti(new DrawDefault(), new DrawRegion("-rotator", 1.4f){{spinSprite = true;}}, new DrawRegion("-top"));
+            drawer = new DrawMulti(new DrawDefault(), new DrawRegion("-rotator", 1.4f, true), new DrawRegion("-top"));
             outputItem = new ItemStack(Items.sand, 3);
         }};
 

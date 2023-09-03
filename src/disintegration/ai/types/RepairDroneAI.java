@@ -50,6 +50,7 @@ public class RepairDroneAI extends AIController {
                 moveTo(parent,0);
                 if(unit.within(parent,parent.block.size)){
                     Units.unitDespawn(unit);
+                    parent.unitsCreated++;
                 }
             }
         }
@@ -61,7 +62,7 @@ public class RepairDroneAI extends AIController {
             RepairDroneStation.RepairDroneStationBuild parent = (RepairDroneStation.RepairDroneStationBuild) bt.building();
             if (parent == null) return;
             if (timer.get(timerTarget, 15)) {
-                damagedTarget = indexer.getDamaged(unit.team).copy().removeAll(b -> b.dst(parent.x, parent.y) > ((RepairDroneStation) parent.block).repairRange).min(b -> b.dst2(unit.x, unit.y));
+                damagedTarget = indexer.getDamaged(unit.team).copy().removeAll(b -> b.dst(parent.x, parent.y) > ((RepairDroneStation) parent.block).repairRange || b.dead() || b.id == parent.id).min(b -> b.dst2(unit.x, unit.y));
                 if (damagedTarget instanceof ConstructBlock.ConstructBuild) damagedTarget = null;
             }
 

@@ -1,11 +1,7 @@
 package disintegration.world.blocks.laser;
 
-import arc.struct.IntSet;
-
-public interface LaserBlock {
-    float luminosity();
-
-    void call(float value, int from, IntSet cameFrom);
-
+public interface LaserBlock extends LaserConsumer {
+    float luminosityFrac();
     float[] l();
+    float luminosity();
 }

@@ -4,7 +4,6 @@ import arc.Core;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Angles;
-import arc.math.Mathf;
 import arc.util.Eachable;
 import arc.util.Nullable;
 import arc.util.io.Reads;
@@ -24,16 +23,18 @@ import mindustry.world.meta.Stat;
 
 import static mindustry.Vars.*;
 
-public class AssemblyConstructModule extends BaseTurret {
+public class UnitAssemblerConstructModule extends BaseTurret {
 
     public float buildSpeed = 1f;
-    public float buildBeamOffset = -5f;
+    public float buildBeamOffset = 5f;
     public float elevation;
+    public float buildCone = 5f;
 
     public TextureRegion baseRegion;
+    public TextureRegion[] baseRegions;
     public TextureRegion topRegion;
 
-    public AssemblyConstructModule(String name) {
+    public UnitAssemblerConstructModule(String name) {
         super(name);
         update = true;
         solid = true;
@@ -45,6 +46,10 @@ public class AssemblyConstructModule extends BaseTurret {
     public void load(){
         super.load();
         baseRegion = Core.atlas.find(name + "-base");
+        baseRegions = new TextureRegion[4];
+        for (int i = 0; i < 4; i++) {
+            baseRegions[i] = Core.atlas.find(name + "-base" + (i + 1));
+        }
         topRegion = Core.atlas.find(name + "-base-top");
     }
 
@@ -63,8 +68,7 @@ public class AssemblyConstructModule extends BaseTurret {
 
     @Override
     public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list){
-        Draw.rect(baseRegion, plan.drawx(), plan.drawy());
-        Draw.rect(topRegion, plan.drawx(), plan.drawy(), plan.rotation * 90);
+        Draw.rect(baseRegions[plan.rotation], plan.drawx(), plan.drawy());
         Draw.rect(region, plan.drawx(), plan.drawy());
     }
 
@@ -86,19 +90,19 @@ public class AssemblyConstructModule extends BaseTurret {
         return results.find(b -> b.moduleFits(this, x * tilesize + offset, y * tilesize + offset, rotation));
     }
 
-    public class AssemblyConstructModuleBuild extends BaseTurretBuild {
+    public class UnitAssemblerConstructModuleBuild extends BaseTurretBuild {
         public UnitAssembler.UnitAssemblerBuild link;
         public boolean building;
 
         @Override
         public void draw(){
-            Draw.rect(baseRegion, x, y);
-            Draw.rect(topRegion, x, y, rotdeg());
+            Draw.rect(baseRegions[rotation()], x, y);
             Draw.z(Layer.turret);
             Drawf.shadow(region, x - elevation, y - elevation, rotation - 90);
-            Draw.rect(region, x, y, rotation + 90);
+            Draw.rect(region, x, y, rotation - 90);
             if(link == null) return;
-            if(efficiency > 0 && Mathf.equal(rotation, Mathf.atan2(x - link.getUnitSpawn().x, y - link.getUnitSpawn().y) * Mathf.radiansToDegrees, rotateSpeed)) {
+            float dest = angleTo(link.getUnitSpawn());
+            if(efficiency > 0 && Angles.within(rotation, dest, buildCone)) {
                 Draw.reset();
                 Draw.z(Layer.buildBeam);
                 Draw.color(Pal.accent, Math.min(1f - link.invalidWarmup, link.warmup));
@@ -125,7 +129,8 @@ public class AssemblyConstructModule extends BaseTurret {
             if(link == null) return;
             building = link.shouldConsume();
             if(!link.wasOccupied && efficiency > 0 && Units.canCreate(team, link.plan().unit)){
-                rotation = Mathf.approachDelta(rotation, Mathf.atan2(x - link.getUnitSpawn().x, y - link.getUnitSpawn().y) * Mathf.radiansToDegrees, rotateSpeed);
+                float dest = angleTo(link.getUnitSpawn());
+                rotation = Angles.moveToward(rotation, dest, rotateSpeed * edelta());
                 link.progress += edelta() * (buildSpeed - 1f) / link.plan().time * state.rules.unitBuildSpeed(team);
             }
         }

@@ -13,6 +13,18 @@ public class DisintegrationJavaMod extends Mod{
             Core.app.addListener(DTVars.DTUI);
             Core.app.post(DTVars.spaceStationReader::read);
             Core.app.addListener(DTVars.spaceStationReader);
+            /*Core.app.post(() -> Vars.content.setCurrentMod(new Mods.LoadedMod(null, null, null, null,
+                    new Mods.ModMeta(){{
+                        displayName = "disintegration";
+                        name = "disintegration";
+                        author = "zeutd";
+                        main = "disintegration.DisintegrationJavaMod";
+                        description = "A Mindustry Java mod.";
+                        version = "0.0.1";
+                        minGameVersion = "140";
+                        java = true;
+                    }})));
+            Core.app.post(this::loadContent);*/
         });
     }
     @Override

@@ -30,6 +30,10 @@ import static mindustry.Vars.world;
 
 public class LaserDevice extends Block {
     public DrawBlock drawer;
+
+    public float visualMaxLaser = 10f;
+    public float laserScale = 0.7f;
+
     public float laserOutput;
 
     public int range;
@@ -99,7 +103,7 @@ public class LaserDevice extends Block {
         addBar("laser", (LaserDeviceBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity(), 10)), () -> Pal.redLight, () -> entity.luminosity / laserOutput));
     }
 
-    public class LaserDeviceBuild extends Building implements LaserProducer {
+    public class LaserDeviceBuild extends Building implements LaserBlock {
         IntSet came = new IntSet();
 
         float luminosity;
@@ -114,7 +118,7 @@ public class LaserDevice extends Block {
             for (int i = 1; i <= range; i++) {
                 Building other = world.build(Geometry.d4x(rotation + a - 1) * i + tileX(), Geometry.d4y(rotation + a - 1) * i + tileY());
                 if (other != null && other.block.solid) {
-                    if (other instanceof LaserBlock build) {
+                    if (other instanceof LaserConsumer build) {
                         build.call(luminosity, Arrays.asList(Edges.getEdges(other.block.size)).indexOf(new Point2(Geometry.d4x(rotation + a - 1) * (i - 1) + tileX() - other.tileX(), Geometry.d4y(rotation + a - 1) * (i - 1) + tileY() - other.tileY())), came);
                     }
                     break;
@@ -128,13 +132,13 @@ public class LaserDevice extends Block {
         }
 
         @Override
-        public float[] l(){
-            return new float[]{0, l, 0};
+        public float luminosityFrac() {
+            return Mathf.clamp(luminosity / visualMaxLaser) * laserScale;
         }
 
         @Override
-        public IntSet cameFrom(){
-            return new IntSet();
+        public float[] l(){
+            return new float[]{0, l, 0};
         }
 
         @Override

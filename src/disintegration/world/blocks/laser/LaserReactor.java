@@ -74,7 +74,7 @@ public class LaserReactor extends PowerGenerator {
                         () -> Pal.redLight,
                         () -> entity.luminosity / maxLaser));
     }
-    public class LaserReactorBuild extends GeneratorBuild implements LaserBlock{
+    public class LaserReactorBuild extends GeneratorBuild implements LaserConsumer {
         float[] sideLaser = new float[getEdges().length];
         float[] callFrom = new float[getEdges().length];
 
@@ -86,18 +86,8 @@ public class LaserReactor extends PowerGenerator {
         public boolean flushed;
 
         @Override
-        public float luminosity() {
-            return luminosity;
-        }
-
-        @Override
         public void call(float value, int from, IntSet cameFrom) {
             callFrom[from] = value;
-        }
-
-        @Override
-        public float[] l(){
-            return new float[]{};
         }
 
         @Override

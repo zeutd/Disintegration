@@ -1,5 +1,6 @@
 package disintegration.world.draw;
 
+import arc.Core;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.util.Eachable;
@@ -8,11 +9,8 @@ import mindustry.gen.Building;
 import mindustry.world.Block;
 import mindustry.world.draw.DrawBlock;
 
-import static arc.Core.atlas;
-
 public class DrawAllRotate extends DrawBlock {
     public int iconIndex = 0;
-    public TextureRegion region1, region2, region3, region4;
     public TextureRegion[] regions;
 
 
@@ -36,10 +34,9 @@ public class DrawAllRotate extends DrawBlock {
 
     @Override
     public void load(Block block){
-        region1 = atlas.find(block.name + "1");
-        region2 = atlas.find(block.name + "2");
-        region3 = atlas.find(block.name + "3");
-        region4 = atlas.find(block.name + "4");
-        regions = new TextureRegion[]{region1, region2, region3, region4};
+        regions = new TextureRegion[4];
+        for (int i = 0; i < 4; i++) {
+            regions[i] = Core.atlas.find(block.name + (i + 1));
+        }
     }
 }

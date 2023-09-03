@@ -1,18 +1,9 @@
 package disintegration.world.draw;
 
-import arc.graphics.Color;
-import arc.graphics.g2d.Draw;
-import arc.graphics.g2d.TextureRegion;
-import arc.util.Eachable;
-import mindustry.entities.units.BuildPlan;
-import mindustry.gen.Building;
-import mindustry.world.Block;
 import mindustry.world.draw.DrawBlock;
 
-import static arc.Core.atlas;
-
 public class DrawTemperature extends DrawBlock {
-    public TextureRegion heatRegion, sideHeatRegion, topRegion;
+    /*public TextureRegion heatRegion, sideHeatRegion, topRegion;
     
     public Color heatColor, sideHeatColor;
 
@@ -76,7 +67,7 @@ public class DrawTemperature extends DrawBlock {
         Draw.rect(sideHeatRegion, build.x, build.y, build.rotation * 90);
 
         Draw.blend();
-        Draw.reset();*/
+        Draw.reset();
     }
 
     @Override
@@ -84,5 +75,5 @@ public class DrawTemperature extends DrawBlock {
         heatRegion = atlas.find(block.name + "-heat");
         sideHeatRegion = atlas.find(block.name + "-heat-side");
         topRegion = atlas.find(block.name + "-top");
-    }
+    }*/
 }

@@ -26,10 +26,10 @@ public class DTItems {
             hardness = 7;
             cost = 3;
         }};
-        ionicAlloy = new Item("ionic-alloy", Color.valueOf("84F491")){{
+        /*ionicAlloy = new Item("ionic-alloy", Color.valueOf("84F491")){{
             hardness = 2;
             cost = 4;
-        }};
+        }};*/
         silver = new Item("silver", Color.valueOf("F2F2F2")){{
             hardness = 2;
             cost = 2;
@@ -46,10 +46,10 @@ public class DTItems {
         }};
 
         omurloItems.addAll(
-                iridium, iron, heavite, ionicAlloy, silver, concussionAlloy, sand, silicon, graphite, coal
+                iridium, iron, heavite, silver, concussionAlloy, sand, silicon, graphite, coal, metaglass, lead, blastCompound
         );
         omurloOnlyItems.addAll(
-                iridium, iron, heavite, ionicAlloy, silver, concussionAlloy
+                iridium, iron, heavite, silver, concussionAlloy
         );
         spaceStationItems.addAll(
                 spaceStationPanel

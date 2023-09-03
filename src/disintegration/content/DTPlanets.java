@@ -18,12 +18,9 @@ public class DTPlanets {
     public static Planet omurlo, cxiuaz;
     public static void load(){
         Planet sun = Planets.sun;
-
-        Planets.erekir.hiddenItems.addAll(DTItems.moddedItems);
-        Planets.serpulo.hiddenItems.addAll(DTItems.moddedItems).remove(DTItems.spaceStationPanel);
         omurlo = new Planet("omurlo", sun, 1f, 3){{
                 generator = new OmurloPlanetGenerator();
-                meshLoader = () -> new HexMesh(this, 5);
+                meshLoader = () -> new HexMesh(this, 6);
                 cloudMeshLoader = () -> new MultiMesh(
                         new HexSkyMesh(this, 2, 0.15f, 0.14f, 5, Color.valueOf("e6e6fa").a(0.75f), 2, 0.42f, 1f, 0.43f),
                         new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("f8f8ff").a(0.75f), 2, 0.42f, 1.2f, 0.45f)

@@ -22,12 +22,6 @@ public class MathDef {
     }
 
     public static int randomSeedRange(long seed){
-        int range = Mathf.randomSeed(seed, -1, 1);
-        int i = 0;
-        while(range == 0){
-            range = Mathf.randomSeed(seed + i, -1, 1);
-            i ++;
-        }
-        return range;
+        return Mathf.randomSeed(seed, 0, 1) == 0 ? -1 : 1;
     }
 }

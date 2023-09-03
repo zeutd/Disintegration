@@ -10,7 +10,6 @@ import arc.struct.IntSet;
 import arc.util.Eachable;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
-import disintegration.DTVars;
 import disintegration.util.MathDef;
 import mindustry.entities.units.BuildPlan;
 import mindustry.gen.Building;
@@ -35,6 +34,9 @@ public class LaserReflector extends Block {
 
     public int range;
 
+    public float visualMaxLaser = 10f;
+    public float laserScale = 0.7f;
+
     public LaserReflector(String name) {
         super(name);
         update = true;
@@ -57,8 +59,8 @@ public class LaserReflector extends Block {
     public float calculateLaser(int x, int y, int a, int rotation) {
         float l = 0;
         for (int i = 1; i <= range; i++) {
-            Building other = world.build(Geometry.d4x(rotation + a - 1) * i + x, Geometry.d4y(rotation + a - 1) * i + y);
-            if (other != null && other.block.solid) {
+            Block other = world.tile(Geometry.d4x(rotation + a - 1) * i + x, Geometry.d4y(rotation + a - 1) * i + y).block();
+            if (other != null && other.solid) {
                 l = i - 0.5f;
                 break;
             }
@@ -102,10 +104,10 @@ public class LaserReflector extends Block {
     public void setBars(){
         super.setBars();
 
-        addBar("laser", (LaserReflectorBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity, 10)), () -> Pal.redLight, () -> entity.luminosity / DTVars.laserScale));
+        addBar("laser", (LaserReflectorBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity, 10)), () -> Pal.redLight, () -> Mathf.clamp(entity.luminosity() / visualMaxLaser)));
     }
 
-    public class LaserReflectorBuild extends Building implements LaserProducer {
+    public class LaserReflectorBuild extends Building implements LaserBlock, LaserConsumer {
         float[] sideLaser = new float[getEdges().length];
         float[] callFrom = new float[getEdges().length];
 
@@ -117,14 +119,14 @@ public class LaserReflector extends Block {
 
         @Override
         public float luminosity() {
-            return luminosity;
+            return luminosity / (split ? 3 : 1);
         }
 
         public void callLaser(int a) {
             for (int i = 1; i <= range; i++) {
                 Building other = world.build(Geometry.d4x(rotation + a - 1) * i + tileX(), Geometry.d4y(rotation + a - 1) * i + tileY());
                 if (other != null && other.block.solid) {
-                    if (other instanceof LaserBlock build) {
+                    if (other instanceof LaserConsumer build) {
                         build.call(split ? luminosity / 3 : luminosity, Arrays.asList(Edges.getEdges(other.block.size)).indexOf(new Point2(Geometry.d4x(rotation + a - 1) * (i - 1) + tileX() - other.tileX(), Geometry.d4y(rotation + a - 1) * (i - 1) + tileY() - other.tileY())), came);
                     }
                     break;
@@ -140,8 +142,8 @@ public class LaserReflector extends Block {
         }
 
         @Override
-        public IntSet cameFrom(){
-            return came;
+        public float luminosityFrac() {
+            return Mathf.clamp(luminosity / visualMaxLaser) * laserScale;
         }
 
         @Override
