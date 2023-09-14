@@ -10,11 +10,21 @@ import arc.util.io.Writes;
 import mindustry.gen.Building;
 import mindustry.type.Item;
 import mindustry.world.blocks.distribution.OverflowGate;
+import mindustry.world.meta.BlockGroup;
 
 public class MultiOverflowGate extends OverflowGate {
     TextureRegion invertRegion;
     public MultiOverflowGate(String name) {
         super(name);
+        hasItems = true;
+        underBullets = true;
+        update = false;
+        destructible = true;
+        group = BlockGroup.transportation;
+        instantTransfer = true;
+        unloadable = false;
+        canOverdrive = false;
+        itemCapacity = 0;
         configurable = true;
         config(Boolean.class, (MultiOverflowGateBuild entity, Boolean b) -> entity.invert = b);
     }
@@ -44,7 +54,6 @@ public class MultiOverflowGate extends OverflowGate {
             return invert;
         }
 
-        @Override
         public @Nullable Building getTileTarget(Item item, Building src, boolean flip){
             int from = relativeToEdge(src.tile);
             if(from == -1) return null;
@@ -76,6 +85,7 @@ public class MultiOverflowGate extends OverflowGate {
 
             return to;
         }
+
 
         @Override
         public void read(Reads read, byte revision){

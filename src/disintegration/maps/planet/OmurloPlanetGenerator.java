@@ -432,6 +432,33 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
             room.connectFloor(spawn);
         }
 
+        //vents
+        int ventCount = 0;
+
+        outer:
+        for(Tile tile : tiles){
+            var floor = tile.floor();
+            if((floor == Blocks.ice) && rand.chance(0.002)){
+                int rad = 2;
+                for(int x = -rad; x <= rad; x++){
+                    for(int y = -rad; y <= rad; y++){
+                        Tile other = tiles.get(x + tile.x, y + tile.y);
+                        if(other == null || other.floor() != Blocks.ice || other.block().solid){
+                            continue outer;
+                        }
+                    }
+                }
+
+                ventCount ++;
+                /*for(Point2 pos : Geometry.d8){
+                    Tile other = tiles.get(pos.x + tile.x + 1, pos.y + tile.y + 1);
+                    other.setFloor(DTBlocks.ethyleneVent.asFloor());
+                }*/
+                Tile other = tiles.get( tile.x + 1, tile.y + 1);
+                other.setFloor(DTBlocks.ethyleneVent.asFloor());
+            }
+        }
+
         /*if(naval){
             //int deepRadius = 2;
 

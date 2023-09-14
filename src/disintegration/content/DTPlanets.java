@@ -23,7 +23,8 @@ public class DTPlanets {
                 meshLoader = () -> new HexMesh(this, 6);
                 cloudMeshLoader = () -> new MultiMesh(
                         new HexSkyMesh(this, 2, 0.15f, 0.14f, 5, Color.valueOf("e6e6fa").a(0.75f), 2, 0.42f, 1f, 0.43f),
-                        new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("f8f8ff").a(0.75f), 2, 0.42f, 1.2f, 0.45f)
+                        new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("f8f8ff").a(0.75f), 2, 0.42f, 1.2f, 0.45f),
+                        new HexSkyMesh(this, 5, 0.1f, 0.16f, 4, Color.valueOf("e6f3f8").a(0.75f), 2, 0.42f, 1.5f, 0.44f)
                 );
                 alwaysUnlocked = true;
                 landCloudColor = Color.valueOf("cce5ff");
