@@ -38,7 +38,6 @@ import mindustry.world.meta.BlockGroup;
 import mindustry.world.meta.Env;
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
-import org.jetbrains.annotations.NotNull;
 
 import static arc.Core.atlas;
 import static arc.math.Mathf.rand;
@@ -342,7 +341,7 @@ public class Quarry extends Block {
             dumpOutputs(itemList);
         }
 
-        public void dumpOutputs(@NotNull Seq<Item> array){
+        public void dumpOutputs(Seq<Item> array){
             array.forEach(this::dump);
         }
 
