@@ -5,8 +5,10 @@ import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.graphics.g2d.TextureRegion;
+import arc.math.Interp;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
 import arc.math.geom.Rect;
 import arc.math.geom.Vec2;
 import arc.struct.Seq;
@@ -17,7 +19,6 @@ import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.content.DTFx;
 import disintegration.util.DTUtil;
-import disintegration.util.MathDef;
 import disintegration.util.WorldDef;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
@@ -40,6 +41,7 @@ import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
 
 import static arc.Core.atlas;
+import static arc.math.Mathf.clamp;
 import static arc.math.Mathf.rand;
 import static mindustry.Vars.iconSmall;
 import static mindustry.Vars.tilesize;
@@ -50,18 +52,21 @@ public class Quarry extends Block {
     public TextureRegion locator;
     public TextureRegion armRegion;
     public TextureRegion drill;
-    public float mineTime = 600;
-    public float liquidBoostIntensity = 2f;
-    public int areaSize = 11;
+    public float mineTime;
+    public float liquidBoostIntensity;
+    public int areaSize;
     public Color areaColor = Pal.accent;
     public Color boostColor = Color.sky.cpy().mul(0.87f);
     public Effect drillEffect = new MultiEffect(DTFx.quarryDrillEffect, Fx.mine);
 
-    protected final float fulls = areaSize * tilesize/2f;
+    public Interp deployInterp;
+    public Interp deployInterpInverse;
 
-    public float AniTolerance = 0.05f;
-    public float AniPower = 0.1f;
-    public float DrillMoveSpeed = 0.07f;
+    public float drillMoveSpeed;
+    public float deploySpeed;
+    public float drillMargin = 20f;
+
+    protected float fulls = areaSize * tilesize/2f;
 
     public Quarry(String name){
         super(name);
@@ -86,6 +91,7 @@ public class Quarry extends Block {
     public void init(){
         updateClipRadius((size + areaSize + 1) * 8);
         super.init();
+        fulls = areaSize * tilesize/2f;
     }
     @Override
     public void load(){
@@ -191,6 +197,11 @@ public class Quarry extends Block {
         return items;
     }
 
+    @Override
+    public boolean rotatedOutput(int x, int y){
+        return false;
+    }
+
     public Vec2 getMiningArea(float x, float y, int rotation){
         float len = tilesize * (areaSize + size)/2f;
         float mineX = x + Geometry.d4x(rotation) * len, mineY = y + Geometry.d4y(rotation) * len;
@@ -205,32 +216,35 @@ public class Quarry extends Block {
         }
     }
     public class QuarryBuild extends Building {
-        float progress;
-        float mx = 0, mxS = 0, mxP = 0, mxM = 0, mxR = 0, my = 0, myS = 0, myP = 0, myM = 0, myR = 0, mN = -2 * fulls, mL = -2 * fulls;
-        float warmup;
+        public float progress;
+        public float deployProgress;
+        //float mx = 0, mxS = 0, mxP = 0, mxM = 0, mxR = 0, my = 0, myS = 0, myP = 0, myM = 0, myR = 0, mN = -2 * fulls, mL = -2 * fulls;
+        public float warmup;
         Color fullColor;
-        float boostWarmup;
-        boolean drawArea;
-        boolean armAlphaAni;
-        boolean drawArm;
-        float drillAlpha;
-        float angle;
-        boolean empty;
-        Vec2 DrillPos;
-        Seq<Tile> tiles;
-        Seq<Item> itemsArray;
+        public float boostWarmup;
+        public boolean drawDrill;
+        public boolean deploying;
+        public boolean empty;
+        Seq<Tile> tiles = new Seq<>();
+        Seq<Item> itemsArray = new Seq<>();
 
-        Seq<Item> itemList;
+        Seq<Item> itemList = new Seq<>();
 
+        public float mx = 0, my = 0, drillX = 0, drillY = 0, targetX = 0, targetY = 0;
+
+        Interp inp;
 
         @Override
         public void updateTile(){
-            tiles = new Seq<>();
-            itemsArray = new Seq<>();
+            inp = deploying ? deployInterp : deployInterpInverse;
 
             boostWarmup = Mathf.lerpDelta(boostWarmup, optionalEfficiency, 0.1f);
 
             warmup = Mathf.lerpDelta(warmup, efficiency, 0.1f);
+
+            Vec2 mineCentre = getMiningArea(x, y, rotation);
+            mx = mineCentre.x;
+            my = mineCentre.y;
 
             Vec2 MiningPos = new Vec2(World.conv(mx - fulls), World.conv(my - fulls));
 
@@ -242,22 +256,13 @@ public class Quarry extends Block {
 
             itemList = DTUtil.listItem(itemsArray);
 
-            Vec2 mineCentre = getMiningArea(x, y, rotation);
-
             fullColor = Tmp.c1.set(areaColor).lerp(boostColor, boostWarmup);
-
-            mx = mineCentre.x;
-            my = mineCentre.y;
             float speed = 0;
             if(items.total() < itemCapacity && efficiency > 0) {
                 speed = Mathf.lerp(1f, liquidBoostIntensity, optionalEfficiency) * efficiency;
             }
-            if (efficiency > 0 && !armAlphaAni) {
-                progress += delta() * speed;
-            }
-            if(!empty && progress >= mineTime && items.total() < itemCapacity && !armAlphaAni){
-                progress %= mineTime;
-                DrillPos = new Vec2(mxM + mx, myM + my);
+            if(!empty && progress >= mineTime && items.total() < itemCapacity && deployProgress >= 4){
+                progress = 0;
                 Item tileItem;
                 for (int ix = 0; ix < areaSize; ix ++){
                     for (int iy = 0; iy < areaSize; iy ++){
@@ -266,205 +271,147 @@ public class Quarry extends Block {
                         tileItem = itemsArray.get(ix * areaSize + iy);
                         if (tileItem != null){
                             if (items.total() < itemCapacity){
-                                Fx.itemTransfer.at(dx + Mathf.range(1f), dy + Mathf.range(1f), 0, tileItem.color, DrillPos);
+                                Fx.itemTransfer.at(dx + Mathf.range(1f), dy + Mathf.range(1f), 0, tileItem.color, new Vec2(drillX + mx, drillY + my));
                                 offload(tileItem);
                             }
                         }
                     }
                 }
             }
-            if (1 - drillAlpha <= 0.01 && Mathf.range(1) >= 0 && efficiency > 0 && items.total() < itemCapacity) {
-                angle = rand.random(0, 360f);
-                drillEffect.at(mxM + mx, myM + my, angle, fullColor);
+            if (deployProgress >= 4 && Mathf.range(1) >= 0 && efficiency > 0 && items.total() < itemCapacity) {
+                drillEffect.at(drillX + mx, drillY + my, rand.random(0, 360f), fullColor);
             }
-            //drawArea = !Mathf.zero(myP, AniTolerance);
-            drawArea = true;
+            drawDrill = deployProgress > 0;
             if (!empty) {
-                if (efficiency > 0 || items.total() >= itemCapacity) {
-                    mxS = Mathf.lerpDelta(mxS, mx - fulls - x, AniPower);
-                    mxP = Mathf.lerpDelta(mxP, mx + fulls - x, AniPower);
-                    myS = Mathf.lerpDelta(myS, my - fulls - y, AniPower);
-                    myP = Mathf.lerpDelta(myP, my + fulls - y, AniPower);
-                    if (Mathf.equal(myP, my + fulls - y, AniTolerance)) {
-                        mN = Mathf.lerpDelta(mN, -fulls, AniPower);
-                        if (Mathf.equal(mN, -fulls, AniTolerance)) {
-                            mL = Mathf.lerpDelta(mL, -fulls, AniPower);
-                            if (Mathf.equal(mL, -fulls, AniTolerance)) {
-                                drillAlpha = Mathf.lerpDelta(drillAlpha, 1, AniPower);
-                                if (Mathf.equal(drillAlpha, 1, AniTolerance)) {
-                                    armAlphaAni = false;
-                                    drawArm = true;
-                                    if (items.total() < itemCapacity) {
-                                        if (Mathf.equal(mxM, mxR, AniTolerance)) {
-                                            mxR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
-                                            myR = rand.random(fulls - fulls / 3, -fulls + fulls / 3);
-                                        }
-                                        mxM = MathDef.linearDelta(mxM, mxR, DrillMoveSpeed);
-                                        myM = MathDef.linearDelta(myM, myR, DrillMoveSpeed);
-                                    } else {
-                                        mxR = 0;
-                                        myR = 0;
-                                        mxM = Mathf.lerpDelta(mxM, mxR, AniPower);
-                                        myM = Mathf.lerpDelta(myM, myR, AniPower);
-                                    }
-                                }
-                            } else {
-                                armAlphaAni = true;
-                                drawArm = false;
-                            }
-                        }
+                if (efficiency > 0){
+                    if(deployProgress <= 4) {
+                        deployProgress += delta() * deploySpeed;
+                        deploying = true;
                     }
+                    else progress += delta() * speed;
+                }
+                else if(deployProgress > 0 && Mathf.zero(drillX, 0.01f) && Mathf.zero(drillY, 0.01f) && items.total() < itemCapacity){
+                    deployProgress -= delta() * deploySpeed;
+                    deploying = false;
+                }
+                if (items.total() >= itemCapacity || efficiency <= 0 ) {
+                    drillX = Mathf.lerpDelta(drillX, 0, 0.07f);
+                    drillY = Mathf.lerpDelta(drillY, 0, 0.07f);
                 } else {
-                    mxR = 0;
-                    myR = 0;
-                    mxM = Mathf.lerpDelta(mxM, mxR, 2);
-                    myM = Mathf.lerpDelta(myM, myR, 2);
-                    if (Mathf.zero(mxM, AniTolerance)) {
-                        drillAlpha = Mathf.lerpDelta(drillAlpha, 0, 2);
-                        if (drillAlpha <= 0.01) {
-                            armAlphaAni = true;
-                            drawArm = false;
-                            mL = Mathf.lerpDelta(mL, -2 * fulls, 2);
-                            if (mL <= -2 * fulls + 0.006) {
-                                if (mN <= -2 * fulls + 0.006) {
-                                    mxS = Mathf.lerpDelta(mxS, 0, 2);
-                                    mxP = Mathf.lerpDelta(mxP, 0, 2);
-                                    myS = Mathf.lerpDelta(myS, 0, 2);
-                                    myP = Mathf.lerpDelta(myP, 0, 2);
-                                }
-                                mN = Mathf.lerpDelta(mN, -2 * fulls, 2);
-                            }
-                        }
+                    if (Mathf.equal(drillX, targetX) && Mathf.equal(drillY, targetY)){
+                        targetX = Mathf.randomSeed(id + (long)Time.time, (float) -areaSize / 2 * tilesize + drillMargin, (float) areaSize / 2 * tilesize - drillMargin);
+                        targetY = Mathf.randomSeed(id / 2 + (long)Time.time, (float) -areaSize / 2 * tilesize + drillMargin, (float) areaSize / 2 * tilesize - drillMargin);
+                    }
+                    if(deployProgress >= 4 && efficiency > 0) {
+                        drillX = Mathf.approachDelta(drillX, targetX, drillMoveSpeed);
+                        drillY = Mathf.approachDelta(drillY, targetY, drillMoveSpeed);
                     }
                 }
             }
-            dumpOutputs(itemList);
+            else deployProgress = 0;
+            dumpOutputs();
         }
 
-        public void dumpOutputs(Seq<Item> array){
-            array.forEach(this::dump);
+        public void dumpOutputs(){
+            if(!empty && timer(timerDump, dumpTime / timeScale)){
+                for(Item output : itemList){
+                    dump(output);
+                }
+            }
         }
 
         public void drawDrill(float x, float y, float mx, float my, float layer){
+            float deployProgress1 = inp.apply(clamp(deployProgress - 0));
+            float deployProgress2 = inp.apply(clamp(deployProgress - 1));
+            float deployProgress3 = inp.apply(clamp(deployProgress - 2));
+            float deployProgress4 = inp.apply(clamp(deployProgress - 3));
             Draw.z(layer - 1f);
-            Vec2 locator1 = new Vec2(mxS + x, myS + y);
-            Vec2 locator2 = new Vec2(mxP + x, myS + y);
-            Vec2 locator3 = new Vec2(mxS + x, myP + y);
-            Vec2 locator4 = new Vec2(mxP + x, myP + y);
-            Draw.rect(locator, locator1.x, locator1.y);
-            Draw.rect(locator, locator2.x, locator2.y);
-            Draw.rect(locator, locator3.x, locator3.y);
-            Draw.rect(locator, locator4.x, locator4.y);
+
+                for (Point2 p : Geometry.d8edge) {
+                    Draw.rect(locator,
+                            x + deployProgress1 * (mx - x + fulls * p.x),
+                            y + deployProgress1 * (my - y + fulls * p.y)
+                    );
+                }
             //Draw arm
             Draw.z(layer - 1.1f);
             Lines.stroke(3.5f);
-            //up
-            Lines.line(armRegion,
-                    mx - fulls,
-                    my + fulls,
-                    mN + mx + fulls,
-                    my + fulls, false
-            );
-            Lines.line(armRegion,
-                    mx + fulls,
-                    my + fulls,
-                    -mN + mx - fulls,
-                    my + fulls, false
-            );
-            //down
-            Lines.line(armRegion,
-                    mx - fulls,
-                    my - fulls,
-                    mN + mx + fulls,
-                    my - fulls, false
-            );
-            Lines.line(armRegion,
-                    mx + fulls,
-                    my - fulls,
-                    -mN + mx - fulls,
-                    my - fulls, false
-            );
-            //right
-            Lines.line(armRegion,
-                    mx + fulls,
-                    my - fulls,
-                    mx + fulls,
-                    mN + my + fulls, false
-            );
-            Lines.line(armRegion,
-                    mx + fulls,
-                    my + fulls,
-                    mx + fulls,
-                    -mN + my - fulls, false
-            );
-            //left
-            Lines.line(armRegion,
-                    mx - fulls,
-                    my - fulls,
-                    mx - fulls,
-                    mN + my + fulls, false
-            );
-            Lines.line(armRegion,
-                    mx - fulls,
-                    my + fulls,
-                    mx - fulls,
-                    -mN + my - fulls, false
-            );
-            //draw across arm animation
-            Draw.z(layer - 1.2f);
-            if (armAlphaAni) {
-                Lines.line(armRegion,
-                        mx,
-                        my - fulls,
-                        mx,
-                        mL + my + fulls, false
-                );
-                Lines.line(armRegion,
-                        mx,
-                        my + fulls,
-                        mx,
-                        -mL + my - fulls, false
-                );
-                Lines.line(armRegion,
-                        mx - fulls,
-                        my,
-                        mL + mx + fulls,
-                        my, false
-                );
-                Lines.line(armRegion,
-                        mx + fulls,
-                        my,
-                        -mL + mx - fulls,
-                        my, false
-                );
+            if (deployProgress > 2) {
+                for (int i = 0; i < Geometry.d8edge.length; i++){
+                    Point2 p1 = Geometry.d8edge(i);
+                    Point2 p2 = Geometry.d8edge(i + 1);
+                    Lines.line(armRegion,
+                            mx + fulls * p1.x,
+                            my + fulls * p1.y,
+                            mx + fulls * p2.x,
+                            my + fulls * p2.y,
+                            false
+                    );
+                }
+            }
+            else if(deployProgress > 1) {
+                for (Point2 p : Geometry.d8edge) {
+                    for (int d : Mathf.zeroOne) {
+                        Lines.line(armRegion,
+                                mx + fulls * p.x,
+                                my + fulls * p.y,
+                                deployProgress2 * -(-d + 1) * fulls * p.x + mx + fulls * p.x,
+                                deployProgress2 *    -d     * fulls * p.y + my + fulls * p.y,
+                                false
+                        );
+                    }
+                }
             }
             //draw across arm
-            if(drawArm) {
+            Draw.z(layer - 1.2f);
+            if (deployProgress > 3) {
+                /*Lines.line(armRegion,
+                        drillX * 0 + mx + fulls * 1,
+                        drillY * 1 + my + fulls * 0,
+                        drillX * 0 + mx + fulls * 1,
+                        drillY * 1 + my + fulls * 0,
+                        false
+                );*/
                 Lines.line(armRegion,
-                        mxM + mx,
+                        mx + drillX,
+                        my + fulls,
+                        mx + drillX,
                         my - fulls,
-                        mxM + mx,
-                        my + fulls, false
+                        false
                 );
                 Lines.line(armRegion,
-                        mx - fulls,
-                        myM + my,
                         mx + fulls,
-                        myM + my, false
+                        my + drillY,
+                        mx - fulls,
+                        my + drillY,
+                        false
                 );
+            }
+            else if (deployProgress > 2){
+                for (int d : Mathf.zeroOne) {
+                    for (int i : Mathf.signs) {
+                        Lines.line(armRegion,
+                                drillX * d + mx + fulls * i * (-d + 1),
+                                drillY * (-d + 1) + my + fulls * i * d,
+                                drillX * d + mx + i * (-d + 1) * (-deployProgress3 * fulls) + fulls * i * (-d + 1),
+                                drillY * (-d + 1) + my + i * d * (-deployProgress3 * fulls) + fulls * i * d,
+                                false
+                        );
+                    }
+                }
             }
             //draw drill
             Draw.z(layer - 1.1f);
 
-            Draw.alpha(drillAlpha * Draw.getColor().a);
+            Draw.alpha(deployProgress4 * Draw.getColor().a);
 
-            Draw.rect(drill, mxM + mx, myM + my);
+            Draw.rect(drill, drillX + mx, drillY + my);
         }
         @Override
         public void draw(){
             Draw.rect(region, x, y);
             Draw.rect(rotation >= 2 ? sideRegion2 : sideRegion1, x, y, rotdeg());
-            if (drawArea) {
+            if (drawDrill) {
                 Draw.color(Pal.shadow);
                 drawDrill(x - 8f, y - 8f, mx - 8f, my - 8f, Layer.floor + 2);
 
@@ -475,8 +422,6 @@ public class Quarry extends Block {
                 Draw.z(Layer.blockOver);
 
                 Lines.stroke(0.6f);
-
-                DrillPos = new Vec2(mxM + mx, myM + my);
                 Item tileItem;
                 for (int ix = 0; ix < areaSize; ix++) {
                     for (int iy = 0; iy < areaSize; iy++) {
@@ -518,19 +463,6 @@ public class Quarry extends Block {
             super.write(write);
             write.f(progress);
             write.f(warmup);
-
-            write.f(mxP);
-            write.f(mxS);
-            write.f(mxM);
-
-            write.f(myP);
-            write.f(myS);
-            write.f(myM);
-
-            write.f(mL);
-            write.f(mN);
-
-            write.f(drillAlpha);
         }
 
         @Override
@@ -539,19 +471,6 @@ public class Quarry extends Block {
             if(revision >= 1){
                 progress = read.f();
                 warmup = read.f();
-
-                mxP = read.f();
-                mxS = read.f();
-                mxM = read.f();
-
-                myP = read.f();
-                myS = read.f();
-                myM = read.f();
-
-                mL = read.f();
-                mN = read.f();
-
-                drillAlpha = read.f();
             }
         }
     }

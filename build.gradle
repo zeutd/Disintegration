@@ -83,8 +83,8 @@ jar{
 }
 
 task deploy(type: Jar){
-    dependsOn jarAndroid
     dependsOn jar
+    dependsOn jarAndroid
     archiveFileName = "${project.archivesBaseName}.jar"
 
     from{ [zipTree("$buildDir/libs/${project.archivesBaseName}Desktop.jar"), zipTree("$buildDir/libs/${project.archivesBaseName}Android.jar")] }
@@ -110,5 +110,11 @@ task testMod {
         exec {
             commandLine 'cmd', "/c", "${gamePath}"
         }
+    }
+}
+
+task testOpenGame {
+    exec {
+        commandLine 'cmd', "/c", "${gamePath}"
     }
 }

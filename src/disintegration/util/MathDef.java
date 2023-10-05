@@ -8,7 +8,7 @@ public class MathDef {
         return (float) Math.round(value * step) / step;
     }
 
-    /**Better Mathf.lerp*/
+    ///**Better Mathf.lerp*/
 
     //public static float lerp(float value, float target, float power, float speed){
         //return (((target / speed - value / speed) / power + value / speed) * speed + (target - value) / speed);

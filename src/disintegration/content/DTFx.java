@@ -28,9 +28,7 @@ public class DTFx {
     public static final Effect
         electricResonated = new Effect(40f, e -> {
             color(Pal2.hyperBlue);
-            randLenVectors(e.id, 2, 1f + e.fin() * 2f, (x, y) -> {
-                Fill.square(e.x + x, e.y + y, e.fslope() * 1.1f, 45f);
-            });
+            randLenVectors(e.id, 2, 1f + e.fin() * 2f, (x, y) -> Fill.square(e.x + x, e.y + y, e.fslope() * 1.1f, 45f));
         }),
         hitLaserYellow = new Effect(8, e -> {
             color(Color.white, Pal.bulletYellow, e.fin());
@@ -41,7 +39,7 @@ public class DTFx {
         }),
         quarryDrillEffect = new Effect(60, e -> {
             color(e.color, Color.gray, e.fin() * 3 >= 1 ? 1 : e.fin() * 3);
-            Draw.rect(atlas.find("large-orb"), e.x + Angles.trnsx(e.rotation, e.finpow() * 20), e.y + Angles.trnsy(e.rotation, e.finpow() * 20), e.fout() * 8f + 2, e.fout() * 8f + 2);
+            Draw.rect(atlas.find("large-orb"), e.x + Angles.trnsx(e.rotation, e.fin(Interp.pow5Out) * 20), e.y + Angles.trnsy(e.rotation, e.fin(Interp.pow5Out) * 20), e.foutpow() * 8f + 2, e.foutpow() * 8f + 2);
         }),
         hitFracture = new Effect(30, e -> {
             color(Pal.berylShot);
@@ -97,10 +95,8 @@ public class DTFx {
                 lineAngle(e.x + x, e.y + y, ang, e.fout() * 6 + 1f);
             });
         }),
-        compressSmoke = new Effect(90, e -> {
-            randLenVectors(e.id, 7, 3f + e.fin(Interp.pow5Out) * 15f, (x, y) -> {
-                color(Pal.stoneGray);
-                Fill.square(e.x + x, e.y + y, e.fout(Interp.pow5Out) * 1.5f + 0.5f, 45);
-            });
-        });
+        compressSmoke = new Effect(90, e -> randLenVectors(e.id, 7, 3f + e.fin(Interp.pow5Out) * 15f, (x, y) -> {
+            color(Pal.stoneGray);
+            Fill.square(e.x + x, e.y + y, e.fout(Interp.pow5Out) * 1.5f + 0.5f, 45);
+        }));
 }
