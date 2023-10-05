@@ -55,11 +55,13 @@ import mindustry.type.*;
 import mindustry.type.unit.MissileUnitType;
 import mindustry.world.Block;
 import mindustry.world.blocks.defense.ShockMine;
+import mindustry.world.blocks.defense.Wall;
 import mindustry.world.blocks.defense.turrets.ContinuousLiquidTurret;
 import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.defense.turrets.PowerTurret;
 import mindustry.world.blocks.distribution.*;
 import mindustry.world.blocks.environment.Floor;
+import mindustry.world.blocks.environment.OreBlock;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.environment.SteamVent;
 import mindustry.world.blocks.payloads.Constructor;
@@ -91,8 +93,12 @@ public class DTBlocks {
             iceWater, greenIce, greenFloor, spaceStationFloor, floatIce,
             ethyleneVent,
             greenIceWall,
+        //ore
+            oreIridium, oreIron, oreSilver,
     //defence
             iridiumWall, iridiumWallLarge,
+            steelWall, steelWallLarge,
+            ironWall, ironWallLarge,
     //transport
             ironConveyor, alternateOverflowGate, ironSorter, invertedIronSorter, fastRouter, fastJunction, ironItemBridge,
             iridiumConveyor,
@@ -118,7 +124,7 @@ public class DTBlocks {
             holy,
             sparkover, axe, ambush,
             voltage,
-            //test
+        //test
             sabre,
     //drills
             quarry, pressureDrill, rockExtractor,
@@ -178,6 +184,24 @@ public class DTBlocks {
             albedo = 0.6f;
         }};
 
+        oreIridium = new OreBlock("ore-iridium", DTItems.iridium){{
+            oreDefault = true;
+            oreThreshold = 0.828f;
+            oreScale = 10f;
+        }};
+
+        oreIron = new OreBlock("ore-iron", DTItems.iron){{
+            oreDefault = true;
+            oreThreshold = 0.828f;
+            oreScale = 23.952381f;
+        }};
+
+        oreSilver = new OreBlock("ore-silver", DTItems.silver){{
+            oreDefault = true;
+            oreThreshold = 0.864f;
+            oreScale = 24.904762f;
+        }};
+
         ethyleneVent = new SteamVent("ethylene-vent"){{
             parent = blendGroup = Blocks.ice;
             effect = DTFx.ethyleneVentSteam;
@@ -190,15 +214,43 @@ public class DTBlocks {
             shardChance = 0.1f;
             shard = DTBullets.shard;
             size = 1;
-            health = 700;
+            scaledHealth = 700;
+            armor = 2f;
             requirements(Category.defense, with(DTItems.iridium, 8));
         }};
         iridiumWallLarge = new ShardWall("iridium-wall-large"){{
             shardChance = 0.1f;
             shard = DTBullets.shard;
             size = 2;
-            health = 2800;
+            scaledHealth = 700;
+            armor = 2f;
             requirements(Category.defense, with(DTItems.iridium, 24));
+        }};
+
+        steelWall = new Wall("steel-wall"){{
+            size = 1;
+            scaledHealth = 600;
+            armor = 8f;
+            requirements(Category.defense, with(DTItems.steel, 8));
+        }};
+        steelWallLarge = new Wall("steel-wall-large"){{
+            size = 2;
+            scaledHealth = 600;
+            armor = 8f;
+            requirements(Category.defense, with(DTItems.steel, 24));
+        }};
+
+        ironWall = new Wall("iron-wall"){{
+            size = 1;
+            scaledHealth = 450;
+            armor = 8f;
+            requirements(Category.defense, with(DTItems.iron, 8));
+        }};
+        ironWallLarge = new Wall("iron-wall-large"){{
+            size = 2;
+            scaledHealth = 450;
+            armor = 8f;
+            requirements(Category.defense, with(DTItems.iron, 24));
         }};
         //transport
         ironConveyor = new Conveyor("iron-conveyor"){{
@@ -1502,6 +1554,15 @@ public class DTBlocks {
            regionRotated1 = 1;
            itemCapacity = 100;
            acceptsItems = true;
+
+           areaSize = 11;
+           liquidBoostIntensity = 1.5f;
+           mineTime = 400f;
+
+           deploySpeed = 0.015f;
+           deployInterp = new Interp.PowOut(4);
+           deployInterpInverse = new Interp.PowIn(4);
+           drillMoveSpeed = 0.07f;
            consumePower(20);
            consumeLiquid(Liquids.hydrogen, 5f / 60f);
            consumeLiquid(Liquids.nitrogen, 6f / 60f).boost();

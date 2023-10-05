@@ -33,6 +33,7 @@ public class DTPlanets {
                 atmosphereRadIn = 0.02f;
                 atmosphereRadOut = 0.3f;
                 tidalLock = true;
+                defaultEnv = Env.terrestrial | Env.groundWater | Env.groundOil | Env.oxygen;
                 orbitSpacing = 4f;
                 totalRadius += 2.6f;
                 clearSectorOnLose = true;

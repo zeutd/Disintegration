@@ -481,7 +481,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
             });
         }*/
 
-        Seq<Block> ores = Seq.with(Blocks.oreCopper, Blocks.oreLead);
+        Seq<Block> ores = Seq.with(DTBlocks.oreIron, Blocks.oreLead, DTBlocks.oreSilver);
         float poles = Math.abs(sector.tile.v.y);
         float nmag = 0.5f;
         float scl = 1f;
@@ -492,7 +492,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
         }
 
         if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x + 1, sector.tile.v.y, sector.tile.v.z)*nmag + poles > 0.5f*addscl){
-            ores.add(Blocks.oreTitanium);
+            ores.add(DTBlocks.oreIridium);
         }
 
         if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x + 2, sector.tile.v.y, sector.tile.v.z)*nmag + poles > 0.7f*addscl){

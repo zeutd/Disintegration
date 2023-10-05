@@ -149,17 +149,6 @@ public class RepairDroneStation extends Block {
                 units.clear();
             }
 
-            if(!readUnits.isEmpty()){
-                units.clear();
-                readUnits.each(i -> {
-                    var unit = Groups.unit.getByID(i);
-                    if(unit != null){
-                        units.add(unit);
-                    }
-                });
-                readUnits.clear();
-            }
-
             repairing = !indexer.getDamaged(team).copy().removeAll(b -> b.dst(x, y) > repairRange || b.id == id || b.dead()).isEmpty();
 
             if(repairing && units.size < dronesCreated && units.size < unitsCreated && (droneProgress += delta() * state.rules.unitBuildSpeed(team) * efficiency / intervalTime) >= 1f){
@@ -235,7 +224,13 @@ public class RepairDroneStation extends Block {
             unitsCreated = read.b();
             readUnits.clear();
             for (int i = 0; i < count; i++) {
-                readUnits.add(read.i());
+                var unit = Groups.unit.getByID(read.i());
+                if(unit != null){
+                    units.add(unit);
+                    if(unit instanceof BuildingTetherc bt){
+                        bt.building(this);
+                    }
+                }
             }
         }
     }
