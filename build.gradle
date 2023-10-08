@@ -17,8 +17,8 @@ ext{
     mindustryVersion = 'v146'
     jabelVersion = "0.9.0"
     sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-    gamePath = /*your own game path*/ "D:/mdt/V7/Mindustry.exe"
-    modPath = /*your own mod path*/ "C:/Users/yizhe/AppData/Roaming/Mindustry/mods"
+    gamePath ="D:/mdt/V7/Mindustry.exe"
+    modPath ="${System.getenv("USERPROFILE")}/AppData/Roaming/Mindustry/mods"
 }
 
 //java 8 backwards compatibility flag
@@ -114,7 +114,9 @@ task testMod {
 }
 
 task testOpenGame {
-    exec {
-        commandLine 'cmd', "/c", "${gamePath}"
+    doLast {
+        exec {
+            commandLine 'cmd', "/c", "${gamePath}"
+        }
     }
 }
