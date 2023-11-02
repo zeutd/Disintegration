@@ -5,6 +5,7 @@ import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
 import arc.math.Interp;
 import arc.math.Mathf;
+import arc.struct.Seq;
 import disintegration.DTVars;
 import disintegration.entities.bullet.BlockBulletType;
 import disintegration.entities.bullet.ConnectBulletType;
@@ -14,6 +15,7 @@ import disintegration.entities.unit.weapons.PortableBlockWeapon;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
+import disintegration.world.blocks.debug.ShaderTestBlock;
 import disintegration.world.blocks.defence.RepairDroneStation;
 import disintegration.world.blocks.defence.ShardWall;
 import disintegration.world.blocks.defence.turrets.ElectricTowerTurret;
@@ -38,19 +40,13 @@ import mindustry.Vars;
 import mindustry.content.*;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.*;
-import mindustry.entities.effect.ExplosionEffect;
-import mindustry.entities.effect.MultiEffect;
-import mindustry.entities.effect.WaveEffect;
-import mindustry.entities.effect.WrapEffect;
+import mindustry.entities.effect.*;
 import mindustry.entities.part.*;
 import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootSpread;
 import mindustry.gen.LegsUnit;
 import mindustry.gen.Sounds;
-import mindustry.graphics.CacheLayer;
-import mindustry.graphics.Drawf;
-import mindustry.graphics.Layer;
-import mindustry.graphics.Pal;
+import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.type.unit.MissileUnitType;
 import mindustry.world.Block;
@@ -90,7 +86,7 @@ public class DTBlocks {
     //TODO check bundles
     public static Block
     //environment
-            iceWater, greenIce, greenFloor, spaceStationFloor, floatIce,
+            iceWater, greenIce, greenFloor, spaceStationFloor, spaceStationFloorSturdy, floatIce,
             ethyleneVent,
             greenIceWall,
         //ore
@@ -109,7 +105,7 @@ public class DTBlocks {
     //laser
             laserDevice, laserReflector, laserRouter, laserSource,
     //factory
-            boiler, electrolyser, siliconRefiner, graphiteCompressor,
+            boiler, electrolyser, siliconRefiner, graphiteCompressor, steelSmelter, steelBlastFurnace,
     //payload
             payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
     //power
@@ -135,7 +131,9 @@ public class DTBlocks {
     //debug
             sandboxBlock,
             dpsBlock,
-            editorBlock
+            editorBlock,
+            cheatBlock,
+            shaderTestBlock
             ;
     public static void load() {
         //environment
@@ -164,8 +162,14 @@ public class DTBlocks {
         spaceStationFloor = new ConnectFloor("space-station-floor"){{
             variants = 0;
             blendGroup = Blocks.empty;
+            connects = Seq.with(this);
         }};
-        Blocks.empty.asFloor().blendGroup = spaceStationFloor;
+        spaceStationFloorSturdy = new ConnectFloor("space-station-floor-sturdy"){{
+            variants = 0;
+            blendGroup = Blocks.empty;
+            connects = Seq.with(spaceStationFloor.asFloor(), this);
+        }};
+        ((ConnectFloor)spaceStationFloor.asFloor()).connects.add(spaceStationFloorSturdy.asFloor());
 
         iceWater = new Floor("ice-water"){{
             speedMultiplier = 0.5f;
@@ -506,6 +510,38 @@ public class DTBlocks {
             hasItems = true;
 
             consumeItem(Items.coal, 5);
+        }};
+
+        steelSmelter = new GenericCrafter("steel-smelter"){{
+            requirements(Category.crafting, with(DTItems.iron, 60, Items.graphite, 30, Items.silicon, 30, Items.metaglass, 20));
+            craftEffect = Fx.smeltsmoke;
+            outputItem = new ItemStack(DTItems.steel, 1);
+            craftTime = 60f;
+            size = 2;
+            hasPower = hasItems = true;
+            drawer = new DrawMulti(new DrawDefault(), new DrawFlame(Color.valueOf("ffef99")));
+            ambientSound = Sounds.smelter;
+            ambientSoundVolume = 0.07f;
+
+            consumeItems(with(DTItems.iron, 1, Items.coal, 1));
+            consumePower(0.60f);
+        }};
+
+        steelBlastFurnace = new HeatCrafter("steel-blast-furnace"){{
+            requirements(Category.crafting, with(DTItems.steel, 100, Items.graphite, 190, Items.silicon, 50, DTItems.iron, 90, DTItems.silver, 20));
+            craftEffect = new MultiEffect(Fx.producesmoke, new RadialEffect(DTFx.blastFurnaceSmoke, 4, 90f, 5f)) ;
+            outputItem = new ItemStack(DTItems.steel, 10);
+            craftTime = 240f;
+            size = 5;
+            hasItems = true;
+            drawer = new DrawMulti(new DrawDefault(), new DrawFlame(Color.valueOf("ffef99")), new DrawHeatInput());
+            ambientSound = Sounds.smelter;
+            ambientSoundVolume = 0.07f;
+            heatRequirement = 15;
+            maxEfficiency = 2;
+            itemCapacity = 30;
+
+            consumeItems(with(DTItems.iron, 8, Items.coal, 4));
         }};
         //payload
         /*payloadPropulsionTower = new PayloadMassDriver("payload-propulsion-tower"){{
@@ -1648,7 +1684,7 @@ public class DTBlocks {
         for (int i = 1; i <= 9; i+=2) {
             int finalI = i;
             new FloorBuilder("space-station-builder-" + finalI){{
-                requirements(Category.effect, with(DTItems.spaceStationPanel, 5 * finalI * finalI));
+                requirements(Category.effect, with(DTItems.spaceStationPanel, 20 + 2 * finalI * finalI));
                 size = 1;
                 envEnabled = envRequired = Env.space;
                 range = finalI;
@@ -1656,31 +1692,53 @@ public class DTBlocks {
                 floorOffset = range + 1;
                 rotateDraw = false;
                 floor = spaceStationFloor.asFloor();
+                buildCostMultiplier = 3;
+                whiteList = Seq.with(Blocks.empty.asFloor());
             }};
         }
 
         for (int i = 1; i <= 9; i+=2) {
             int finalI = i;
             new FloorBuilder("space-station-breaker-" + finalI){{
-                requirements(Category.effect, with(DTItems.spaceStationPanel, 5 * finalI * finalI));
+                requirements(Category.effect, with(DTItems.spaceStationPanel, 20));
                 size = 1;
                 envEnabled = envRequired = Env.space;
                 range = finalI;
                 floor = Blocks.empty.asFloor();
+                buildCostMultiplier = 3;
+                returnItem = new ItemStack(DTItems.spaceStationPanel, DTVars.spaceStationBaseRequirement);
+                whiteList = Seq.with(spaceStationFloor.asFloor());
             }};
         }
         //debug
         sandboxBlock = new DebugBlock("sandbox-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
-            runnable = () -> Vars.state.rules.infiniteResources = !Vars.state.rules.infiniteResources;
+            runs = b -> Vars.state.rules.infiniteResources = !Vars.state.rules.infiniteResources;
+            buildCostMultiplier = 99;
             requirements(Category.effect, with(), true);
         }};
 
         editorBlock = new DebugBlock("editor-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
-            runnable = () -> Vars.state.rules.editor = !Vars.state.rules.editor;
+            runs = b -> Vars.state.rules.editor = !Vars.state.rules.editor;
+            buildCostMultiplier = 99;
+            requirements(Category.effect, with(), true);
+        }};
+
+        cheatBlock = new DebugBlock("cheat-block"){{
+            buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
+            envEnabled = Env.any;
+            runs = b -> Vars.state.rules.teams.get(b.team).cheat = Vars.state.rules.teams.get(b.team).cheat;
+            buildCostMultiplier = 99;
+            requirements(Category.effect, with(), true);
+        }};
+
+        shaderTestBlock = new ShaderTestBlock("shader-test-block"){{
+            buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
+            envEnabled = Env.any;
+            shader = Shaders.buildBeam;
             requirements(Category.effect, with(), true);
         }};
         dpsBlock = new DPSBlock("dps-block"){{

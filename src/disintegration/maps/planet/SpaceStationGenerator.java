@@ -25,7 +25,7 @@ public class SpaceStationGenerator extends BlankPlanetGenerator {
         int sx = width/2, sy = height/2;
 
         Floor background = Blocks.empty.asFloor();
-        Floor ground = DTBlocks.spaceStationFloor.asFloor();
+        Floor ground = DTBlocks.spaceStationFloorSturdy.asFloor();
 
         tiles.eachTile(t -> t.setFloor(background));
 

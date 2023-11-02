@@ -7,7 +7,6 @@ import disintegration.type.SpaceStation;
 import mindustry.Vars;
 import mindustry.gen.Icon;
 import mindustry.gen.Tex;
-import mindustry.graphics.g3d.PlanetParams;
 import mindustry.type.Planet;
 import mindustry.type.Sector;
 import mindustry.ui.Styles;
@@ -20,7 +19,7 @@ import static mindustry.Vars.ui;
 
 public class SpaceStationDialog extends BaseDialog {
 
-    public PlanetParams state = new PlanetParams();
+    public Planet selectedPlanet;
 
     public SpaceStationDialog() {
         super(bundle.get("spacestation", "Space Stations Menu"));
@@ -40,17 +39,16 @@ public class SpaceStationDialog extends BaseDialog {
             });
         });
 
-        Table tablespaceStation = new Table(st -> {
+        Table tableSpaceStation = new Table(st -> {
             st.image(Core.atlas.find("disintegration-spacestation")).size(300, 400).bottom();
             for (int i = 0; i < 1; i++) {
                 st.row();
             }
             st.button(Icon.trash, () -> ui.showConfirm("@confirm", "@disintegration.clearspacestation.confirm", () -> {
-                SpaceStation spacestationi = DTVars.spaceStations.find(s -> s.parent == state.planet);
+                SpaceStation spacestationi = DTVars.spaceStations.find(s -> s.parent == selectedPlanet);
                 DTVars.spaceStations.remove(spacestationi);
-                DTVars.spaceStationPlanets.remove(state.planet);
+                DTVars.spaceStationPlanets.remove(selectedPlanet);
                 spacestationi.accessible = false;
-                spacestationi.clearUnlock();
                 spacestationi.visible = false;
                 spacestationi.sectors.clear();
                 Vars.ui.planet.show();
@@ -65,8 +63,8 @@ public class SpaceStationDialog extends BaseDialog {
                     Planet planet = content.planets().get(i);
                     if(selectable(planet)){
                         t.button(planet.localizedName, Icon.icons.get(planet.icon + "Small", Icon.icons.get(planet.icon, Icon.commandRallySmall)), Styles.flatTogglet, () -> {
-                            state.planet = planet;
-                        }).width(190).height(40).growX().update(bb -> bb.setChecked(state.planet == planet)).with(w -> w.marginLeft(10f)).get().getChildren().get(1).setColor(planet.iconColor);
+                            selectedPlanet = planet;
+                        }).width(190).height(40).growX().update(bb -> bb.setChecked(selectedPlanet == planet)).with(w -> w.marginLeft(10f)).get().getChildren().get(1).setColor(planet.iconColor);
                         t.row();
                     }
                 }
@@ -80,15 +78,15 @@ public class SpaceStationDialog extends BaseDialog {
                         pt.defaults().size(300, 400);
                         pt.stack(
                                 tableAdd,
-                                tablespaceStation
+                                tableSpaceStation
                         );
                         pt.update(() -> {
-                            if (DTVars.spaceStationPlanets.contains(state.planet)){
-                                tablespaceStation.visible = true;
+                            if (DTVars.spaceStationPlanets.contains(selectedPlanet)){
+                                tableSpaceStation.visible = true;
                                 tableAdd.visible = false;
                             }
                             else {
-                                tablespaceStation.visible = false;
+                                tableSpaceStation.visible = false;
                                 tableAdd.visible = true;
                             }
                         });

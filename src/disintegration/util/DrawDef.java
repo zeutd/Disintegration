@@ -18,6 +18,10 @@ public class DrawDef {
                     {0,-1}
     };
 
+    /**
+     * Original code from Project Unity
+     * Author: @Xeloboyo
+     * */
     public static TextureRegion[] splitRegionTile(TextureRegion region, int w, int h, int tilesize){
         int size = w * h;
         TextureRegion[] regions = new TextureRegion[size];

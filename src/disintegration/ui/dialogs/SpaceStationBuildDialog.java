@@ -6,7 +6,7 @@ import disintegration.content.DTItems;
 import disintegration.content.DTLoadouts;
 import disintegration.type.SpaceStation;
 import mindustry.Vars;
-import mindustry.content.Planets;
+import mindustry.ctype.ContentType;
 import mindustry.game.Schematic;
 import mindustry.gen.Icon;
 import mindustry.type.Item;
@@ -27,8 +27,6 @@ public class SpaceStationBuildDialog extends BaseDialog {
 
     boolean valid;
 
-    Planet rootPlanet = Planets.serpulo;
-
 
     ObjectMap<Sector, Integer> itemCache = new ObjectMap<>();
     Item item = DTItems.spaceStationPanel;
@@ -40,7 +38,7 @@ public class SpaceStationBuildDialog extends BaseDialog {
 
     void setup(){
         rebuildItems();
-        valid = itemNum >= DTVars.spaceStationRequire;
+        valid = itemNum >= DTVars.spaceStationRequirement;
         cont.clear();
         buttons.clear();
 
@@ -50,16 +48,24 @@ public class SpaceStationBuildDialog extends BaseDialog {
             t.row();
             t.table(pt -> {
                 pt.image(item.uiIcon).left().size(iconSmall);
-                pt.add((itemNum >= DTVars.spaceStationRequire ? "" : "[scarlet]") + (Math.min(DTVars.spaceStationRequire, itemNum) + "[lightgray]/" + DTVars.spaceStationRequire));
+                pt.add((itemNum >= DTVars.spaceStationRequirement ? "" : "[scarlet]") + (Math.min(DTVars.spaceStationRequirement, itemNum) + "[lightgray]/" + DTVars.spaceStationRequirement));
             }).left();
         });
         buttons.button("@launch.text", Icon.ok, () -> {
             hide();
+            DTUI.spaceStation.hide();
             Vars.ui.planet.show();
-            Planet p = DTUI.spaceStation.state.planet;
-            removeItem(DTVars.spaceStationRequire);
+            Planet p = DTUI.spaceStation.selectedPlanet;
+            removeItem(DTVars.spaceStationRequirement);
             DTVars.spaceStationPlanets.add(p);
-            DTVars.spaceStations.add(new SpaceStation(p.name + "-spaceStation", p));
+            Planet s = Vars.content.getByName(ContentType.planet, p.name + "-space-station");
+            if(s != null){
+                s.accessible = true;
+                s.visible = true;
+                DTVars.spaceStations.add((SpaceStation) s);
+                return;
+            }
+            DTVars.spaceStations.add(new SpaceStation(p.name + "-space-station", p));
         }).disabled(b -> !valid);
         cont.row();
         cont.add("@sector.missingresources").visible(() -> !valid);
@@ -67,21 +73,25 @@ public class SpaceStationBuildDialog extends BaseDialog {
 
     public void rebuildItems(){
         itemNum = 0;
-        for (Sector sector : rootPlanet.sectors) {
-            if (sector.hasBase()) {
-                int cached = sector.items().get(item);
-                itemCache.put(sector, cached);
-                itemNum += cached;
+        for (Planet p : Vars.content.planets()) {
+            for (Sector sector : p.sectors) {
+                if (sector.hasBase()) {
+                    int cached = sector.items().get(item);
+                    itemCache.put(sector, cached);
+                    itemNum += cached;
+                }
             }
         }
     }
     public void removeItem(int amount){
         int left = amount;
-        for (Sector sec : rootPlanet.sectors) {
-            if(left <= 0) break;
-            int remove = Math.min(sec.items().get(DTItems.spaceStationPanel), left);
-            sec.removeItem(DTItems.spaceStationPanel, remove);
-            left -= remove;
+        for (Planet p : Vars.content.planets()) {
+            for (Sector sec : p.sectors) {
+                if(left <= 0) break;
+                int remove = Math.min(sec.items().get(DTItems.spaceStationPanel), left);
+                sec.removeItem(DTItems.spaceStationPanel, remove);
+                left -= remove;
+            }
         }
     }
 }

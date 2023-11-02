@@ -9,14 +9,16 @@ import mindustry.type.Planet;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Objects;
 
 public class SpaceStationReader implements ApplicationListener {
     public void read(){
         for (String s : DTVars.SpaceStationFi.readString().split("/")) {
             Planet parent = Vars.content.planet(s);
             if(parent != null){
+                String whiteSpace = Objects.equals(Core.bundle.get("spacestationwhitespace"), "true") ? " " : "";
                 SpaceStation spaceStation = new SpaceStation(parent.name + "-spacestation", parent);
-                spaceStation.localizedName = parent.localizedName + " " + Core.bundle.get("spacestation");
+                spaceStation.localizedName = parent.localizedName + whiteSpace + Core.bundle.get("spacestation");
                 DTVars.spaceStations.add(spaceStation);
                 DTVars.spaceStationPlanets.add(parent);
             }

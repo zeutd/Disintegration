@@ -41,7 +41,7 @@ public class DTItems {
         }};
         spaceStationPanel = new Item("space-station-panel", Color.valueOf("F5F6FF")){{
             hardness = 2;
-            cost = 2;
+            cost = 1;
         }};
 
         concussionAlloy = new Item("concussion-alloy", Color.valueOf("EFEAEA")){{

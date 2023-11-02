@@ -1,18 +1,21 @@
 package disintegration;
 
-import arc.Core;
 import arc.Events;
 import disintegration.content.*;
+import disintegration.graphics.DTShaders;
 import mindustry.game.EventType;
 import mindustry.mod.Mod;
+
+import static arc.Core.app;
 
 public class DisintegrationJavaMod extends Mod{
     public DisintegrationJavaMod(){
         Events.on(EventType.ClientLoadEvent.class, e -> {
-            Core.app.post(DTVars.DTUI::init);
-            Core.app.addListener(DTVars.DTUI);
-            Core.app.post(DTVars.spaceStationReader::read);
-            Core.app.addListener(DTVars.spaceStationReader);
+            app.post(DTVars::init);
+            app.post(DTShaders::init);
+            app.addListener(DTVars.DTUI);
+            app.post(DTVars.spaceStationReader::read);
+            app.addListener(DTVars.spaceStationReader);
             /*Core.app.post(() -> Vars.content.setCurrentMod(new Mods.LoadedMod(null, null, null, null,
                     new Mods.ModMeta(){{
                         displayName = "disintegration";

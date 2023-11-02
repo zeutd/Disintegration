@@ -5,6 +5,7 @@ import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Lines;
 import arc.graphics.g2d.TextureRegion;
+import arc.graphics.gl.FrameBuffer;
 import arc.math.Interp;
 import arc.math.Mathf;
 import arc.math.geom.Geometry;
@@ -41,6 +42,7 @@ import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
 
 import static arc.Core.atlas;
+import static arc.Core.graphics;
 import static arc.math.Mathf.clamp;
 import static arc.math.Mathf.rand;
 import static mindustry.Vars.iconSmall;
@@ -65,6 +67,7 @@ public class Quarry extends Block {
     public float drillMoveSpeed;
     public float deploySpeed;
     public float drillMargin = 20f;
+    public float elevation = 8f;
 
     protected float fulls = areaSize * tilesize/2f;
 
@@ -216,6 +219,7 @@ public class Quarry extends Block {
         }
     }
     public class QuarryBuild extends Building {
+        private FrameBuffer shadow = null;
         public float progress;
         public float deployProgress;
         //float mx = 0, mxS = 0, mxP = 0, mxM = 0, mxR = 0, my = 0, myS = 0, myP = 0, myM = 0, myR = 0, mN = -2 * fulls, mL = -2 * fulls;
@@ -231,6 +235,8 @@ public class Quarry extends Block {
         Seq<Item> itemList = new Seq<>();
 
         public float mx = 0, my = 0, drillX = 0, drillY = 0, targetX = 0, targetY = 0;
+
+        public float deployProgress1, deployProgress2, deployProgress3, deployProgress4;
 
         Interp inp;
 
@@ -321,10 +327,6 @@ public class Quarry extends Block {
         }
 
         public void drawDrill(float x, float y, float mx, float my, float layer){
-            float deployProgress1 = inp.apply(clamp(deployProgress - 0));
-            float deployProgress2 = inp.apply(clamp(deployProgress - 1));
-            float deployProgress3 = inp.apply(clamp(deployProgress - 2));
-            float deployProgress4 = inp.apply(clamp(deployProgress - 3));
             Draw.z(layer - 1f);
 
                 for (Point2 p : Geometry.d8edge) {
@@ -403,20 +405,31 @@ public class Quarry extends Block {
             //draw drill
             Draw.z(layer - 1.1f);
 
-            Draw.alpha(deployProgress4 * Draw.getColor().a);
+            if (deployProgress4 > 0)Draw.alpha(deployProgress4 * Draw.getColor().a);
 
             Draw.rect(drill, drillX + mx, drillY + my);
         }
         @Override
         public void draw(){
+            if (deployProgress >= 0 && deployProgress <= 1)deployProgress1 = inp.apply(clamp(deployProgress - 0));
+            else if (deployProgress >= 1 && deployProgress <= 2)deployProgress2 = inp.apply(clamp(deployProgress - 1));
+            else if (deployProgress >= 2 && deployProgress <= 3)deployProgress3 = inp.apply(clamp(deployProgress - 2));
+            else if (deployProgress >= 3 && deployProgress <= 4)deployProgress4 = inp.apply(clamp(deployProgress - 3));
             Draw.rect(region, x, y);
             Draw.rect(rotation >= 2 ? sideRegion2 : sideRegion1, x, y, rotdeg());
-            if (drawDrill) {
+            drawDrill(x, y, mx, my, Layer.flyingUnitLow - 0.01f);
+            Draw.draw(Layer.floor + 2, () -> {
+                if (shadow == null) shadow = new FrameBuffer(graphics.getWidth(), graphics.getHeight());
+                Draw.flush();
+                shadow.resize(graphics.getWidth(), graphics.getHeight());
+                shadow.begin();
+                drawDrill(x - elevation, y - elevation, mx - elevation, my - elevation, Layer.floor + 2);
+                Draw.flush();
+                shadow.end();
                 Draw.color(Pal.shadow);
-                drawDrill(x - 8f, y - 8f, mx - 8f, my - 8f, Layer.floor + 2);
-
-                Draw.color();
-                drawDrill(x, y, mx, my, Layer.flyingUnitLow - 0.01f);
+                Draw.rect(Draw.wrap(shadow.getTexture()), Core.camera.position.x, Core.camera.position.y, Core.camera.width, -Core.camera.height);
+            });
+            if (drawDrill) {
                 Draw.reset();
                 //draw ore stroke
                 Draw.z(Layer.blockOver);

@@ -17,9 +17,11 @@ java{
 
 ext{
     //the build number that this mod is made for
-    mindustryVersion = 'v145'
+    mindustryVersion = 'v146'
     jabelVersion = "93fde537c7"
     sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+    gamePath = "D:/mdt/V7/Mindustry.exe"
+    modPath = "${System.getenv("USERPROFILE")}/AppData/Roaming/Mindustry/mods"
 }
 
 //java 8 backwards compatibility flag

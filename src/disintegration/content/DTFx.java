@@ -98,5 +98,19 @@ public class DTFx {
         compressSmoke = new Effect(90, e -> randLenVectors(e.id, 7, 3f + e.fin(Interp.pow5Out) * 15f, (x, y) -> {
             color(Pal.stoneGray);
             Fill.square(e.x + x, e.y + y, e.fout(Interp.pow5Out) * 1.5f + 0.5f, 45);
-        }));
+        })),
+
+        blastFurnaceSmoke = new Effect(100, e -> {
+            color(Pal.stoneGray);
+            alpha(0.8f);
+
+            rand.setSeed(e.id);
+            for(int i = 0; i < 4; i++){
+                float len = rand.random(8f, 14f), rot = rand.range(20f) + e.rotation, radius = rand.random(1.7f, 3f);
+
+                e.scaled(e.lifetime * rand.random(0.3f, 1f), b -> {
+                    v.trns(rot, len * b.fin(Interp.pow5Out));
+                    Fill.circle(e.x + v.x, e.y + v.y, radius * b.fout(Interp.pow5Out) + 0.2f);
+                });
+            }});
 }

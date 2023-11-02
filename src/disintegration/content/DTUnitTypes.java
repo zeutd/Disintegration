@@ -5,16 +5,20 @@ import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
 import arc.math.Angles;
 import arc.math.Mathf;
+import arc.util.Time;
 import disintegration.ai.types.RepairDroneAI;
 import disintegration.entities.abilities.DTArmorPlateAbility;
 import disintegration.graphics.Pal2;
 import disintegration.util.DTUtil;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
+import mindustry.content.Liquids;
 import mindustry.entities.Effect;
+import mindustry.entities.bullet.BombBulletType;
 import mindustry.entities.bullet.BulletType;
 import mindustry.entities.bullet.EmpBulletType;
 import mindustry.entities.bullet.LaserBoltBulletType;
+import mindustry.entities.part.DrawPart;
 import mindustry.entities.part.RegionPart;
 import mindustry.gen.EntityMapping;
 import mindustry.gen.Sounds;
@@ -24,6 +28,7 @@ import mindustry.type.UnitType;
 import mindustry.type.Weapon;
 import mindustry.type.ammo.PowerAmmoType;
 import mindustry.type.unit.ErekirUnitType;
+import mindustry.type.unit.NeoplasmUnitType;
 import mindustry.type.weapons.RepairBeamWeapon;
 import mindustry.world.meta.Env;
 
@@ -32,6 +37,8 @@ import static arc.graphics.g2d.Lines.stroke;
 import static mindustry.Vars.tilesize;
 
 public class DTUnitTypes {
+    public static DrawPart.PartProgress time = p -> Time.time;
+    public static DrawPart.PartProgress timeSin = p -> Mathf.absin( 20f, 1f);
     public static UnitType
             //air-Hyper
             lancet, raven,
@@ -46,13 +53,15 @@ public class DTUnitTypes {
             separate,
             spaceStationDrone,
             //special
-            repairDrone
+            repairDrone,
+            flyingNeoplasmSquid
             ;
     public static void load(){
         EntityMapping.nameMap.put(DTUtil.name("lancet"), EntityMapping.map(3));
         EntityMapping.nameMap.put(DTUtil.name("separate"), EntityMapping.map(3));
         EntityMapping.nameMap.put(DTUtil.name("space-station-drone"), EntityMapping.map(3));
         EntityMapping.nameMap.put(DTUtil.name("repair-drone"), EntityMapping.map(36));
+        EntityMapping.nameMap.put(DTUtil.name("flying-neoplasm-squid"), EntityMapping.map(3));
         /*
         UnitTypes.gamma.weapons.get(0).bullet.homingPower = 0.1f;
         UnitTypes.gamma.weapons.get(0).bullet.homingRange = 1000f;
@@ -292,11 +301,56 @@ public class DTUnitTypes {
 
                 bullet = new LaserBoltBulletType(4f, 1){{
                     lifetime = 23f;
-                    healPercent = 5f;
+                    healPercent = 1f;
                     collidesTeam = true;
                     backColor = Pal.heal;
                     frontColor = Color.white;
                     recoil = 0.5f;
+                }};
+            }});
+        }};
+        flyingNeoplasmSquid = new NeoplasmUnitType("flying-neoplasm-squid"){{
+            speed = 1.5f;
+            accel = 0.03f;
+            drag = 0.06f;
+            flying = true;
+            rotateSpeed = 1f;
+            health = 70;
+            engineSize = 0;
+            hitSize = 12;
+            itemCapacity = 10;
+            omniMovement = false;
+            circleTarget = true;
+            parts.add(new RegionPart("-tentacle"){{
+                moves.add(new PartMove(p -> Mathf.absin( 20f, 1f), 0, 0, 20));
+                x = -4f;
+                y = 0.5f;
+                rotation = -10;
+                mirror = true;
+            }});
+            weapons.add(new Weapon(){{
+                minShootVelocity = 0.5f;
+                x = 0f;
+                shootY = 0f;
+                reload = 50f;
+                shootCone = 180f;
+                ejectEffect = Fx.none;
+                inaccuracy = 15f;
+                ignoreRotation = true;
+
+                shootSound = Sounds.none;
+                bullet = new BombBulletType(27f, 25f){{
+                    width = 10f;
+                    height = 14f;
+                    hitEffect = Fx.blastExplosion;
+                    shootEffect = Fx.none;
+                    smokeEffect = Fx.none;
+                    frontColor = Pal.neoplasm1;
+                    backColor = Pal.neoplasm2;
+                    puddleLiquid = Liquids.neoplasm;
+                    puddleAmount = 20f;
+                    puddleRange = 4f;
+                    puddles = 3;
                 }};
             }});
         }};

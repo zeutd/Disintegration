@@ -1,5 +1,6 @@
 package disintegration.world.blocks.debug;
 
+import arc.func.Cons;
 import arc.scene.ui.layout.Table;
 import arc.util.Nullable;
 import mindustry.gen.Building;
@@ -8,7 +9,7 @@ import mindustry.ui.Styles;
 import mindustry.world.Block;
 
 public class DebugBlock extends Block {
-    public @Nullable Runnable runnable;
+    public @Nullable Cons<Building> runs;
     public DebugBlock(String name) {
         super(name);
         update = true;
@@ -20,7 +21,7 @@ public class DebugBlock extends Block {
         @Override
         public void buildConfiguration(Table table){
             table.button(Icon.upOpen, Styles.cleari, () -> {
-                if (runnable != null)runnable.run();
+                if (runs != null) runs.get(this);
                 deselect();
             }).size(40f);
         }
