@@ -31,7 +31,6 @@ public class FloorBuilder extends Block {
         super(name);
         update = true;
         solid = false;
-
     }
 
     @Override
@@ -45,6 +44,7 @@ public class FloorBuilder extends Block {
         @Override
         public void updateTile(){
             super.updateTile();
+            if (!allowUpdate()) return;
             WorldDef.getAreaTile(new Vec2(
                     tileX() - (float)range / 2 + Geometry.d4x(rotation) * (float)floorOffset / 2,
                     tileY() - (float)range / 2 + Geometry.d4y(rotation) * (float)floorOffset / 2),

@@ -13,6 +13,7 @@ import disintegration.entities.bullet.RandomSpreadBulletType;
 import disintegration.entities.bullet.WarpBulletType;
 import disintegration.entities.unit.weapons.PortableBlockWeapon;
 import disintegration.graphics.Pal2;
+import disintegration.world.blocks.campaign.SpaceStationLaunchPad;
 import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
 import disintegration.world.blocks.debug.ShaderTestBlock;
@@ -128,6 +129,8 @@ public class DTBlocks {
     //effect
             blastMine,
             repairDroneStation,
+    //campaign
+            spaceStationLaunchPad,
     //debug
             sandboxBlock,
             dpsBlock,
@@ -1692,7 +1695,7 @@ public class DTBlocks {
                 floorOffset = range + 1;
                 rotateDraw = false;
                 floor = spaceStationFloor.asFloor();
-                buildCostMultiplier = 3;
+                buildCostMultiplier = 0.05f;
                 whiteList = Seq.with(Blocks.empty.asFloor());
             }};
         }
@@ -1705,17 +1708,23 @@ public class DTBlocks {
                 envEnabled = envRequired = Env.space;
                 range = finalI;
                 floor = Blocks.empty.asFloor();
-                buildCostMultiplier = 3;
+                buildCostMultiplier = 0.05f;
                 returnItem = new ItemStack(DTItems.spaceStationPanel, DTVars.spaceStationBaseRequirement);
                 whiteList = Seq.with(spaceStationFloor.asFloor());
             }};
         }
+        //campaign
+        spaceStationLaunchPad = new SpaceStationLaunchPad("space-station-launch-pad"){{
+            requirements(Category.effect, with(Items.copper, 10));
+            size = 10;
+            health = 9000;
+        }};
         //debug
         sandboxBlock = new DebugBlock("sandbox-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             runs = b -> Vars.state.rules.infiniteResources = !Vars.state.rules.infiniteResources;
-            buildCostMultiplier = 99;
+            buildCostMultiplier = 0.01f;
             requirements(Category.effect, with(), true);
         }};
 
@@ -1723,7 +1732,7 @@ public class DTBlocks {
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             runs = b -> Vars.state.rules.editor = !Vars.state.rules.editor;
-            buildCostMultiplier = 99;
+            buildCostMultiplier = 0.01f;
             requirements(Category.effect, with(), true);
         }};
 
@@ -1731,7 +1740,7 @@ public class DTBlocks {
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             runs = b -> Vars.state.rules.teams.get(b.team).cheat = Vars.state.rules.teams.get(b.team).cheat;
-            buildCostMultiplier = 99;
+            buildCostMultiplier = 0.01f;
             requirements(Category.effect, with(), true);
         }};
 
@@ -1739,6 +1748,7 @@ public class DTBlocks {
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             shader = Shaders.buildBeam;
+            hasShadow = false;
             requirements(Category.effect, with(), true);
         }};
         dpsBlock = new DPSBlock("dps-block"){{

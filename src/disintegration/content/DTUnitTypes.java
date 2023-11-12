@@ -287,7 +287,6 @@ public class DTUnitTypes {
             logicControllable = false;
             playerControllable = false;
             allowedInPayloads = false;
-            createWreck = false;
             envEnabled = Env.any;
             envDisabled = Env.none;
             payloadCapacity = 0f;

@@ -1,3 +1,4 @@
+/*
 package disintegration.ui.dialogs;
 
 import arc.Core;
@@ -18,7 +19,6 @@ import static mindustry.Vars.content;
 import static mindustry.Vars.ui;
 
 public class SpaceStationDialog extends BaseDialog {
-
     public Planet selectedPlanet;
 
     public SpaceStationDialog() {
@@ -97,3 +97,4 @@ public class SpaceStationDialog extends BaseDialog {
         );
     }
 }
+*/

@@ -1,13 +1,18 @@
 package disintegration.world.blocks.debug;
 
+import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.gl.FrameBuffer;
 import arc.graphics.gl.Shader;
 import arc.math.geom.Vec2;
+import disintegration.content.DTBlocks;
 import disintegration.graphics.DTShaders;
 import mindustry.gen.Building;
+import mindustry.gen.Groups;
 import mindustry.graphics.Layer;
 import mindustry.world.Block;
+
+import static arc.Core.graphics;
 
 public class ShaderTestBlock extends Block {
     public Shader shader;
@@ -30,17 +35,20 @@ public class ShaderTestBlock extends Block {
             if (shader instanceof DTShaders.BlackHoleShader blackHole){
                 blackHole.pos = new Vec2(x, y);
             }
-            Draw.draw(Layer.flyingUnitLow - 1, () -> {
+            /*Draw.draw(Layer.flyingUnitLow - 1, () -> {
                 shader.apply();
                 Draw.shader(shader);
                 super.draw();
                 Draw.shader();
+            });*/
+            if(Groups.build.count(b -> b.block == DTBlocks.shaderTestBlock) > 1)return;
+            buffer.resize(graphics.getWidth(), graphics.getHeight());
+            Draw.draw(Layer.min, () -> buffer.begin(Color.clear));
+            Draw.draw(Layer.plans + 1, () -> {
+                buffer.end();
+                buffer.blit(shader);
             });
-            /*buffer.resize(graphics.getWidth(), graphics.getHeight());
-            buffer.begin(Color.clear);
-            super.draw();
-            buffer.end();
-            buffer.blit(shader);*/
+            //super.draw();
         }
     }
 }

@@ -5,13 +5,15 @@ import arc.files.Fi;
 import arc.graphics.gl.Shader;
 import arc.math.geom.Vec2;
 import disintegration.DTVars;
+import disintegration.content.DTBlocks;
+import disintegration.world.blocks.debug.ShaderTestBlock;
 
 public class DTShaders {
     public static BlackHoleShader blackHole;
 
     public static void init(){
         blackHole = new BlackHoleShader();
-        //((ShaderTestBlock) DTBlocks.shaderTestBlock).shader = blackHole;
+        ((ShaderTestBlock) DTBlocks.shaderTestBlock).shader = blackHole;
     }
     public static class BlackHoleShader extends Shader {
         public Vec2 pos;
