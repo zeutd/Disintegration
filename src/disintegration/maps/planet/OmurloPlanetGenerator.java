@@ -31,7 +31,6 @@ import mindustry.type.Sector;
 import mindustry.world.Block;
 import mindustry.world.Tile;
 import mindustry.world.TileGen;
-import mindustry.world.Tiles;
 import mindustry.world.blocks.environment.Floor;
 
 import static mindustry.Vars.*;
@@ -39,7 +38,7 @@ import static mindustry.Vars.*;
 public class OmurloPlanetGenerator extends PlanetGenerator{
     //alternate, less direct generation (wip)
     public static boolean alt = false;
-    BaseGenerator basegen = new BaseGenerator();
+    //BaseGenerator basegen = new BaseGenerator();
     float scl = 5f;
     float waterOffset = 0.07f;
     boolean genLakes = false;
@@ -709,13 +708,15 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
             tiles.getn(espawn.x, espawn.y).setOverlay(Blocks.spawn);
         }
 
-        if(sector.hasEnemyBase()){
+        /*if(sector.hasEnemyBase()){
+            //Log.info((enemies.first().x) + ", " + (enemies.first().y));
             basegen.generate(tiles, enemies.map(r -> tiles.getn(r.x, r.y)), tiles.get(spawn.x, spawn.y), state.rules.waveTeam, sector, difficulty);
 
             state.rules.attackMode = sector.info.attack = true;
         }else{
             state.rules.winWave = sector.info.winWave = 10 + 5 * (int)Math.max(difficulty * 10, 1);
-        }
+        }*/
+        state.rules.winWave = sector.info.winWave = 10 + 5 * (int)Math.max(difficulty * 10, 1);
 
         float waveTimeDec = 0.4f;
 
@@ -728,7 +729,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
         state.rules.spawns = Waves.generate(difficulty, new Rand(sector.id), state.rules.attackMode, state.rules.attackMode && spawner.countGroundSpawns() == 0, false);
     }
 
-    @Override
+    /*@Override
     public void postGenerate(Tiles tiles){
         if(sector.hasEnemyBase()){
             basegen.postGenerate();
@@ -738,5 +739,5 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
                 state.rules.spawns = Waves.generate(sector.threat, new Rand(sector.id), state.rules.attackMode, true, false);
             }
         }
-    }
+    }*/
 }

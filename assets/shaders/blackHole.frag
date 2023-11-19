@@ -1,12 +1,58 @@
+#define MAX_BLACKHOLES 16
+#define PI 3.1415927
+
 uniform sampler2D u_texture;
 
 uniform vec2 u_campos;
 uniform vec2 u_resolution;
-uniform vec2 v_pos;
+uniform vec2 u_pos;
+uniform vec4 u_blackholes[MAX_BLACKHOLES];
+uniform int u_blackhole_count;
 
 varying vec2 v_texCoords;
 
-#define PI 3.1415927
+
+float atan2(in float y, in float x){
+    bool s = (abs(x) > abs(y));
+    return mix(PI/2.0 - atan(x,y), atan(y,x), s);
+}
+
+float cforce(in float a, in float radius, in float force){
+    return (abs(a / radius) - 1)*(abs(a / radius) - 1)*force;
+}
+
+void main(){
+    float radius = 32;
+    float force = 64;
+    vec2 worldCoords = v_texCoords * u_resolution + u_campos;
+    vec2 displacement = vec2(0, 0);
+    vec4 color = vec4(0, 0, 0, 0);
+    for(int i = 0; i < MAX_BLACKHOLES; i++){
+        vec4 blackhole = u_blackholes[i];
+        float radius = blackhole.z;
+        float force = blackhole.w;
+        float dst = distance(worldCoords, blackhole.xy);
+        float rd = radius;
+        if (dst < radius){
+            float dstc = cforce(dst, radius, force);
+            if(dst < dstc*0.75){
+                color = vec4(0, 0, 0, 255);
+            }
+            else {
+                float dir = atan2(worldCoords.y - blackhole.y, worldCoords.x - blackhole.x);//+sqrt(dst / 10);
+                displacement += vec2((cos(dir) * -dstc), (sin(dir) * -dstc)) / u_resolution;
+            }
+        }
+        if(i >= u_blackhole_count - 1){
+            break;
+        }
+        //float dstc = cforce(dst, radius, force);
+    }
+    if(color.w == 0){
+        color = texture2D(u_texture, v_texCoords + displacement);
+    }
+    gl_FragColor = color;
+}
 
 /*float atan2(float x, float y){
     float n = y / x;
@@ -37,19 +83,11 @@ varying vec2 v_texCoords;
         return x + y; // returns 0 for 0,0 or NaN if either y or x is NaN
     }
 }*/
-float atan2(in float y, in float x){
-    bool s = (abs(x) > abs(y));
-    return mix(PI/2.0 - atan(x,y), atan(y,x), s);
-}
 
-float cforce(in float a, in float radius, in float force){
-    return (abs(a / radius) - 1)*(abs(a / radius) - 1)*force;
-}
-
-void main(){
+/*void main(){
     float radius = 64;
     float force = 64;
-    vec2 c = v_texCoords;
+    vec2 c = v_texCoords.xy;
     //vec2 p = v_pos * u_resolution + u_campos;
     //vec2 p = v_pos - u_campos;
     //vec2 p = vec2 (0, 0) - u_campos;
@@ -82,4 +120,5 @@ void main(){
 
 
     //if(dst < 0.1) gl_FragColor = vec4(dst,dst,dst,100);
-}
+}*/
+

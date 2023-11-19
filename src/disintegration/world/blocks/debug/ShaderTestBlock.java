@@ -4,7 +4,6 @@ import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.gl.FrameBuffer;
 import arc.graphics.gl.Shader;
-import arc.math.geom.Vec2;
 import disintegration.content.DTBlocks;
 import disintegration.graphics.DTShaders;
 import mindustry.gen.Building;
@@ -33,7 +32,8 @@ public class ShaderTestBlock extends Block {
         @Override
         public void draw(){
             if (shader instanceof DTShaders.BlackHoleShader blackHole){
-                blackHole.pos = new Vec2(x, y);
+                blackHole.add(x, y, 64, 64);
+                return;
             }
             /*Draw.draw(Layer.flyingUnitLow - 1, () -> {
                 shader.apply();

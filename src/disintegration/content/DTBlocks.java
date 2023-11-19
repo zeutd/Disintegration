@@ -1747,7 +1747,7 @@ public class DTBlocks {
         shaderTestBlock = new ShaderTestBlock("shader-test-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
-            shader = Shaders.buildBeam;
+            //shader = new Shaders.ShockwaveShader();
             hasShadow = false;
             requirements(Category.effect, with(), true);
         }};
