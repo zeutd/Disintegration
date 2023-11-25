@@ -329,12 +329,14 @@ public class Quarry extends Block {
         public void drawDrill(float x, float y, float mx, float my, float layer){
             Draw.z(layer - 1f);
 
-                for (Point2 p : Geometry.d8edge) {
-                    Draw.rect(locator,
-                            x + deployProgress1 * (mx - x + fulls * p.x),
-                            y + deployProgress1 * (my - y + fulls * p.y)
-                    );
-                }
+            for (Point2 p : Geometry.d8edge) {
+                Draw.rect(locator,
+                        x + deployProgress1 * (mx - x + fulls * p.x),
+                        y + deployProgress1 * (my - y + fulls * p.y)
+                );
+            }
+            if (deployProgress > 1) Draw.rect(drill, drillX + mx, drillY + my);
+            else Draw.rect(drill, x + deployProgress1 * (mx - x), y + deployProgress1 * (my - y));
             //Draw arm
             Draw.z(layer - 1.1f);
             Lines.stroke(3.5f);
@@ -402,55 +404,50 @@ public class Quarry extends Block {
                     }
                 }
             }
-            //draw drill
-            Draw.z(layer - 1.1f);
-
-            if (deployProgress4 > 0)Draw.alpha(deployProgress4 * Draw.getColor().a);
-
-            Draw.rect(drill, drillX + mx, drillY + my);
         }
         @Override
         public void draw(){
+            Draw.rect(region, x, y);
+            Draw.rect(rotation >= 2 ? sideRegion2 : sideRegion1, x, y, rotdeg());
+            if (!drawDrill) return;
             if (deployProgress >= 0 && deployProgress <= 1)deployProgress1 = inp.apply(clamp(deployProgress - 0));
             else if (deployProgress >= 1 && deployProgress <= 2)deployProgress2 = inp.apply(clamp(deployProgress - 1));
             else if (deployProgress >= 2 && deployProgress <= 3)deployProgress3 = inp.apply(clamp(deployProgress - 2));
             else if (deployProgress >= 3 && deployProgress <= 4)deployProgress4 = inp.apply(clamp(deployProgress - 3));
-            Draw.rect(region, x, y);
-            Draw.rect(rotation >= 2 ? sideRegion2 : sideRegion1, x, y, rotdeg());
             drawDrill(x, y, mx, my, Layer.flyingUnitLow - 0.01f);
             Draw.draw(Layer.floor + 2, () -> {
                 if (shadow == null) shadow = new FrameBuffer(graphics.getWidth(), graphics.getHeight());
                 Draw.flush();
                 shadow.resize(graphics.getWidth(), graphics.getHeight());
-                shadow.begin();
+                shadow.begin(Color.clear);
                 drawDrill(x - elevation, y - elevation, mx - elevation, my - elevation, Layer.floor + 2);
                 Draw.flush();
                 shadow.end();
                 Draw.color(Pal.shadow);
-                Draw.rect(Draw.wrap(shadow.getTexture()), Core.camera.position.x, Core.camera.position.y, Core.camera.width, -Core.camera.height);
+                Draw.rect(Draw.wrap(shadow.getTexture()), Core.camera.position, Core.camera.width, -Core.camera.height);
+                Draw.flush();
+                Draw.color();
             });
-            if (drawDrill) {
-                Draw.reset();
-                //draw ore stroke
-                Draw.z(Layer.blockOver);
+            Draw.reset();
+            //draw ore stroke
+            Draw.z(Layer.blockOver);
 
-                Lines.stroke(0.6f);
-                Item tileItem;
-                for (int ix = 0; ix < areaSize; ix++) {
-                    for (int iy = 0; iy < areaSize; iy++) {
-                        float dx = ix * 8 + mx - fulls + 4;
-                        float dy = iy * 8 + my - fulls + 4;
-                        tileItem = itemsArray.get(ix * areaSize + iy);
-                        if (tileItem != null) {
-                            for (int i = 0; i <= 1; i++) {
+            Lines.stroke(0.6f);
+            Item tileItem;
+            for (int ix = 0; ix < areaSize; ix++) {
+                for (int iy = 0; iy < areaSize; iy++) {
+                    float dx = ix * 8 + mx - fulls + 4;
+                    float dy = iy * 8 + my - fulls + 4;
+                    tileItem = itemsArray.get(ix * areaSize + iy);
+                    if (tileItem != null) {
+                        for (int i = 0; i <= 1; i++) {
 
-                                Draw.color(tileItem.color);
+                            Draw.color(tileItem.color);
 
-                                Drawf.light(dx, dy, 5, tileItem.color, 50);
-                                float rot = i * 360f / 2 - Time.time * 1.1f;
-                                Draw.alpha(warmup);
-                                Lines.arc(dx, dy, 4f, 0.3f, rot);
-                            }
+                            Drawf.light(dx, dy, 5, tileItem.color, 50);
+                            float rot = i * 360f / 2 - Time.time * 1.1f;
+                            Draw.alpha(warmup);
+                            Lines.arc(dx, dy, 4f, 0.3f, rot);
                         }
                     }
                 }

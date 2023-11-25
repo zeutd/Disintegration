@@ -14,7 +14,6 @@ public class DisintegrationJavaMod extends Mod{
             app.post(DTVars::init);
             app.post(DTShaders::init);
             app.addListener(DTVars.DTUI);
-            app.post(DTVars.spaceStationReader::read);
             app.addListener(DTVars.spaceStationReader);
             /*Core.app.post(() -> Vars.content.setCurrentMod(new Mods.LoadedMod(null, null, null, null,
                     new Mods.ModMeta(){{
@@ -40,6 +39,7 @@ public class DisintegrationJavaMod extends Mod{
         DTBlocks.load();
         DTLoadouts.load();
         DTPlanets.load();
+        app.post(DTVars.spaceStationReader::read);
         DTSectorPresets.load();
     }
 }

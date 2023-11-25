@@ -1,7 +1,7 @@
 package disintegration.ui;
 
 import arc.ApplicationListener;
-import arc.scene.ui.Button;
+import arc.scene.ui.layout.Table;
 import disintegration.type.SpaceStation;
 import mindustry.gen.Icon;
 import mindustry.type.Planet;
@@ -22,30 +22,23 @@ public class DTUI implements ApplicationListener {
         spaceStationBuild = new SpaceStationBuildDialog();
     }*/
     public boolean added = false;
-    Button removeButton;
     Planet p;
     @Override
     public void update(){
         ui.planet.shown(() -> {
             added = false;
         });
-        if (p != ui.planet.state.planet) {
-            p = ui.planet.state.planet;
-            if(removeButton != null)ui.planet.buttons.removeChild(removeButton);
-            if (p instanceof SpaceStation && !added) {
-                removeButton = ui.planet.buttons.button(Icon.trash, () -> ui.showConfirm("@confirm", "@disintegration.clearspacestation.confirm", () -> {
-                    spaceStations.remove((SpaceStation) p);
-                    spaceStationPlanets.remove(p.parent);
-                    p.accessible = false;
-                    p.visible = false;
-                    p.sectors.clear();
-                    ui.planet.show();
-                    added = true;
-                })).get();
-            } else {
-                added = false;
-            }
-        }
         p = ui.planet.state.planet;
+        if(!added)ui.planet.stack(new Table(t -> {
+            t.button(Icon.trash, () -> ui.showConfirm("@confirm", "@disintegration.clearspacestation.confirm", () -> {
+                spaceStations.remove((SpaceStation) p);
+                spaceStationPlanets.remove(p.parent);
+                p.accessible = false;
+                p.visible = false;
+                p.sectors.clear();
+                ui.planet.show();
+            })).visible(() -> p instanceof SpaceStation);
+        }));
+        added = true;
     }
 }

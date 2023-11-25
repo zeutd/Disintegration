@@ -36,6 +36,8 @@ dependencies{
     compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
 
     annotationProcessor "com.github.Anuken:jabel:$jabelVersion"
+
+    //implementation "com.github.Zelaux.ArcLibrary:graphics-extendedDraw:v1.0.5.1"
 }
 
 //force arc version

@@ -30,6 +30,8 @@ import mindustry.ui.dialogs.PlanetDialog;
 import mindustry.world.Block;
 import mindustry.world.meta.BlockFlag;
 
+import java.util.Objects;
+
 import static disintegration.DTVars.*;
 import static mindustry.Vars.*;
 
@@ -39,7 +41,6 @@ public class SpaceStationLaunchPad extends Block {
 
     public TextureRegion lightRegion;
     public TextureRegion podRegion;
-    public TextureRegion topRegion;
     public Color lightColor = Color.valueOf("eab678");
 
     public static Planet selectedPlanet;
@@ -64,12 +65,6 @@ public class SpaceStationLaunchPad extends Block {
         region = Core.atlas.find(name);
         lightRegion = Core.atlas.find(name + "-light");
         podRegion = Core.atlas.find("disintegration-space-station-launchpod");
-        topRegion = Core.atlas.find(name + "-top");
-    }
-
-    @Override
-    public TextureRegion[] icons(){
-        return new TextureRegion[]{topRegion, region};
     }
 
     @Override
@@ -112,7 +107,6 @@ public class SpaceStationLaunchPad extends Block {
         @Override
         public void draw(){
             super.draw();
-            Draw.rect(topRegion, x, y);
 
             if(!state.isCampaign()) return;
             float progress = (float)items.get(DTItems.spaceStationPanel) / itemCapacity;
@@ -166,7 +160,10 @@ public class SpaceStationLaunchPad extends Block {
                         spaceStations.add((SpaceStation) s);
                         return;
                     }
-                    spaceStations.add(new SpaceStation(selectedPlanet.name + "-space-station", selectedPlanet));
+                    String whiteSpace = Objects.equals(Core.bundle.get("spacestationwhitespace"), "true") ? " " : "";
+                    SpaceStation spaceStation = new SpaceStation(selectedPlanet.name + "-space-station", selectedPlanet);
+                    spaceStations.add(spaceStation);
+                    spaceStation.localizedName = selectedPlanet.localizedName + whiteSpace + Core.bundle.get("spacestation");
                 }
             }
         }

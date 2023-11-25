@@ -9,6 +9,7 @@ import mindustry.gen.Unit;
 import mindustry.input.InputHandler;
 import mindustry.type.Weapon;
 import mindustry.world.Block;
+import mindustry.world.Tile;
 
 public class PortableBlockWeapon extends Weapon {
     public Block unitContent;
@@ -33,9 +34,10 @@ public class PortableBlockWeapon extends Weapon {
 
     @Override
     protected void shoot(Unit unit, WeaponMount mount, float shootX, float shootY, float rotation){
-        if(Vars.world.tile(unit.tileX(), unit.tileY()).block() == Blocks.air) {
+        Tile tile = Vars.world.tile(unit.tileX(), unit.tileY());
+        if(tile != null && tile.block() == Blocks.air) {
             unit.remove();
-            Vars.world.tile(unit.tileX(), unit.tileY()).setBlock(unitContent, unit.team);
+            tile.setBlock(unitContent, unit.team);
             placeEffect.at(unit.tileX() * 8, unit.tileY() * 8, 0f);
             placeSound.at(unit.x, unit.y);
             InputHandler.unitClear(unit.getPlayer());

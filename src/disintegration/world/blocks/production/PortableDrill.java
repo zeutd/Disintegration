@@ -1,6 +1,7 @@
 package disintegration.world.blocks.production;
 
 import arc.util.Nullable;
+import mindustry.content.Blocks;
 import mindustry.content.UnitTypes;
 import mindustry.entities.Effect;
 import mindustry.gen.BlockUnitc;
@@ -46,8 +47,7 @@ public class PortableDrill extends Drill {
                 portableUnit.rotation(90);
                 unit.getPlayer().unit(portableUnit);
                 unit.remove();
-                unit.killed();
-                tile().setAir();
+                tile.setBlock(Blocks.air);
                 removalEffect.at(x, y);
             }
         }
