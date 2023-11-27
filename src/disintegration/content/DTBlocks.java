@@ -14,6 +14,7 @@ import disintegration.entities.bullet.WarpBulletType;
 import disintegration.entities.unit.weapons.PortableBlockWeapon;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.campaign.SpaceStationLaunchPad;
+import disintegration.world.blocks.debug.BlackHoleBlock;
 import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
 import disintegration.world.blocks.debug.ShaderTestBlock;
@@ -136,7 +137,8 @@ public class DTBlocks {
             dpsBlock,
             editorBlock,
             cheatBlock,
-            shaderTestBlock
+            shaderTestBlock,
+            blackHoleBlock
             ;
     public static void load() {
         //environment
@@ -1756,6 +1758,13 @@ public class DTBlocks {
             health = 999999;
             envEnabled = Env.any;
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
+            requirements(Category.effect, with(), true);
+        }};
+
+        sandboxBlock = new BlackHoleBlock("black-hole--block"){{
+            buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
+            envEnabled = Env.any;
+            buildCostMultiplier = 0.01f;
             requirements(Category.effect, with(), true);
         }};
     }

@@ -2,6 +2,7 @@ package disintegration;
 
 import arc.Events;
 import disintegration.content.*;
+import disintegration.entities.DTGroups;
 import disintegration.graphics.DTShaders;
 import mindustry.game.EventType;
 import mindustry.mod.Mod;
@@ -13,6 +14,7 @@ public class DisintegrationJavaMod extends Mod{
         Events.on(EventType.ClientLoadEvent.class, e -> {
             app.post(DTVars::init);
             app.post(DTShaders::init);
+            app.post(DTGroups::init);
             app.addListener(DTVars.DTUI);
             app.addListener(DTVars.spaceStationReader);
             /*Core.app.post(() -> Vars.content.setCurrentMod(new Mods.LoadedMod(null, null, null, null,
@@ -28,6 +30,7 @@ public class DisintegrationJavaMod extends Mod{
                     }})));
             Core.app.post(this::loadContent);*/
         });
+        Events.run(EventType.Trigger.update, DTGroups::update);
     }
     @Override
     public void loadContent() {

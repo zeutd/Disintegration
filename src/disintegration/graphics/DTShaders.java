@@ -24,7 +24,7 @@ public class DTShaders {
         ((ShaderTestBlock) DTBlocks.shaderTestBlock).shader = blackHole;
     }
     public static class BlackHoleShader extends Shader {
-        static final int max = 16;
+        static final int max = 32;
         static final int size = 4;
 
         //x y radius force

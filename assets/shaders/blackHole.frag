@@ -1,4 +1,4 @@
-#define MAX_BLACKHOLES 16
+#define MAX_BLACKHOLES 32
 #define PI 3.1415927
 
 uniform sampler2D u_texture;
@@ -17,13 +17,11 @@ float atan2(in float y, in float x){
     return mix(PI/2.0 - atan(x,y), atan(y,x), s);
 }
 
-float cforce(in float a, in float radius, in float force){
-    return (abs(a / radius) - 1)*(abs(a / radius) - 1)*force;
+float cforce(in float dst, in float radius, in float force){
+    return (abs(dst / radius) - 1)*(abs(dst / radius) - 1)*force;
 }
 
 void main(){
-    float radius = 32;
-    float force = 64;
     vec2 worldCoords = v_texCoords * u_resolution + u_campos;
     vec2 displacement = vec2(0, 0);
     vec4 color = vec4(0, 0, 0, 0);
