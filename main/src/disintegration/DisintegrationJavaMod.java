@@ -34,6 +34,7 @@ public class DisintegrationJavaMod extends Mod{
     }
     @Override
     public void loadContent() {
+        //EntityRegistry.register();
         DTItems.load();
         DTLiquids.load();
         DTStatusEffects.load();

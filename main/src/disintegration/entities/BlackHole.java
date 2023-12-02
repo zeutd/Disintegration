@@ -18,8 +18,6 @@ import mindustry.world.Tile;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.storage.CoreBlock;
 
-import static java.lang.Math.abs;
-
 public class BlackHole implements BlackHolec{
     public float x;
     public float y;
@@ -31,6 +29,7 @@ public class BlackHole implements BlackHolec{
     public float radius;
     public float force;
     public float attractForce;
+    public float attractRadius;
     public boolean added;
     public Team team;
     public BlackHole(){
@@ -38,7 +37,8 @@ public class BlackHole implements BlackHolec{
     }
 
     public float cforce(float dst, float radius, float force){
-        return (abs(dst / radius) - 1)*(abs(dst / radius) - 1)*force;
+        //return (abs(dst / radius) - 1)*(abs(dst / radius) - 1)*force;
+        return Mathf.pow(1 / dst * force, 2);
     }
     @Override
     public float radius() {
@@ -56,6 +56,11 @@ public class BlackHole implements BlackHolec{
     }
 
     @Override
+    public float attractRadius(){
+        return attractRadius;
+    }
+
+    @Override
     public void radius(float r) {
         radius = r;
     }
@@ -68,6 +73,11 @@ public class BlackHole implements BlackHolec{
     @Override
     public void attractForce(float f){
         attractForce = f;
+    }
+
+    @Override
+    public void attractRadius(float r){
+        attractRadius = r;
     }
 
     @Override
@@ -288,16 +298,15 @@ public class BlackHole implements BlackHolec{
 
     @Override
     public void update() {
-        Groups.all.each(e -> e instanceof Velc, e -> {
+        Groups.all.each(e -> e instanceof Velc v && Mathf.dst(x, y, v.x(), v.y()) < attractRadius, e -> {
             Velc v = (Velc) e;
             float dst = Mathf.dst(x, y, v.x(), v.y());
-            if(dst < radius){
+            if (dst < attractRadius) {
                 float dir = Mathf.atan2(x - v.x(), y - v.y());
-                float dstc = cforce(dst, radius, attractForce);
+                float dstc = cforce(dst, attractRadius, attractForce);
                 v.vel().add(Mathf.cos(dir) * dstc * Time.delta, Mathf.sin(dir) * dstc * Time.delta);
             }
         });
-
     }
 
     @Override

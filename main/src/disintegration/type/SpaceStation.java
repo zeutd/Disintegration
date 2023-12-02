@@ -1,7 +1,7 @@
 package disintegration.type;
 
 import disintegration.content.DTBlocks;
-import disintegration.maps.planet.SpaceStationGenerator;
+import disintegration.type.maps.planet.SpaceStationGenerator;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.PlanetGrid;
 import mindustry.type.Planet;

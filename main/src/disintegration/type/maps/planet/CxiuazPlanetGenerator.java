@@ -1,4 +1,4 @@
-package disintegration.maps.planet;
+package disintegration.type.maps.planet;
 
 import arc.graphics.*;
 import arc.math.*;

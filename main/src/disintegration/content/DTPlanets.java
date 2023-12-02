@@ -1,8 +1,8 @@
 package disintegration.content;
 
 import arc.graphics.Color;
-import disintegration.maps.planet.CxiuazPlanetGenerator;
-import disintegration.maps.planet.OmurloPlanetGenerator;
+import disintegration.type.maps.planet.CxiuazPlanetGenerator;
+import disintegration.type.maps.planet.OmurloPlanetGenerator;
 import mindustry.content.Blocks;
 import mindustry.content.Items;
 import mindustry.content.Planets;

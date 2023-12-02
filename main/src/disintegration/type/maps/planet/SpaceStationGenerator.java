@@ -1,4 +1,4 @@
-package disintegration.maps.planet;
+package disintegration.type.maps.planet;
 
 import arc.math.geom.Vec2;
 import arc.math.geom.Vec3;

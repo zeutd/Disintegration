@@ -22,8 +22,9 @@ public class BlackHoleBlock extends Block {
             blackHole.team = team;
             blackHole.set(this);
             blackHole.force(20);
-            blackHole.attractForce(3);
-            blackHole.radius(100);
+            blackHole.attractForce(20);
+            blackHole.attractRadius(100);
+            blackHole.radius(50);
             blackHole.add();
         }
 
