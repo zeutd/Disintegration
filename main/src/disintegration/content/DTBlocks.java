@@ -7,6 +7,7 @@ import arc.math.Interp;
 import arc.math.Mathf;
 import arc.struct.Seq;
 import disintegration.DTVars;
+import disintegration.entities.DTGroups;
 import disintegration.entities.bullet.BlockBulletType;
 import disintegration.entities.bullet.ConnectBulletType;
 import disintegration.entities.bullet.RandomSpreadBulletType;
@@ -46,9 +47,13 @@ import mindustry.entities.effect.*;
 import mindustry.entities.part.*;
 import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootSpread;
+import mindustry.gen.Entityc;
 import mindustry.gen.LegsUnit;
 import mindustry.gen.Sounds;
-import mindustry.graphics.*;
+import mindustry.graphics.CacheLayer;
+import mindustry.graphics.Drawf;
+import mindustry.graphics.Layer;
+import mindustry.graphics.Pal;
 import mindustry.type.*;
 import mindustry.type.unit.MissileUnitType;
 import mindustry.world.Block;
@@ -133,12 +138,7 @@ public class DTBlocks {
     //campaign
             spaceStationLaunchPad,
     //debug
-            sandboxBlock,
-            dpsBlock,
-            editorBlock,
-            cheatBlock,
-            shaderTestBlock,
-            blackHoleBlock
+            sandboxBlock, dpsBlock, editorBlock, cheatBlock, shaderTestBlock, blackHoleBlock, blackHoleClearBlock
             ;
     public static void load() {
         //environment
@@ -1761,10 +1761,18 @@ public class DTBlocks {
             requirements(Category.effect, with(), true);
         }};
 
-        sandboxBlock = new BlackHoleBlock("black-hole--block"){{
+        blackHoleBlock = new BlackHoleBlock("black-hole-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             buildCostMultiplier = 0.01f;
+            requirements(Category.effect, with(), true);
+        }};
+
+        blackHoleClearBlock = new DebugBlock("black-hole-clear-block"){{
+            buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
+            envEnabled = Env.any;
+            buildCostMultiplier = 0.01f;
+            runs = b -> DTGroups.blackHole.forEach(Entityc::remove);
             requirements(Category.effect, with(), true);
         }};
     }

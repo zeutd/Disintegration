@@ -1,20 +1,21 @@
 package disintegration.entities;
 
+import disintegration.gen.entities.BlackHolec;
 import mindustry.entities.EntityGroup;
 
-@SuppressWarnings("all")
+@SuppressWarnings("unchecked")
 public class DTGroups {
-    public static EntityGroup<BlackHole> blackHole;
+    public static EntityGroup<BlackHolec> blackHole;
 
     public static void clear(){
         blackHole.clear();
     }
 
     public static void init(){
-        blackHole = new EntityGroup(BlackHole.class, false, false, (e, pos) -> {});
+        blackHole = new EntityGroup(BlackHolec.class, true, true, (e, pos) -> {});
     }
 
     public static void update(){
-        blackHole.update();
+
     }
 }

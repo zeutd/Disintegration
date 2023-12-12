@@ -116,7 +116,7 @@ public class RepairDroneStation extends Block {
 
         public Seq<Unit> units = new Seq<>();
 
-        public IntSeq readUnits = new IntSeq();
+        public IntSeq readUnits = new IntSeq(dronesCreated);
 
         public int unitsCreated;
 
@@ -126,6 +126,17 @@ public class RepairDroneStation extends Block {
 
         @Override
         public void updateTile() {
+            if(!readUnits.isEmpty()){
+                readUnits.each(id -> {
+                    var unit = Groups.unit.getByID(id);
+                    if (unit != null) {
+                        units.add(unit);
+                        if (unit instanceof BuildingTetherc bt) {
+                            bt.building(this);
+                        }
+                    }
+                });
+            }
             if (buildingUnits()) {
                 buildProgress += edelta() / buildTime;
                 if (buildProgress >= 1) {
@@ -221,16 +232,10 @@ public class RepairDroneStation extends Block {
         public void read(Reads read, byte revision){
             super.read(read, revision);
             int count = read.b();
-            unitsCreated = read.b();
             readUnits.clear();
+            unitsCreated = read.b();
             for (int i = 0; i < count; i++) {
-                var unit = Groups.unit.getByID(read.i());
-                if(unit != null){
-                    units.add(unit);
-                    if(unit instanceof BuildingTetherc bt){
-                        bt.building(this);
-                    }
-                }
+                readUnits.add(read.i());
             }
         }
     }

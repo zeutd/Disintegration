@@ -18,7 +18,7 @@ public class SpaceStation extends Planet {
         updateLighting = false;
         drawOrbit = true;
         accessible = true;
-        clipRadius = 0;
+        //clipRadius = -1;
         orbitRadius = parent.radius + 2f;
         alwaysUnlocked = true;
         defaultEnv = Env.space;

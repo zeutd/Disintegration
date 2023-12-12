@@ -7,7 +7,7 @@ import mindustry.type.Item;
 import static mindustry.content.Items.*;
 
 public class DTItems {
-    public static Item iridium, iron, steel, silver, concussionAlloy, spaceStationPanel;
+    public static Item iridium, iron, steel, silver, magnetismAlloy, spaceStationPanel;
     public static final Seq<Item>
             omurloItems = new Seq<>(),
             omurloOnlyItems = new Seq<>(),
@@ -44,17 +44,17 @@ public class DTItems {
             cost = 1;
         }};
 
-        concussionAlloy = new Item("concussion-alloy", Color.valueOf("EFEAEA")){{
+        magnetismAlloy = new Item("magnetism-alloy", Color.valueOf("EFEAEA")){{
             hardness = 2;
             cost = 2;
 
         }};
 
         omurloItems.addAll(
-                iridium, iron, silver, concussionAlloy, sand, silicon, graphite, coal, metaglass, lead, blastCompound
+                iridium, iron, silver, magnetismAlloy, sand, silicon, graphite, coal, metaglass, lead, blastCompound
         );
         omurloOnlyItems.addAll(
-                iridium, iron, silver, concussionAlloy
+                iridium, iron, silver, magnetismAlloy
         );
         spaceStationItems.addAll(
                 spaceStationPanel

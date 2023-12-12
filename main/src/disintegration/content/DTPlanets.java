@@ -1,7 +1,7 @@
 package disintegration.content;
 
 import arc.graphics.Color;
-import disintegration.type.maps.planet.CxiuazPlanetGenerator;
+import disintegration.type.maps.planet.CosiuazPlanetGenerator;
 import disintegration.type.maps.planet.OmurloPlanetGenerator;
 import mindustry.content.Blocks;
 import mindustry.content.Items;
@@ -15,7 +15,7 @@ import mindustry.world.meta.Attribute;
 import mindustry.world.meta.Env;
 
 public class DTPlanets {
-    public static Planet omurlo, cxiuaz;
+    public static Planet omurlo, cosiuaz;
     public static void load(){
         Planet sun = Planets.sun;
         omurlo = new Planet("omurlo", sun, 1f, 3){{
@@ -27,8 +27,8 @@ public class DTPlanets {
                         new HexSkyMesh(this, 5, 0.1f, 0.16f, 4, Color.valueOf("e6f3f8").a(0.75f), 2, 0.42f, 1.5f, 0.44f)
                 );
                 alwaysUnlocked = true;
-                landCloudColor = Color.valueOf("cce5ff");
-                atmosphereColor = Color.valueOf("112245");
+                landCloudColor = Color.valueOf("bbd9ff");
+                atmosphereColor = Color.valueOf("051245");
                 startSector = 17;
                 atmosphereRadIn = 0.02f;
                 atmosphereRadOut = 0.3f;
@@ -51,8 +51,8 @@ public class DTPlanets {
             }};
 
         //WIP
-        cxiuaz = new Planet("cxiuaz", sun, 1f, 2){{
-            generator = new CxiuazPlanetGenerator();
+        cosiuaz = new Planet("cosiuaz", sun, 1f, 2){{
+            generator = new CosiuazPlanetGenerator();
             meshLoader = () -> new HexMesh(this, 5);
             cloudMeshLoader = () -> new MultiMesh(
                     new HexSkyMesh(this, 2, 0.15f, 0.14f, 5, Color.valueOf("eba768").a(0.75f), 2, 0.42f, 1f, 0.43f),

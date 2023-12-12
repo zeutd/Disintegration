@@ -1,24 +1,42 @@
 package disintegration.type.maps.planet;
 
-import arc.graphics.*;
-import arc.math.*;
-import arc.math.geom.*;
-import arc.struct.*;
-import arc.util.*;
-import arc.util.noise.*;
-import mindustry.ai.*;
-import mindustry.ai.BaseRegistry.*;
-import mindustry.content.*;
-import mindustry.game.*;
-import mindustry.graphics.g3d.PlanetGrid.*;
-import mindustry.maps.generators.*;
-import mindustry.type.*;
-import mindustry.world.*;
-import mindustry.world.blocks.environment.*;
+import arc.graphics.Color;
+import arc.math.Angles;
+import arc.math.Mathf;
+import arc.math.Rand;
+import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
+import arc.math.geom.Vec2;
+import arc.math.geom.Vec3;
+import arc.struct.FloatSeq;
+import arc.struct.ObjectMap;
+import arc.struct.ObjectSet;
+import arc.struct.Seq;
+import arc.util.Structs;
+import arc.util.Tmp;
+import arc.util.noise.Noise;
+import arc.util.noise.Ridged;
+import arc.util.noise.Simplex;
+import mindustry.ai.Astar;
+import mindustry.ai.BaseRegistry.BasePart;
+import mindustry.content.Blocks;
+import mindustry.content.Liquids;
+import mindustry.game.Schematics;
+import mindustry.game.Team;
+import mindustry.game.Waves;
+import mindustry.graphics.g3d.PlanetGrid.Ptile;
+import mindustry.maps.generators.BaseGenerator;
+import mindustry.maps.generators.PlanetGenerator;
+import mindustry.type.Sector;
+import mindustry.world.Block;
+import mindustry.world.Tile;
+import mindustry.world.TileGen;
+import mindustry.world.Tiles;
+import mindustry.world.blocks.environment.Floor;
 
 import static mindustry.Vars.*;
 
-public class CxiuazPlanetGenerator extends PlanetGenerator{
+public class CosiuazPlanetGenerator extends PlanetGenerator{
     //alternate, less direct generation (wip)
     public static boolean alt = false;
 
