@@ -8,8 +8,13 @@ import arc.math.Mathf;
 import arc.util.Time;
 import disintegration.ai.types.RepairDroneAI;
 import disintegration.entities.abilities.DTArmorPlateAbility;
+import disintegration.gen.entities.EntityRegistry;
+import disintegration.gen.entities.PayloadBuildingTetherUnit;
+import disintegration.gen.entities.WorldUnit;
+import disintegration.gen.entities.Worldc;
 import disintegration.graphics.Pal2;
-import disintegration.util.DTUtil;
+import disintegration.type.unit.WorldUnitType;
+import ent.anno.Annotations.EntityDef;
 import mindustry.ai.types.BuilderAI;
 import mindustry.content.Fx;
 import mindustry.content.Liquids;
@@ -20,8 +25,7 @@ import mindustry.entities.bullet.EmpBulletType;
 import mindustry.entities.bullet.LaserBoltBulletType;
 import mindustry.entities.part.DrawPart;
 import mindustry.entities.part.RegionPart;
-import mindustry.gen.EntityMapping;
-import mindustry.gen.Sounds;
+import mindustry.gen.*;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Pal;
 import mindustry.type.UnitType;
@@ -39,29 +43,10 @@ import static mindustry.Vars.tilesize;
 public class DTUnitTypes {
     public static DrawPart.PartProgress time = p -> Time.time;
     public static DrawPart.PartProgress timeSin = p -> Mathf.absin( 20f, 1f);
-    public static UnitType
-            //air-Hyper
-            lancet, raven,
-            //ground-Hyper
-            essence, truth, solve,
-            //air-offensive
-            knife,
-            //ground-offensive
-            //air-subsidiary
-            //ground-subsidiary
-            //core-unit
-            separate,
-            spaceStationDrone,
-            //special
-            repairDrone,
-            flyingNeoplasmSquid
-            ;
+    public static @EntityDef({Unitc.class}) UnitType lancet, raven, essence, truth, solve, knife, separate, spaceStationDrone, flyingNeoplasmSquid;
+    public static @EntityDef({Unitc.class, BuildingTetherc.class, Payloadc.class}) UnitType repairDrone;
+    public static @EntityDef({Unitc.class, Worldc.class}) UnitType physics;
     public static void load(){
-        EntityMapping.nameMap.put(DTUtil.name("lancet"), EntityMapping.map(3));
-        EntityMapping.nameMap.put(DTUtil.name("separate"), EntityMapping.map(3));
-        EntityMapping.nameMap.put(DTUtil.name("space-station-drone"), EntityMapping.map(3));
-        EntityMapping.nameMap.put(DTUtil.name("repair-drone"), EntityMapping.map(36));
-        EntityMapping.nameMap.put(DTUtil.name("flying-neoplasm-squid"), EntityMapping.map(3));
         /*
         UnitTypes.gamma.weapons.get(0).bullet.homingPower = 0.1f;
         UnitTypes.gamma.weapons.get(0).bullet.homingRange = 1000f;
@@ -82,7 +67,7 @@ public class DTUnitTypes {
         //air-Hyper
         //T1 lancet
 
-        lancet = new UnitType("lancet"){{
+        lancet = EntityRegistry.content("lancet", UnitEntity.class, name -> new UnitType(name){{
             speed = 2.7f;
             accel = 0.08f;
             drag = 0.04f;
@@ -167,8 +152,8 @@ public class DTUnitTypes {
                     }};
                 }});
             abilities.add(new DTArmorPlateAbility(){});
-        }};
-        separate = new UnitType("separate"){{
+        }});
+        separate = EntityRegistry.content("separate", UnitEntity.class, name -> new UnitType(name){{
             ammoType = new PowerAmmoType(900);
             aiController = BuilderAI::new;
             isEnemy = false;
@@ -205,10 +190,10 @@ public class DTUnitTypes {
                     healColor = Pal.bulletYellow;
                 }};
             }});
-        }};
+        }});
 
         float coreFleeRange = 500f;
-        spaceStationDrone = new UnitType("space-station-drone"){{
+        spaceStationDrone = EntityRegistry.content("space-station-drone", UnitEntity.class, name -> new UnitType(name){{
             coreUnitDock = true;
             controller = u -> new BuilderAI(true, coreFleeRange);
             isEnemy = false;
@@ -268,9 +253,9 @@ public class DTUnitTypes {
                     maxRange = 60f;
                 }};
             }});
-        }};
+        }});
         //special
-        repairDrone = new ErekirUnitType("repair-drone"){{
+        repairDrone = EntityRegistry.content("repair-drone", PayloadBuildingTetherUnit.class, name -> new ErekirUnitType(name){{
             controller = u -> new RepairDroneAI();
             flying = true;
             drag = 0.06f;
@@ -307,8 +292,8 @@ public class DTUnitTypes {
                     recoil = 0.5f;
                 }};
             }});
-        }};
-        flyingNeoplasmSquid = new NeoplasmUnitType("flying-neoplasm-squid"){{
+        }});
+        flyingNeoplasmSquid = EntityRegistry.content("flying-neoplasm-squid", UnitEntity.class, name -> new NeoplasmUnitType(name){{
             speed = 1.5f;
             accel = 0.03f;
             drag = 0.06f;
@@ -352,6 +337,16 @@ public class DTUnitTypes {
                     puddles = 3;
                 }};
             }});
-        }};
+        }});
+        physics = EntityRegistry.content("physics", WorldUnit.class, name -> new WorldUnitType(name){{
+            speed = 1.5f;
+            accel = 0.03f;
+            drag = 0.06f;
+            flying = true;
+            rotateSpeed = 1f;
+            health = 70;
+            worldWidth = 10;
+            worldHeight = 10;
+        }});
     }
 }

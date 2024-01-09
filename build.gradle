@@ -30,8 +30,18 @@ ext{
     //mindustryVersion = 'v146'
     //jabelVersion = "93fde537c7"
     sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-    gamePath = "D:/mdt/V7-ARC/Mindustry.exe"
+    gamePath = "D:/mdt/V7/Mindustry.exe"
     modPath = "${System.getenv("USERPROFILE")}/AppData/Roaming/Mindustry/mods"
+
+    arc = {String module ->
+        return "com.github.Anuken.Arc$module:$arcVersion"
+    }
+    arcLibrary = {String module ->
+        return "com.github.Zelaux.ArcLibrary$module:$arcLibraryVersion"
+    }
+    mindustry = {String module ->
+        return "com.github.Anuken.Mindustry$module:$mindustryVersion"
+    }
 }
 
 //java 8 backwards compatibility flag
@@ -43,8 +53,11 @@ ext{
 
 dependencies{
     // i.
-    compileOnly "com.github.Anuken.Arc:arc-core:$mindustryVersion"
-    compileOnly "com.github.Anuken.Mindustry:core:$mindustryVersion"
+    compileOnly "${mindustry(':core')}"
+    compileOnly "${arc(':arc-core')}"
+    implementation "${arcLibrary(':graphics-draw3d')}"
+    implementation "${arcLibrary(':graphics-g3d')}"
+    implementation "${arcLibrary(':graphics-extendedDraw')}"
 
     // ii.
     annotationProcessor "com.github.GlennFolker.EntityAnno:downgrader:$entVersion"

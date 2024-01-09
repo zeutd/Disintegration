@@ -65,7 +65,8 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
             Blocks.ice, DTBlocks.greenIce
     );
 
-    float water = 2f / arr[0].length;
+    //float water = 2f / arr[0].length;
+    float water = 999f;
 
     float rawHeight(Vec3 position){
         position = Tmp.v33.set(position).scl(scl);

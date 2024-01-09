@@ -20,7 +20,6 @@ import mindustry.world.meta.BlockFlag;
 
 import static mindustry.Vars.player;
 import static mindustry.Vars.tilesize;
-
 public class UnitAssemblerInterfaceModule extends PayloadBlock {
     public TextureRegion sideRegion1;
     public TextureRegion sideRegion2;

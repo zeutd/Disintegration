@@ -20,11 +20,16 @@ public class DTPlanets {
         Planet sun = Planets.sun;
         omurlo = new Planet("omurlo", sun, 1f, 3){{
                 generator = new OmurloPlanetGenerator();
+                /*Prov<OBJModel> modelLoader = () -> {
+                    OBJModel model = DTUtil.loadObj("aaaaaa.obj").first();
+                    model.transformation.scale(new Vec3(10, 10, 10));
+                    return model;
+                };*/
                 meshLoader = () -> new HexMesh(this, 6);
                 cloudMeshLoader = () -> new MultiMesh(
-                        new HexSkyMesh(this, 2, 0.15f, 0.14f, 5, Color.valueOf("e6e6fa").a(0.75f), 2, 0.42f, 1f, 0.43f),
+                        new HexSkyMesh(this, 4, 0.15f, 0.14f, 5, Color.valueOf("e6e6fa").a(0.75f), 2, 0.42f, 1f, 0.43f),
                         new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("f8f8ff").a(0.75f), 2, 0.42f, 1.2f, 0.45f),
-                        new HexSkyMesh(this, 5, 0.1f, 0.16f, 4, Color.valueOf("e6f3f8").a(0.75f), 2, 0.42f, 1.5f, 0.44f)
+                        new HexSkyMesh(this, 5, 0.1f, 0.16f, 4, Color.valueOf("e3e9ff").a(0.75f), 2, 0.42f, 1.5f, 0.44f)
                 );
                 alwaysUnlocked = true;
                 landCloudColor = Color.valueOf("bbd9ff");
@@ -37,7 +42,7 @@ public class DTPlanets {
                 orbitSpacing = 4f;
                 totalRadius += 2.6f;
                 clearSectorOnLose = true;
-                hiddenItems.addAll(Items.erekirOnlyItems).addAll(Items.serpuloItems).removeAll(DTItems.omurloItems);
+                itemWhitelist.addAll(DTItems.omurloItems);
                 updateLighting = false;
 
                 ruleSetter = r -> {
@@ -72,10 +77,10 @@ public class DTPlanets {
             lightDstFrom = 0.2f;
             clearSectorOnLose = true;
             defaultCore = Blocks.coreBastion;
-            iconColor = Color.valueOf("ff9266");
+            iconColor = Color.valueOf("c12300");
             allowWaves = true;
             allowWaveSimulation = true;
-            allowSectorInvasion = true;
+            allowSectorInvasion = false;
             allowLaunchSchematics = true;
             hiddenItems.addAll(Items.serpuloItems).removeAll(Items.erekirItems);
 

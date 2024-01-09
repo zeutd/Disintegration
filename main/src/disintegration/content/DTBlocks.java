@@ -93,7 +93,7 @@ public class DTBlocks {
     //TODO check bundles
     public static Block
     //environment
-            iceWater, greenIce, greenFloor, spaceStationFloor, spaceStationFloorSturdy, floatIce,
+            iceWater, greenIce, greenFloor, spaceStationFloor, spaceStationFloorFixed, floatIce,
             ethyleneVent,
             greenIceWall,
         //ore
@@ -103,7 +103,7 @@ public class DTBlocks {
             steelWall, steelWallLarge,
             ironWall, ironWallLarge,
     //transport
-            ironConveyor, alternateOverflowGate, ironSorter, invertedIronSorter, fastRouter, fastJunction, ironItemBridge,
+            ironConveyor, alternateOverflowGate, ironSorter, invertedIronSorter, ironRouter, ironJunction, ironItemBridge,
             iridiumConveyor,
     //storage
             corePedestal, spaceStationCore,
@@ -112,7 +112,7 @@ public class DTBlocks {
     //laser
             laserDevice, laserReflector, laserRouter, laserSource,
     //factory
-            boiler, electrolyser, siliconRefiner, graphiteCompressor, steelSmelter, steelBlastFurnace,
+            boiler, electrolyser, siliconRefiner, graphiteCompressor, steelSmelter, steelBlastFurnace, conductionAlloySmelter,
     //payload
             payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
     //power
@@ -141,7 +141,7 @@ public class DTBlocks {
             sandboxBlock, dpsBlock, editorBlock, cheatBlock, shaderTestBlock, blackHoleBlock, blackHoleClearBlock
             ;
     public static void load() {
-        //environment
+        //region environment
         Blocks.ice.mapColor.add(0.1f, 0.1f, 0.2f);
         Blocks.snow.mapColor.add(0.1f, 0.1f, 0.2f);
         greenIce = new Floor("green-ice"){{
@@ -169,12 +169,12 @@ public class DTBlocks {
             blendGroup = Blocks.empty;
             connects = Seq.with(this);
         }};
-        spaceStationFloorSturdy = new ConnectFloor("space-station-floor-sturdy"){{
+        spaceStationFloorFixed = new ConnectFloor("space-station-floor-fixed"){{
             variants = 0;
             blendGroup = Blocks.empty;
             connects = Seq.with(spaceStationFloor.asFloor(), this);
         }};
-        ((ConnectFloor)spaceStationFloor.asFloor()).connects.add(spaceStationFloorSturdy.asFloor());
+        ((ConnectFloor)spaceStationFloor.asFloor()).connects.add(spaceStationFloorFixed.asFloor());
 
         iceWater = new Floor("ice-water"){{
             speedMultiplier = 0.5f;
@@ -217,7 +217,8 @@ public class DTBlocks {
             attributes.set(Attribute.steam, 1f);
         }};
 
-        //defence
+        //endregion
+        //region defence
 
         iridiumWall = new ShardWall("iridium-wall"){{
             shardChance = 0.1f;
@@ -261,7 +262,8 @@ public class DTBlocks {
             armor = 8f;
             requirements(Category.defense, with(DTItems.iron, 24));
         }};
-        //transport
+        //endregion
+        //region transport
         ironConveyor = new Conveyor("iron-conveyor"){{
             requirements(Category.distribution, with(DTItems.iron, 1));
             health = 45;
@@ -284,15 +286,15 @@ public class DTBlocks {
             health = 60;
             invert = true;
         }};
-        fastRouter = new Router("fast-router"){{
+        ironRouter = new Router("iron-router"){{
             requirements(Category.distribution, with(DTItems.iron, 3));
-            speed = 4f;
+            speed = 5f;
             buildCostMultiplier = 4f;
         }};
 
-        fastJunction = new Junction("fast-junction"){{
+        ironJunction = new Junction("iron-junction"){{
             requirements(Category.distribution, with(DTItems.iron, 2));
-            speed = 10;
+            speed = 20;
             capacity = 6;
             health = 30;
             buildCostMultiplier = 6f;
@@ -301,7 +303,7 @@ public class DTBlocks {
         ironItemBridge = new BufferedItemBridge("iron-bridge-conveyor"){{
             requirements(Category.distribution, with(DTItems.iron, 12));
             fadeIn = moveArrows = false;
-            range = 7;
+            range = 5;
             speed = 74f;
             arrowSpacing = 6f;
             bufferCapacity = 14;
@@ -313,8 +315,8 @@ public class DTBlocks {
             displayedSpeed = 13f;
             buildCostMultiplier = 2f;
         }};
-
-        //storage
+        //endregion
+        //region storage
         corePedestal = new CoreBlock("core-pedestal"){{
             requirements(Category.effect, BuildVisibility.editorOnly, with(DTItems.iron, 1300));
             alwaysUnlocked = true;
@@ -340,8 +342,8 @@ public class DTBlocks {
 
             unitCapModifier = 16;
         }};
-        
-        //temperature
+        //endregion
+        //region heat
         heatConduit = new HeatConduit("heat-conduit"){{
             researchCostMultiplier = 10f;
             size = 1;
@@ -378,7 +380,8 @@ public class DTBlocks {
 
             drawer = new DrawMulti(new DrawAllRotate(), new DrawHeatOutput());
         }};
-
+        //endregion
+        //region laser
         laserSource = new LaserDevice("laser-source"){{
             range = 10;
             health = 400;
@@ -413,7 +416,8 @@ public class DTBlocks {
             drawer = new DrawMulti(new DrawRegion(""), new DrawLaser(true));
             requirements(Category.crafting, with(DTItems.iron, 30, Items.silicon, 20, Items.graphite, 50));
         }};
-        //factory
+        //endregion
+        //region factory
         boiler = new HeatCrafter("boiler"){{
             requirements(Category.crafting, with(DTItems.iron, 65, Items.silicon, 40, Items.graphite, 60));
             outputLiquid = new LiquidStack(DTLiquids.steam, 12f / 60f);
@@ -535,7 +539,7 @@ public class DTBlocks {
         steelBlastFurnace = new HeatCrafter("steel-blast-furnace"){{
             requirements(Category.crafting, with(DTItems.steel, 100, Items.graphite, 190, Items.silicon, 50, DTItems.iron, 90, DTItems.silver, 20));
             craftEffect = new MultiEffect(Fx.producesmoke, new RadialEffect(DTFx.blastFurnaceSmoke, 4, 90f, 5f)) ;
-            outputItem = new ItemStack(DTItems.steel, 10);
+            outputItem = new ItemStack(DTItems.steel, 12);
             craftTime = 240f;
             size = 5;
             hasItems = true;
@@ -548,7 +552,22 @@ public class DTBlocks {
 
             consumeItems(with(DTItems.iron, 8, Items.coal, 4));
         }};
-        //payload
+
+        conductionAlloySmelter = new GenericCrafter("conduction-alloy-smelter"){{
+            requirements(Category.crafting, with(Items.silicon, 80, Items.lead, 90, DTItems.silver, 90, DTItems.iron, 70));
+            craftEffect = Fx.smeltsmoke;
+            outputItem = new ItemStack(DTItems.conductionAlloy, 1);
+            craftTime = 75f;
+            size = 3;
+            hasPower = true;
+            itemCapacity = 20;
+            drawer = new DrawMulti(new DrawDefault(), new DrawFlame());
+
+            consumePower(4f);
+            consumeItems(with(Items.lead, 4, Items.silicon, 3, DTItems.iridium, 1));
+        }};
+        //endregion
+        //region payload
         /*payloadPropulsionTower = new PayloadMassDriver("payload-propulsion-tower"){{
             requirements(Category.units, with(Items.thorium, 300, Items.silicon, 200, Items.plastanium, 200, Items.phaseFabric, 50));
             size = 5;
@@ -596,7 +615,8 @@ public class DTBlocks {
             consumePower(2f);
             size = 3;
         }};
-        //power
+        //endregion
+        //region power
         neoplasmGenerator = new SpreadGenerator("neoplasm-generator"){{
             requirements(Category.power, with(Items.tungsten, 500, Items.carbide, 100, Items.oxide, 150, Items.silicon, 400, Items.phaseFabric, 200));
 
@@ -715,7 +735,8 @@ public class DTBlocks {
 
             size = 3;
         }};
-        //turret
+        //endregion
+        //region turret
 
         //TODO balancing
         fracture = new ItemTurret("fracture"){{
@@ -889,7 +910,7 @@ public class DTBlocks {
             rotateSpeed = 2;
             outlineColor = Pal.darkOutline;
 
-            shootCone = 1;
+            shootCone = 45;
             size = 5;
             shootY = 15;
             envEnabled |= Env.space;
@@ -1065,7 +1086,7 @@ public class DTBlocks {
 
             heatColor = Pal.berylShot.cpy().a(0.9f);
 
-            shootCone = 5;
+            shootCone = 15;
             size = 3;
             envEnabled |= Env.space;
 
@@ -1158,7 +1179,7 @@ public class DTBlocks {
             recoil = 3f;
             squareSprite = false;
 
-            shootCone = 1;
+            shootCone = 5;
             size = 3;
             envEnabled |= Env.space;
 
@@ -1362,15 +1383,15 @@ public class DTBlocks {
         sparkover = new ElectricTowerTurret("sparkover"){{
             hasPower = true;
             size = 2;
-            range = 170f;
-            damage = 120f;
-            reload = 200f;
-            maxTargets = 30;
+            range = 200f;
+            damage = 100f;
+            reload = 150f;
+            maxTargets = 15;
 
             targetAir = true;
             targetGround = true;
 
-            consumePower(10f);
+            consumePower(4f);
 
             requirements(Category.turret, with(DTItems.iron, 200, Items.silicon, 110, DTItems.iridium, 90));
         }};
@@ -1589,7 +1610,8 @@ public class DTBlocks {
             shake = 3f;
             limitRange(9f);
         }};
-        //drill
+        //endregion
+        //region drill
         quarry = new Quarry("quarry"){{
            size = 3;
            regionRotated1 = 1;
@@ -1664,7 +1686,8 @@ public class DTBlocks {
             requirements(Category.production, with(Items.copper, 12));
         }};
         ((PortableBlockWeapon)((PortableDrill)portableDrill).portableUnitType.weapons.get(0)).unitContent = portableDrill;
-        //effect
+        //endregion
+        //region effect
         repairDroneStation = new RepairDroneStation("repair-drone-station"){{
             size = 3;
             unitType = DTUnitTypes.repairDrone;
@@ -1715,13 +1738,15 @@ public class DTBlocks {
                 whiteList = Seq.with(spaceStationFloor.asFloor());
             }};
         }
-        //campaign
+        //endregion
+        //region campaign
         spaceStationLaunchPad = new SpaceStationLaunchPad("space-station-launch-pad"){{
             requirements(Category.effect, with(Items.copper, 10));
             size = 10;
             health = 9000;
         }};
-        //debug
+        //endregion
+        //region debug
         sandboxBlock = new DebugBlock("sandbox-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
@@ -1775,5 +1800,6 @@ public class DTBlocks {
             runs = b -> DTGroups.blackHole.forEach(Entityc::remove);
             requirements(Category.effect, with(), true);
         }};
+        //endregion
     }
 }

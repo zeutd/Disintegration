@@ -20,7 +20,6 @@ import mindustry.gen.Teamc;
 abstract class BlackHoleComp implements Teamc, Drawc, BlackHolec {
     @Import float x, y;
     @Import Team team;
-    @Import boolean added;
     public float force, radius;
     public float attractForce, attractRadius;
     public float teamForceMultiplier;

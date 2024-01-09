@@ -14,6 +14,11 @@ public class DisintegrationJavaMod extends Mod{
     public DisintegrationJavaMod(){
         app.post(DTGroups::init);
         Events.run(EventType.Trigger.update, DTGroups::update);
+        /*Events.run(EventType.Trigger.draw, DTVars.renderer3D.models::clear);
+        Events.run(EventType.Trigger.postDraw, () -> {
+            DTVars.renderer3D.cam.position.set(Core.camera.position, Core.camera.height);
+            DTVars.renderer3D.render();
+        });*/
     }
 
     @Override

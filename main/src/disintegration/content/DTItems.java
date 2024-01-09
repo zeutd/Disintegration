@@ -7,7 +7,7 @@ import mindustry.type.Item;
 import static mindustry.content.Items.*;
 
 public class DTItems {
-    public static Item iridium, iron, steel, silver, magnetismAlloy, spaceStationPanel;
+    public static Item iridium, iron, steel, silver, magnetismAlloy, spaceStationPanel, conductionAlloy;
     public static final Seq<Item>
             omurloItems = new Seq<>(),
             omurloOnlyItems = new Seq<>(),
@@ -18,7 +18,7 @@ public class DTItems {
              hardness = 4;
              cost = 2;
         }};
-        iron = new Item("iron", Color.valueOf("8691c3")){{
+        iron = new Item("iron", Color.valueOf("8691b4")){{
             hardness = 1;
             cost = 1;
         }};
@@ -35,7 +35,7 @@ public class DTItems {
             hardness = 2;
             cost = 4;
         }};*/
-        silver = new Item("silver", Color.valueOf("F2F2F2")){{
+        silver = new Item("silver", Color.valueOf("E0E8F3")){{
             hardness = 2;
             cost = 2;
         }};
@@ -44,17 +44,23 @@ public class DTItems {
             cost = 1;
         }};
 
-        magnetismAlloy = new Item("magnetism-alloy", Color.valueOf("EFEAEA")){{
+        magnetismAlloy = new Item("magnetism-alloy", Color.valueOf("DED4D4")){{
             hardness = 2;
             cost = 2;
 
         }};
 
+        conductionAlloy = new Item("conduction-alloy", Color.valueOf("4D536E")){{
+            hardness = 2;
+            cost = 3;
+
+        }};
+
         omurloItems.addAll(
-                iridium, iron, silver, magnetismAlloy, sand, silicon, graphite, coal, metaglass, lead, blastCompound
+                iridium, iron, silver, magnetismAlloy, conductionAlloy, sand, silicon, graphite, coal, metaglass, lead, blastCompound
         );
         omurloOnlyItems.addAll(
-                iridium, iron, silver, magnetismAlloy
+                iridium, iron, silver, magnetismAlloy, conductionAlloy
         );
         spaceStationItems.addAll(
                 spaceStationPanel

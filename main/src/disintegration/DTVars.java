@@ -4,6 +4,7 @@ import arc.files.Fi;
 import arc.files.ZipFi;
 import arc.struct.Seq;
 import arc.util.serialization.Jval;
+import arclibrary.graphics.g3d.render.GenericRenderer3D;
 import disintegration.core.SpaceStationReader;
 import disintegration.type.SpaceStation;
 import disintegration.ui.DTUI;
@@ -21,6 +22,7 @@ public class DTVars {
 
     public static DTUI DTUI = new DTUI();
     public static SpaceStationReader spaceStationReader = new SpaceStationReader();
+    public static GenericRenderer3D renderer3D = new GenericRenderer3D();
 
     public static Fi DTRoot = DTUtil.getFiChild(Vars.dataDirectory, modName + "/");
     public static ZipFi DTModFile;
@@ -29,7 +31,9 @@ public class DTVars {
     public static Seq<SpaceStation> spaceStations = new Seq<>();
     public static Seq<Planet> spaceStationPlanets = new Seq<>();
 
-    public static void init() {
+    public static ZipFi modFi(){
+        ZipFi tmp = new ZipFi(Vars.mods.getMod(modName).file);
+        if (tmp != null) return tmp;
         Seq<Fi> modFiles = Vars.modDirectory.findAll(f -> {
             Fi metaFile = null;
             try {
@@ -46,7 +50,12 @@ public class DTVars {
                 return false;
             }
         });
-        if (!modFiles.isEmpty()) DTModFile = new ZipFi(modFiles.first());
+        return new ZipFi(modFiles.first());
+    }
+    public static void init() {
+        DTModFile = modFi();
+
         DTUI.init();
+        renderer3D.init();
     }
 }
