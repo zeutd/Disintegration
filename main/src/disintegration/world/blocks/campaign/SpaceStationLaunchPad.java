@@ -11,6 +11,7 @@ import arc.scene.ui.layout.Table;
 import arc.struct.EnumSet;
 import disintegration.content.DTFx;
 import disintegration.content.DTItems;
+import disintegration.content.DTPlanets;
 import disintegration.type.SpaceStation;
 import mindustry.Vars;
 import mindustry.content.Fx;
@@ -23,7 +24,6 @@ import mindustry.graphics.Pal;
 import mindustry.logic.LAccess;
 import mindustry.type.Item;
 import mindustry.type.Planet;
-import mindustry.type.Sector;
 import mindustry.ui.Bar;
 import mindustry.ui.Styles;
 import mindustry.ui.dialogs.PlanetDialog;
@@ -56,7 +56,7 @@ public class SpaceStationLaunchPad extends Block {
     }
 
     public static boolean selectable(Planet planet){
-        return (((planet.alwaysUnlocked && planet.isLandable()) || planet.sectors.contains(Sector::hasBase)) && !(planet instanceof SpaceStation)) || PlanetDialog.debugSelect;
+        return DTPlanets.canSpaceStation.get(planet) || PlanetDialog.debugSelect;
     }
 
     @Override

@@ -30,7 +30,7 @@ ext{
     //mindustryVersion = 'v146'
     //jabelVersion = "93fde537c7"
     sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-    gamePath = "D:/mdt/V7/Mindustry.exe"
+    gamePath = "D:/mdt/V7-ARC/Mindustry.exe"
     modPath = "${System.getenv("USERPROFILE")}/AppData/Roaming/Mindustry/mods"
 
     arc = {String module ->
