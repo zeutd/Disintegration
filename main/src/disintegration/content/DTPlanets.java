@@ -118,7 +118,7 @@ public class DTPlanets {
                 unlockedOnLand.add(DTBlocks.corePedestal);
             }};
 
-        terminsi = new Planet("terminsi", sun, 3.6f, 3){{
+        terminsi = new Planet("terminsi", sun, 3.7f, 3){{
             bloom = true;
             accessible = true;
             alwaysUnlocked = true;
