@@ -104,6 +104,6 @@ public class DTShaders {
     }
 
     public static Fi getDTShaderFi(String file){
-        return DTVars.DTModFile.child("shaders").child(file);
+        return DTVars.modFi().child("shaders").child(file);
     }
 }

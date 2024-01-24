@@ -32,8 +32,8 @@ public class DTVars {
     public static Seq<Planet> spaceStationPlanets = new Seq<>();
 
     public static ZipFi modFi(){
-        ZipFi tmp = new ZipFi(Vars.mods.getMod(modName).file);
-        if (tmp != null) return tmp;
+        Fi tmp = Vars.mods.getMod(modName).file;
+        if (tmp != null && tmp.exists()) return new ZipFi(tmp);
         Seq<Fi> modFiles = Vars.modDirectory.findAll(f -> {
             Fi metaFile = null;
             try {
@@ -53,9 +53,7 @@ public class DTVars {
         return new ZipFi(modFiles.first());
     }
     public static void init() {
-        DTModFile = modFi();
-
         DTUI.init();
-        renderer3D.init();
+        //renderer3D.init();
     }
 }

@@ -1,6 +1,6 @@
-name: Commit Build
+name: Build Mod
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
   buildJar:

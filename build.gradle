@@ -94,7 +94,7 @@ task jarAndroid{
         def d8 = isWindows ? "d8.bat" : "d8"
 
         //dex and desugar files - this requires d8 in your PATH
-        "$d8 $dependencies --min-api 14 --output ${project.archivesBaseName}Android.jar ${project.archivesBaseName}Desktop.jar"
+        "$d8 $dependencies --min-api 26 --output ${project.archivesBaseName}Android.jar ${project.archivesBaseName}Desktop.jar"
                 .execute(null, new File("$buildDir/libs")).waitForProcessOutput(System.out, System.err)
     }
 }
@@ -139,6 +139,23 @@ task testMod {
         copy {
             from "$buildDir/libs/${project.archivesBaseName}.jar"
             into modPath
+        }
+        exec {
+            commandLine 'cmd', "/c", "${gamePath}"
+        }
+    }
+}
+
+task testModDesktop {
+    dependsOn jar
+    doLast {
+        delete{
+            delete "${modPath}/${project.archivesBaseName}.jar"
+        }
+        copy {
+            from "$buildDir/libs/${project.archivesBaseName}Desktop.jar"
+            into modPath
+            rename ("${project.archivesBaseName}Desktop.jar", "${project.archivesBaseName}.jar")
         }
         exec {
             commandLine 'cmd', "/c", "${gamePath}"

@@ -3,7 +3,7 @@ package disintegration.entities;
 import disintegration.gen.entities.BlackHolec;
 import mindustry.entities.EntityGroup;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings("all")
 public class DTGroups {
     public static EntityGroup<BlackHolec> blackHole;
 
