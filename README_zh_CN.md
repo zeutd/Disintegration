@@ -1,4 +1,9 @@
-[English](https://github.com/zeutd/Disintegration/blob/master/README.md) | 中文
+[English](README.md) | 中文
+
++ **Discord 服务器：**
+  [![Discord](https://img.shields.io/discord/825801593466388520.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord&color=17cf48)](https://discord.gg/yNmbMcuwyW)
++ **QQ**：676206144
+  ![](images/qq-QRcode.png)
 
 ## 用Github Action构建
 
