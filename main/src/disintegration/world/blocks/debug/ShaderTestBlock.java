@@ -35,13 +35,13 @@ public class ShaderTestBlock extends Block {
     public class ShaderTestBuild extends Building {
         @Override
         public void draw(){
-            super.draw();
             /*model.setTranslation(new Vec3(x, y, 0));
             DTVars.renderer3D.models.add((Model) model.cloneModel());*/
             if (shader instanceof DTShaders.BlackHoleShader blackHole){
                 blackHole.add(x, y, 64, 64);
                 return;
             }
+            super.draw();
             /*Draw.draw(Layer.flyingUnitLow - 1, () -> {
                 shader.apply();
                 Draw.shader(shader);

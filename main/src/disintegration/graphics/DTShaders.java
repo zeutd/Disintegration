@@ -10,8 +10,6 @@ import arc.graphics.gl.FrameBuffer;
 import arc.graphics.gl.Shader;
 import arc.struct.FloatSeq;
 import disintegration.DTVars;
-import disintegration.content.DTBlocks;
-import disintegration.world.blocks.debug.ShaderTestBlock;
 import mindustry.game.EventType;
 
 import static mindustry.Vars.state;
@@ -21,7 +19,6 @@ public class DTShaders {
 
     public static void init(){
         blackHole = new BlackHoleShader();
-        ((ShaderTestBlock) DTBlocks.shaderTestBlock).shader = blackHole;
     }
     public static class BlackHoleShader extends Shader {
         static final int max = 32;
@@ -104,6 +101,6 @@ public class DTShaders {
     }
 
     public static Fi getDTShaderFi(String file){
-        return DTVars.modFi().child("shaders").child(file);
+        return DTVars.modFile.child("shaders").child(file);
     }
 }

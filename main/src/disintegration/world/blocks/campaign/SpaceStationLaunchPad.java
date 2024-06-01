@@ -56,7 +56,9 @@ public class SpaceStationLaunchPad extends Block {
     }
 
     public static boolean selectable(Planet planet){
-        return DTPlanets.canSpaceStation.get(planet) || PlanetDialog.debugSelect;
+        if(PlanetDialog.debugSelect) return true;
+        if(!DTPlanets.canSpaceStation.containsKey(planet)) return false;
+        return DTPlanets.canSpaceStation.get(planet);
     }
 
     @Override

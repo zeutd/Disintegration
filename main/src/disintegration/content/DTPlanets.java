@@ -5,6 +5,7 @@ import arc.struct.ObjectMap;
 import disintegration.graphics.g3d.SphereMesh;
 import disintegration.type.SpaceStation;
 import disintegration.type.maps.planet.CosiuazPlanetGenerator;
+import disintegration.type.maps.planet.LunaPlanetGenerator;
 import disintegration.type.maps.planet.OmurloPlanetGenerator;
 import mindustry.Vars;
 import mindustry.content.Blocks;
@@ -21,9 +22,9 @@ import mindustry.world.meta.Env;
 public class DTPlanets {
     static Planet sun = Planets.sun;
 
-    public static Planet omurlo, cosiuaz, terminsi;
+    public static Planet luna, omurlo, cosiuaz, terminsi;
 
-    public static ObjectMap<Planet, Boolean> canSpaceStation = new ObjectMap<>();
+    public static final ObjectMap<Planet, Boolean> canSpaceStation = new ObjectMap<>();
 
     public static void init(){
         canSpaceStation.putAll(sun, true, terminsi, true);
@@ -34,11 +35,32 @@ public class DTPlanets {
         }
     }
     public static void load(){
-
-        //WIP
-        cosiuaz = new Planet("cosiuaz", sun, 1f, 2){{
-            generator = new CosiuazPlanetGenerator();
+        luna = new Planet("luna", Planets.serpulo, 0.7f, 2){{
+            generator = new LunaPlanetGenerator();
             meshLoader = () -> new HexMesh(this, 5);
+            alwaysUnlocked = true;
+            landCloudColor = Color.valueOf("88aabb");
+            atmosphereColor = Color.valueOf("122240");
+            defaultEnv = Env.terrestrial;
+            startSector = 10;
+            hasAtmosphere = false;
+            tidalLock = true;
+            orbitSpacing = 2f;
+            totalRadius += 10f;
+            lightSrcTo = 0.5f;
+            lightDstFrom = 0.2f;
+            clearSectorOnLose = true;
+            defaultCore = Blocks.coreBastion;
+            iconColor = Color.valueOf("cceeff");
+            hiddenItems.addAll(Items.erekirItems);
+
+            updateLighting = false;
+        }};
+        //WIP
+        cosiuaz = new Planet("cosiuaz", sun, 0.8f, 2){{
+            minZoom = 0.65f;
+            generator = new CosiuazPlanetGenerator();
+            meshLoader = () -> new HexMesh(this, 6);
             cloudMeshLoader = () -> new MultiMesh(
                     new HexSkyMesh(this, 1, 0.15f, 0.14f, 5, Color.valueOf("eba768").a(0.75f), 2, 0.42f, 1f, 0.43f),
                     new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("eea293").a(0.75f), 2, 0.42f, 1.2f, 0.45f)
@@ -81,6 +103,10 @@ public class DTPlanets {
 
             unlockedOnLand.add(Blocks.coreBastion);
         }};
+        Vars.content.planets().each(p -> p.parent == p.solarSystem, p -> {
+            p.orbitRadius += sun.orbitSpacing;
+            cosiuaz.orbitRadius = sun.orbitSpacing + sun.radius;
+        });
         omurlo = new Planet("omurlo", sun, 1f, 3){{
                 generator = new OmurloPlanetGenerator();
                 /*Prov<OBJModel> modelLoader = () -> {
@@ -118,15 +144,15 @@ public class DTPlanets {
                 unlockedOnLand.add(DTBlocks.corePedestal);
             }};
 
-        terminsi = new Planet("terminsi", sun, 3.6f, 3){{
+        terminsi = new Planet("terminsi", sun, 2.6f){{
             bloom = true;
             accessible = true;
             alwaysUnlocked = true;
 
-            atmosphereRadIn = 0.1f;
-            atmosphereRadOut = 0.5f;
+            hasAtmosphere = true;
+            atmosphereRadIn = 0.05f;
+            atmosphereRadOut = 3.1f;
             atmosphereColor = Color.valueOf("3941ff");
-            lightColor = Color.valueOf("546fff");
             landCloudColor = Color.valueOf("aedeff");
             iconColor = Color.valueOf("2871ff");
 

@@ -44,7 +44,7 @@ public class DTUtil {
     }
 
     public static Seq<OBJModel> loadObj(String file){
-        Fi objFi = DTVars.modFi().child("models").child(file);
+        Fi objFi = DTVars.modFile.child("models").child(file);
         return ObjectModelFactory.create(objFi, new ObjectShader(
                 """
                         attribute vec4 a_position;

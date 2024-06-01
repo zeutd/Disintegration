@@ -13,8 +13,7 @@ import mindustry.type.Sector;
 import mindustry.world.Block;
 import mindustry.world.blocks.environment.Floor;
 
-import static mindustry.Vars.state;
-import static mindustry.Vars.world;
+import static mindustry.Vars.*;
 
 public class SpaceStationGenerator extends BlankPlanetGenerator {
     public Block core = DTBlocks.spaceStationCore;
@@ -37,7 +36,7 @@ public class SpaceStationGenerator extends BlankPlanetGenerator {
         state.rules.planetBackground = new PlanetParams(){{
             planet = sector.planet.parent;
             zoom = 1f;
-            camPos = new Vec3(1.2388899f, 1.6047299f, /*2.4758825f*/0);
+            camPos = new Vec3(0f, 0f, /*2.4758825f*/0.5f);
         }};
 
         state.rules.dragMultiplier = 0.7f; //yes, space actually has 0 drag but true 0% drag is very annoying

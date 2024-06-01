@@ -13,12 +13,16 @@ varying vec2 v_texCoords;
 
 
 float atan2(in float y, in float x){
-    bool s = (abs(x) > abs(y));
-    return mix(PI/2.0 - atan(x,y), atan(y,x), s);
+    if(abs(x) > abs(y)){
+        return atan(y, x);
+    }
+    else{
+        return PI/2.0 - atan(x, y);
+    }
 }
 
 float cforce(in float dst, in float radius, in float force){
-    return (abs(dst / radius) - 1)*(abs(dst / radius) - 1)*force;
+    return (abs(dst / radius) - 1.0)*(abs(dst / radius) - 1.0)*force;
 }
 
 void main(){
@@ -33,8 +37,8 @@ void main(){
         float rd = radius;
         if (dst < radius){
             float dstc = cforce(dst, radius, force);
-            if(dst < dstc*0.75){
-                color = vec4(0, 0, 0, 255);
+            if(dst < dstc*0.75 && false){
+                color = vec4(0, 0, 0, 0);
             }
             else {
                 float dir = atan2(worldCoords.y - blackhole.y, worldCoords.x - blackhole.x);//+sqrt(dst / 10);
@@ -46,7 +50,7 @@ void main(){
         }
         //float dstc = cforce(dst, radius, force);
     }
-    if(color.w == 0){
+    if(color.w == 0.0){
         color = texture2D(u_texture, v_texCoords + displacement);
     }
     gl_FragColor = color;

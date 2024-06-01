@@ -19,6 +19,7 @@ import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
 import mindustry.world.Edges;
+import mindustry.world.Tile;
 import mindustry.world.draw.DrawBlock;
 
 import java.util.Arrays;
@@ -59,8 +60,8 @@ public class LaserReflector extends Block {
     public float calculateLaser(int x, int y, int a, int rotation) {
         float l = 0;
         for (int i = 1; i <= range; i++) {
-            Block other = world.tile(Geometry.d4x(rotation + a - 1) * i + x, Geometry.d4y(rotation + a - 1) * i + y).block();
-            if (other != null && other.solid) {
+            Tile tile = world.tile(Geometry.d4x(rotation + a - 1) * i + x, Geometry.d4y(rotation + a - 1) * i + y);
+            if (tile != null && tile.block().solid) {
                 l = i - 0.5f;
                 break;
             }

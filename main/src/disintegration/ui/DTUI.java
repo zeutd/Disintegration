@@ -25,20 +25,22 @@ public class DTUI implements ApplicationListener {
     Planet p;
     @Override
     public void update(){
-        ui.planet.shown(() -> {
-            added = false;
-        });
-        p = ui.planet.state.planet;
-        if(!added)ui.planet.stack(new Table(t -> {
-            t.button(Icon.trash, () -> ui.showConfirm("@confirm", "@disintegration.clearspacestation.confirm", () -> {
-                spaceStations.remove((SpaceStation) p);
-                spaceStationPlanets.remove(p.parent);
-                p.accessible = false;
-                p.visible = false;
-                p.sectors.clear();
-                ui.planet.show();
-            })).visible(() -> p instanceof SpaceStation);
-        }));
-        added = true;
+        if(ui.planet != null) {
+            ui.planet.shown(() -> {
+                added = false;
+            });
+            p = ui.planet.state.planet;
+            if (!added) ui.planet.stack(new Table(t -> {
+                t.button(Icon.trash, () -> ui.showConfirm("@confirm", "@disintegration.clearspacestation.confirm", () -> {
+                    spaceStations.remove((SpaceStation) p);
+                    spaceStationPlanets.remove(p.parent);
+                    p.accessible = false;
+                    p.visible = false;
+                    p.sectors.clear();
+                    ui.planet.show();
+                })).visible(() -> p instanceof SpaceStation);
+            }));
+            added = true;
+        }
     }
 }

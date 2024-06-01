@@ -8,5 +8,6 @@ public class DTStat{
     public static final Stat
             maxLinks = new Stat("powerConnections", StatCat.function),
             shardChance = new Stat("shardChance"),
-            shardDamage = new Stat("shardDamage");
+            shardDamage = new Stat("shardDamage"),
+            catalyst = new Stat("catalyst", StatCat.optional);
 }

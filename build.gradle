@@ -163,6 +163,15 @@ task testModDesktop {
     }
 }
 
+task testModAndroid {
+    dependsOn deploy
+    doLast {
+        exec {
+            commandLine 'cmd', "/c", "android-test.bat $buildDir/libs/${project.archivesBaseName}.jar"
+        }
+    }
+}
+
 task testOpenGame {
     doLast {
         exec {

@@ -12,6 +12,7 @@ import arc.util.Time;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.ai.types.RepairDroneAI;
+import disintegration.net.DTCall;
 import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.entities.Units;
@@ -26,6 +27,7 @@ import mindustry.ui.Fonts;
 import mindustry.ui.Styles;
 import mindustry.world.Block;
 import mindustry.world.Tile;
+import mindustry.world.blocks.units.UnitAssembler;
 import mindustry.world.meta.Stat;
 
 import static mindustry.Vars.*;
@@ -105,6 +107,11 @@ public class RepairDroneStation extends Block {
         });
     }
 
+    public static void repairDroneSpawned(Tile tile, int id){
+        if(tile == null || !(tile.build instanceof RepairDroneStationBuild build)) return;
+        build.droneSpawned(id);
+    }
+
     public class RepairDroneStationBuild extends Building {
         public boolean repairing;
 
@@ -116,7 +123,9 @@ public class RepairDroneStation extends Block {
 
         public Seq<Unit> units = new Seq<>();
 
-        public IntSeq readUnits = new IntSeq(dronesCreated);
+        public IntSeq readUnits = new IntSeq();
+
+        public IntSeq whenSyncedUnits = new IntSeq();
 
         public int unitsCreated;
 
@@ -173,8 +182,18 @@ public class RepairDroneStation extends Block {
                     unit.rotation = 90f;
                     unit.add();
                     units.add(unit);
+                    DTCall.repairDroneSpawned(tile, id);
                 }
                 droneProgress = 0;
+            }
+
+            if(repairing && units.size < dronesCreated && whenSyncedUnits.size > 0){
+                whenSyncedUnits.each(id -> {
+                    var unit = Groups.unit.getByID(id);
+                    if(unit != null){
+                        units.addUnique(unit);
+                    }
+                });
             }
 
             if(units.size >= dronesCreated){
@@ -207,6 +226,14 @@ public class RepairDroneStation extends Block {
             Draw.z(Layer.block);
         }
 
+        public void droneSpawned(int id){
+            Fx.spawn.at(x, y);
+            droneProgress = 0f;
+            if(net.client()){
+                whenSyncedUnits.add(id);
+            }
+        }
+
         @Override
         public void drawSelect(){
             Drawf.dashCircle(x, y, repairRange, Pal.accent);
@@ -237,6 +264,7 @@ public class RepairDroneStation extends Block {
             for (int i = 0; i < count; i++) {
                 readUnits.add(read.i());
             }
+            whenSyncedUnits.clear();
         }
     }
 }

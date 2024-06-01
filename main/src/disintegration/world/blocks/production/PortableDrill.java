@@ -1,6 +1,9 @@
 package disintegration.world.blocks.production;
 
+import arc.scene.ui.layout.Table;
+import arc.struct.EnumSet;
 import arc.util.Nullable;
+import disintegration.net.DTCall;
 import mindustry.content.Blocks;
 import mindustry.content.UnitTypes;
 import mindustry.entities.Effect;
@@ -9,6 +12,7 @@ import mindustry.gen.Unit;
 import mindustry.type.UnitType;
 import mindustry.world.blocks.ControlBlock;
 import mindustry.world.blocks.production.Drill;
+import mindustry.world.meta.BlockFlag;
 
 public class PortableDrill extends Drill {
     public UnitType portableUnitType;
@@ -17,6 +21,7 @@ public class PortableDrill extends Drill {
 
     public PortableDrill(String name) {
         super(name);
+        flags = EnumSet.of(BlockFlag.drill);
     }
 
     public class PortableDrillBuild extends DrillBuild implements ControlBlock {

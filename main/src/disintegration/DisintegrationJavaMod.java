@@ -1,18 +1,32 @@
 package disintegration;
 
 import arc.Events;
+import arc.struct.Seq;
 import disintegration.content.*;
+import disintegration.core.ExportHandler;
+import disintegration.core.SpaceStationReader;
 import disintegration.entities.DTGroups;
 import disintegration.gen.entities.EntityRegistry;
 import disintegration.graphics.DTShaders;
+import disintegration.ui.DTUI;
+import mindustry.Vars;
 import mindustry.game.EventType;
 import mindustry.mod.Mod;
+import rhino.ImporterTopLevel;
+import rhino.NativeJavaPackage;
+
+import java.io.IOException;
 
 import static arc.Core.app;
 
 public class DisintegrationJavaMod extends Mod{
     public DisintegrationJavaMod(){
-        app.post(DTGroups::init);
+
+        DTVars.init();
+        DTGroups.init();
+        app.addListener(DTVars.spaceStationReader = new SpaceStationReader());
+        app.addListener(DTVars.exportHandler = new ExportHandler());
+        DTVars.exportHandler.init();
         Events.run(EventType.Trigger.update, DTGroups::update);
         /*Events.run(EventType.Trigger.draw, DTVars.renderer3D.models::clear);
         Events.run(EventType.Trigger.postDraw, () -> {
@@ -23,14 +37,28 @@ public class DisintegrationJavaMod extends Mod{
 
     @Override
     public void init(){
-        app.post(DTVars::init);
-        app.post(DTShaders::init);
-        app.addListener(DTVars.DTUI);
-        app.addListener(DTVars.spaceStationReader);
+        DTPlanets.init();
+        app.addListener(DTVars.DTUI = new DTUI());
+        Vars.content.planets().each(p -> p.parent == p.solarSystem, p -> {
+            p.orbitRadius *= 0.5;
+            p.orbitRadius += p.solarSystem.radius * 2f;
+        });
+        Vars.content.planets().each(p -> p == p.solarSystem, p -> {
+            p.radius *= 2f;
+            p.reloadMesh();
+            p.clipRadius *= 2f;
+        });
+        DTPlanets.luna.orbitRadius *= 0.5f;
+        try {
+            DTVars.spaceStationReader.read();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
     @Override
     public void loadContent() {
         EntityRegistry.register();
+        DTShaders.init();
         DTItems.load();
         DTLiquids.load();
         DTStatusEffects.load();
@@ -39,7 +67,6 @@ public class DisintegrationJavaMod extends Mod{
         DTBlocks.load();
         DTLoadouts.load();
         DTPlanets.load();
-        app.post(DTVars.spaceStationReader::read);
         DTSectorPresets.load();
     }
 }

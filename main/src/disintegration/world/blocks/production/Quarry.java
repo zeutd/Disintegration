@@ -18,6 +18,7 @@ import arc.util.Time;
 import arc.util.Tmp;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
+import arclibrary.graphics.EDraw;
 import disintegration.content.DTFx;
 import disintegration.util.DTUtil;
 import disintegration.util.WorldDef;
@@ -272,12 +273,13 @@ public class Quarry extends Block {
                 Item tileItem;
                 for (int ix = 0; ix < areaSize; ix ++){
                     for (int iy = 0; iy < areaSize; iy ++){
-                        float dx = ix * 8 + mx - fulls + 4;
-                        float dy = iy * 8 + my - fulls + 4;
+                        float dx = ix * tilesize + mx - fulls + tilesize / 2f;
+                        float dy = iy * tilesize + my - fulls + tilesize / 2f;
                         tileItem = itemsArray.get(ix * areaSize + iy);
                         if (tileItem != null){
                             if (items.total() < itemCapacity){
                                 Fx.itemTransfer.at(dx + Mathf.range(1f), dy + Mathf.range(1f), 0, tileItem.color, new Vec2(drillX + mx, drillY + my));
+                                Fx.itemTransfer.at(drillX + Mathf.range(1f) + mx, drillY + Mathf.range(1f) + my, 0, tileItem.color, new Vec2(x, y));
                                 offload(tileItem);
                             }
                         }

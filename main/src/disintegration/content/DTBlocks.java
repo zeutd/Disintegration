@@ -1,19 +1,28 @@
 package disintegration.content;
 
 import arc.graphics.Color;
+import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
+import arc.math.Angles;
 import arc.math.Interp;
 import arc.math.Mathf;
+import arc.math.Rand;
+import arc.math.geom.Geometry;
+import arc.math.geom.Rect;
+import arc.math.geom.Vec2;
 import arc.struct.Seq;
+import arc.util.Time;
 import disintegration.DTVars;
 import disintegration.entities.DTGroups;
+import disintegration.entities.abilities.PortableBlockAbility;
 import disintegration.entities.bullet.BlockBulletType;
 import disintegration.entities.bullet.ConnectBulletType;
 import disintegration.entities.bullet.RandomSpreadBulletType;
 import disintegration.entities.bullet.WarpBulletType;
-import disintegration.entities.unit.weapons.PortableBlockWeapon;
+import disintegration.graphics.DTShaders;
 import disintegration.graphics.Pal2;
+import disintegration.world.blocks.campaign.OrbitalLaunchPad;
 import disintegration.world.blocks.campaign.SpaceStationLaunchPad;
 import disintegration.world.blocks.debug.BlackHoleBlock;
 import disintegration.world.blocks.debug.DPSBlock;
@@ -31,9 +40,14 @@ import disintegration.world.blocks.heat.HeatConduitRouter;
 import disintegration.world.blocks.laser.LaserDevice;
 import disintegration.world.blocks.laser.LaserReactor;
 import disintegration.world.blocks.laser.LaserReflector;
+import disintegration.world.blocks.power.RotateSolarGenerator;
+import disintegration.world.blocks.power.SpaceSolarGenerator;
 import disintegration.world.blocks.power.SpreadGenerator;
+import disintegration.world.blocks.production.CatalyzeCrafter;
 import disintegration.world.blocks.production.PortableDrill;
+import disintegration.world.blocks.production.PortableDrillUnloadPoint;
 import disintegration.world.blocks.production.Quarry;
+import disintegration.world.blocks.units.ReconstructPlatform;
 import disintegration.world.blocks.units.UnitAssemblerConstructModule;
 import disintegration.world.blocks.units.UnitAssemblerInterfaceModule;
 import disintegration.world.draw.DrawAllRotate;
@@ -41,12 +55,14 @@ import disintegration.world.draw.DrawFusion;
 import disintegration.world.draw.DrawLaser;
 import mindustry.Vars;
 import mindustry.content.*;
+import mindustry.entities.Damage;
 import mindustry.entities.Effect;
 import mindustry.entities.bullet.*;
 import mindustry.entities.effect.*;
 import mindustry.entities.part.*;
 import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootSpread;
+import mindustry.gen.Bullet;
 import mindustry.gen.Entityc;
 import mindustry.gen.LegsUnit;
 import mindustry.gen.Sounds;
@@ -57,31 +73,37 @@ import mindustry.graphics.Pal;
 import mindustry.type.*;
 import mindustry.type.unit.MissileUnitType;
 import mindustry.world.Block;
+import mindustry.world.blocks.defense.ShieldWall;
 import mindustry.world.blocks.defense.ShockMine;
 import mindustry.world.blocks.defense.Wall;
-import mindustry.world.blocks.defense.turrets.ContinuousLiquidTurret;
-import mindustry.world.blocks.defense.turrets.ItemTurret;
-import mindustry.world.blocks.defense.turrets.PowerTurret;
+import mindustry.world.blocks.defense.turrets.*;
 import mindustry.world.blocks.distribution.*;
 import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.environment.OreBlock;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.environment.SteamVent;
+import mindustry.world.blocks.liquid.Conduit;
 import mindustry.world.blocks.payloads.Constructor;
 import mindustry.world.blocks.payloads.PayloadDeconstructor;
 import mindustry.world.blocks.payloads.PayloadLoader;
 import mindustry.world.blocks.payloads.PayloadUnloader;
-import mindustry.world.blocks.power.ConsumeGenerator;
+import mindustry.world.blocks.power.Battery;
+import mindustry.world.blocks.power.PowerNode;
 import mindustry.world.blocks.power.ThermalGenerator;
+import mindustry.world.blocks.production.AttributeCrafter;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.blocks.production.GenericCrafter;
 import mindustry.world.blocks.production.HeatCrafter;
 import mindustry.world.blocks.storage.CoreBlock;
+import mindustry.world.blocks.units.Reconstructor;
+import mindustry.world.blocks.units.UnitFactory;
+import mindustry.world.consumers.ConsumeCoolant;
 import mindustry.world.consumers.ConsumeItemExplode;
 import mindustry.world.consumers.ConsumeItemFlammable;
 import mindustry.world.consumers.ConsumeLiquid;
 import mindustry.world.draw.*;
 import mindustry.world.meta.Attribute;
+import mindustry.world.meta.BlockGroup;
 import mindustry.world.meta.BuildVisibility;
 import mindustry.world.meta.Env;
 
@@ -91,67 +113,91 @@ import static mindustry.type.ItemStack.with;
 
 public class DTBlocks {
     //TODO check bundles
+    static Rand rand = new Rand();
     public static Block
     //environment
             iceWater, greenIce, greenFloor, spaceStationFloor, spaceStationFloorFixed, floatIce,
+            obsidianFloor,
             ethyleneVent,
-            greenIceWall,
+            greenIceWall, obsidianWall,
         //ore
             oreIridium, oreIron, oreSilver,
     //defence
             iridiumWall, iridiumWallLarge,
             steelWall, steelWallLarge,
             ironWall, ironWallLarge,
+            projectorWall,
     //transport
             ironConveyor, alternateOverflowGate, ironSorter, invertedIronSorter, ironRouter, ironJunction, ironItemBridge,
             iridiumConveyor,
+    //liquid
+            magnetizedConduit,
     //storage
-            corePedestal, spaceStationCore,
+            corePedestal, corePillar, spaceStationCore,
     //heat
             heatConduit, heatConduitRouter, burningHeater,
     //laser
             laserDevice, laserReflector, laserRouter, laserSource,
     //factory
-            boiler, electrolyser, siliconRefiner, graphiteCompressor, steelSmelter, steelBlastFurnace, conductionAlloySmelter,
+            nitrideSynthesizer, slagCentrifuge,
+            boiler, airCompressor, electrolyser, siliconRefiner, graphiteCompressor, steelSmelter, steelBlastFurnace, conductionAlloySmelter, magnetismAlloySmelter, surgeFurnace,
+            algalPond,
     //payload
             payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
     //power
-            neoplasmGenerator, excitationReactor, stirlingGenerator, solarPanel,
+            neoplasmGenerator, excitationReactor, ventTurbine, spaceSolarPanel, rotateSolarPanel,
+            ironPowerNode, ironPowerNodeLarge, powerCapacitor,
     //units
-
-            AssemblerConstructModule, AssemblerExpandInterfaceModule,
+            asemblerConstructModule, assemblerExpandInterfaceModule,
+            unitFabricator,
+            additiveRefabricator, multiplicativeRefabricator, exponentialRefabricatingPlatform, tetrativeRefabricatingPlatform,
     //turrets
+            overheat, impact,
             fracture, dissolve,
             blade, encourage,
             aegis, permeation,
             holy,
-            sparkover, axe, ambush,
+            shard, aerolite, sparkover, focus, axe, ambush,
             voltage,
+            condense, blaze,
         //test
             sabre,
     //drills
-            quarry, pressureDrill, rockExtractor,
+            quarry, pressureDrill, stiffDrill, rockExtractor,
             portableDrill,
     //effect
             blastMine,
             repairDroneStation,
     //campaign
-            spaceStationLaunchPad,
+            spaceStationLaunchPad, orbitalLaunchPad,
     //debug
             sandboxBlock, dpsBlock, editorBlock, cheatBlock, shaderTestBlock, blackHoleBlock, blackHoleClearBlock
             ;
     public static void load() {
-        //region environment
         Blocks.ice.mapColor.add(0.1f, 0.1f, 0.2f);
         Blocks.snow.mapColor.add(0.1f, 0.1f, 0.2f);
+
+        Blocks.malign.requirements(Category.turret, with(DTItems.nitride, 120, Items.carbide, 400, Items.beryllium, 2000, Items.silicon, 800, Items.graphite, 800, Items.phaseFabric, 300));
+        Blocks.smite.requirements(Category.turret, with(DTItems.nitride, 160, Items.oxide, 200, Items.surgeAlloy, 400, Items.silicon, 800, Items.carbide, 500, Items.phaseFabric, 300));
+        Blocks.lustre.requirements(Category.turret, with(DTItems.nitride, 90, Items.silicon, 250, Items.graphite, 200, Items.oxide, 50, Items.carbide, 90));
+
+        Blocks.liquidContainer.requirements(Category.liquid, with(Items.lead, 10, Items.metaglass, 15));
+        Blocks.liquidTank.requirements(Category.liquid, with(Items.lead, 30, Items.metaglass, 40));
+
+        Blocks.payloadConveyor.requirements(Category.units, with(Items.graphite, 10, Items.lead, 10));
+        Blocks.payloadRouter.requirements(Category.units, with(Items.graphite, 15, Items.lead, 10));
+
+        Blocks.sporePress.envEnabled |= Env.spores;
+        //region environment
         greenIce = new Floor("green-ice"){{
             dragMultiplier = 0.35f;
             speedMultiplier = 0.9f;
             attributes.set(Attribute.water, 0.4f);
-            albedo = 0.65f;
+            attributes.set(DTAttribute.algae, 1f);
+            albedo = 0.6f;
         }};
 
-        floatIce = new Floor("float-ice"){{
+        if(false)floatIce = new Floor("float-ice"){{
             dragMultiplier = 0.35f;
             speedMultiplier = 0.9f;
             attributes.set(Attribute.water, 0.4f);
@@ -188,9 +234,15 @@ public class DTBlocks {
             supportsOverlay = true;
             wall = Blocks.iceWall;
         }};
+
+        obsidianFloor = new Floor("obsidian-floor"){};
         greenIceWall = new StaticWall("green-ice-wall"){{
             greenIce.asFloor().wall = this;
             albedo = 0.6f;
+        }};
+
+        obsidianWall = new StaticWall("obsidian-wall"){{
+            obsidianFloor.asFloor().wall = this;
         }};
 
         oreIridium = new OreBlock("ore-iridium", DTItems.iridium){{
@@ -262,6 +314,20 @@ public class DTBlocks {
             armor = 8f;
             requirements(Category.defense, with(DTItems.iron, 24));
         }};
+
+        projectorWall = new ShieldWall("projector-wall"){{
+            requirements(Category.defense, ItemStack.with(DTItems.iron, 10, Items.silicon, 20, DTItems.magnetismAlloy, 5));
+            consumePower(3f / 60f);
+
+            outputsPower = false;
+            hasPower = true;
+            consumesPower = true;
+            conductivePower = true;
+
+            scaledHealth = 600;
+            armor = 10f;
+            size = 2;
+        }};
         //endregion
         //region transport
         ironConveyor = new Conveyor("iron-conveyor"){{
@@ -315,6 +381,15 @@ public class DTBlocks {
             displayedSpeed = 13f;
             buildCostMultiplier = 2f;
         }};
+
+        //endregion
+        //region liquid
+        magnetizedConduit = new Conduit("magnetized-conduit"){{
+            requirements(Category.liquid, with(DTItems.silver, 2, Items.metaglass, 1));
+            liquidCapacity = 16f;
+            liquidPressure = 1.025f;
+            health = 90;
+        }};
         //endregion
         //region storage
         corePedestal = new CoreBlock("core-pedestal"){{
@@ -330,6 +405,18 @@ public class DTBlocks {
             unitCapModifier = 8;
         }};
 
+        corePillar = new CoreBlock("core-pillar"){{
+            requirements(Category.effect, with(DTItems.iron, 2000, DTItems.silver, 1500, Items.lead, 1700));
+            alwaysUnlocked = true;
+
+            unitType = DTUnitTypes.attract;
+            health = 3000;
+            itemCapacity = 8000;
+            size = 4;
+
+            unitCapModifier = 12;
+        }};
+
         spaceStationCore = new CoreBlock("space-station-core"){{
             requirements(Category.effect, BuildVisibility.editorOnly, with(DTItems.iron, 1300));
             alwaysUnlocked = true;
@@ -340,8 +427,12 @@ public class DTBlocks {
             itemCapacity = 4000;
             size = 3;
 
-            unitCapModifier = 16;
-        }};
+            unitCapModifier = 25;
+        }
+            @Override
+            public boolean canReplace(Block other){
+                return false;
+            }};
         //endregion
         //region heat
         heatConduit = new HeatConduit("heat-conduit"){{
@@ -418,6 +509,69 @@ public class DTBlocks {
         }};
         //endregion
         //region factory
+        nitrideSynthesizer = new HeatCrafter("nitride-synthesizer"){{
+            size = 4;
+            requirements(Category.crafting, with(Items.silicon, 105, Items.oxide, 90, Items.graphite, 100, Items.beryllium, 140, Items.carbide, 60));
+            drawer = new DrawMulti(
+                    new DrawRegion("-bottom"),
+                    new DrawLiquidTile(Liquids.gallium),
+                    new DrawLiquidTile(Liquids.nitrogen),
+                    new DrawParticles(){{
+                        color = Color.valueOf("ededed");
+                        alpha = 0.5f;
+                        particleSize = 3f;
+                        particles = 10;
+                        particleRad = 9f;
+                        particleLife = 200f;
+                        particleSizeInterp = Interp.one;
+                    }},
+                    new DrawDefault(),
+                    new DrawHeatInput(),
+                    new DrawHeatRegion("-heat-top")
+            );
+            ambientSound = Sounds.extractLoop;
+            ambientSoundVolume = 0.08f;
+
+            liquidCapacity = 80f;
+
+            craftTime = 120f;
+            consumeLiquids(LiquidStack.with(Liquids.gallium, 0.07f, Liquids.nitrogen, 0.12f, Liquids.hydrogen, 0.04f));
+            heatRequirement = 6f;
+            outputItem = new ItemStack(DTItems.nitride, 1);
+        }};
+        slagCentrifuge = new GenericCrafter("slag-centrifuge"){{
+            requirements(Category.crafting, BuildVisibility.shown, with(Items.carbide, 70, Items.graphite, 60, Items.silicon, 40, Items.oxide, 40));
+
+            consumePower(2f / 60f);
+
+            size = 3;
+            consumeItem(Items.sand, 1);
+            consumeLiquid(Liquids.slag, 30f / 60f);
+            liquidCapacity = 80f;
+            hasLiquids = true;
+
+            var drawers = Seq.with(new DrawRegion("-bottom"), new DrawLiquidRegion(Liquids.slag){{ alpha = 0.7f; }});
+
+            for(int i = 0; i < 5; i++){
+                int fi = i;
+                drawers.add(new DrawGlowRegion(-1f){{
+                    glowIntensity = 0.3f;
+                    rotateSpeed = 3f / (1f + fi/1.4f);
+                    alpha = 0.4f;
+                    color = new Color(1f, 0.5f, 0.5f, 1f);
+                }});
+            }
+
+            drawer = new DrawMulti(drawers.add(new DrawDefault()));
+
+            craftTime = 60f * 2f;
+
+            outputLiquid = new LiquidStack(Liquids.gallium, 5f / 60f);
+            //outputItem = new ItemStack(Items.scrap, 1);
+        }};
+
+
+
         boiler = new HeatCrafter("boiler"){{
             requirements(Category.crafting, with(DTItems.iron, 65, Items.silicon, 40, Items.graphite, 60));
             outputLiquid = new LiquidStack(DTLiquids.steam, 12f / 60f);
@@ -448,6 +602,32 @@ public class DTBlocks {
             craftTime = 120;
 
             consumeLiquid(Liquids.water, 12f / 60f);
+        }};
+
+        airCompressor = new GenericCrafter("air-compressor"){{
+            requirements(Category.crafting, with(DTItems.silver, 60, DTItems.iron, 180, Items.silicon, 150));
+            size = 2;
+            hasLiquids = true;
+
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawLiquidTile(Liquids.nitrogen, 4.1f), new DrawDefault(), new DrawHeatInput(),
+                    new DrawParticles(){{
+                        color = Color.valueOf("d4f0ff");
+                        alpha = 0.6f;
+                        particleSize = 4f;
+                        particles = 10;
+                        particleRad = 12f;
+                        particleLife = 140f;
+                    }});
+
+            researchCostMultiplier = 1.1f;
+            liquidCapacity = 40f;
+            consumePower(0.5f);
+            ambientSound = Sounds.extractLoop;
+            ambientSoundVolume = 0.06f;
+
+            outputLiquid = new LiquidStack(Liquids.nitrogen, 8/60f);
+
+            researchCost = with(Items.silicon, 2000, Items.oxide, 900, Items.beryllium, 2400);
         }};
 
         electrolyser = new GenericCrafter("electrolyser"){{
@@ -553,18 +733,83 @@ public class DTBlocks {
             consumeItems(with(DTItems.iron, 8, Items.coal, 4));
         }};
 
-        conductionAlloySmelter = new GenericCrafter("conduction-alloy-smelter"){{
+        conductionAlloySmelter = new CatalyzeCrafter("conduction-alloy-smelter"){{
             requirements(Category.crafting, with(Items.silicon, 80, Items.lead, 90, DTItems.silver, 90, DTItems.iron, 70));
             craftEffect = Fx.smeltsmoke;
             outputItem = new ItemStack(DTItems.conductionAlloy, 1);
-            craftTime = 75f;
+            craftTime = 60*2f;
+            catalysisEfficiency = 1;
             size = 3;
+            catalystItem = new ItemStack(DTItems.iridium, 1);
             hasPower = true;
             itemCapacity = 20;
             drawer = new DrawMulti(new DrawDefault(), new DrawFlame());
 
             consumePower(4f);
-            consumeItems(with(Items.lead, 4, Items.silicon, 3, DTItems.iridium, 1));
+            consumeItems(with(Items.lead, 4, Items.silicon, 3));
+        }};
+        magnetismAlloySmelter = new GenericCrafter("magnetism-alloy-smelter"){{
+            requirements(Category.crafting, with(Items.silicon, 150, Items.lead, 160, DTItems.silver, 90, DTItems.iron, 170, DTItems.steel, 30));
+            craftEffect = new Effect(50, e -> {
+                float len = 8f;
+                for(int i = 0; i < 4; i++){
+                    float x = Geometry.d4x(i), y = Geometry.d4y(i);
+                    Draw.color(Pal2.lightningWhite);
+                    Drawf.tri(e.x + x * len, e.y + y * len, 7f * e.foutpow(), 10f * e.finpow(), i * 90);
+                    Drawf.tri(e.x + x * len, e.y + y * len, 7f * e.foutpow(), 4f * e.finpow(), i * 90 + 180);
+                }
+            });
+            hasPower = true;
+            craftTime = 100f;
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawCrucibleFlame(){{
+                flameColor = Color.valueOf("ceecff");
+                midColor = Color.valueOf("a9e9ff");
+                particleRad = 12f;
+                flameRad = 6f;
+            }}, new DrawDefault());
+            consumePower(5f);
+            consumeItems(with(Items.silicon, 1, DTItems.silver, 2));
+            consumeLiquid(Liquids.nitrogen, 0.2f);
+            size = 3;
+            outputItem = new ItemStack(DTItems.magnetismAlloy, 2);
+        }};
+
+        surgeFurnace = new GenericCrafter("surge-furnace"){{
+            requirements(Category.crafting, with(Items.silicon, 100, Items.lead, 120, DTItems.iridium, 90));
+            craftEffect = Fx.smeltsmoke;
+            outputItem = new ItemStack(Items.surgeAlloy, 1);
+            craftTime = 75f;
+            size = 4;
+            hasPower = true;
+            itemCapacity = 20;
+            drawer = new DrawMulti(new DrawDefault(), new DrawFlame(){{
+                lightRadius = 160f;
+            }});
+
+            consumePower(4f);
+            consumeItems(with(DTItems.silver, 3, Items.lead, 4, Items.silicon, 3));
+        }};
+        algalPond = new AttributeCrafter("algal-pond"){{
+            requirements(Category.production, with(DTItems.iron, 120, Items.lead, 110, Items.graphite, 90, Items.silicon, 100));
+            size = 9;
+            baseEfficiency = 1f;
+            attribute = DTAttribute.algae;
+            boostScale = 1.5f;
+            liquidCapacity = 120f;
+            rotate = true;
+            regionRotated1 = 3;
+            invertFlip = true;
+            liquidOutputDirections = new int[]{1, 3};
+            group = BlockGroup.liquids;
+            consumeLiquid(Liquids.water, 0.4f);
+            outputLiquids = LiquidStack.with(DTLiquids.oxygen, 0.1f, DTLiquids.algalWater, 0.4f);
+            drawer = new DrawMulti(
+                    new DrawRegion("-bottom"),
+                    new DrawLiquidTile(Liquids.water),
+                    new DrawLiquidTile(DTLiquids.algalWater),
+                    new DrawRegion(),
+                    new DrawLiquidOutputs()
+            );
         }};
         //endregion
         //region payload
@@ -579,7 +824,7 @@ public class DTBlocks {
         }};*/
 
         payloadDeconstructor = new PayloadDeconstructor("payload-deconstructor"){{
-            requirements(Category.units, with(Items.thorium, 250, Items.silicon, 200, Items.graphite, 250));
+            requirements(Category.units, with(Items.lead, 250, Items.silicon, 200, Items.graphite, 250));
             itemCapacity = 250;
             consumePower(3f);
             size = 5;
@@ -587,14 +832,14 @@ public class DTBlocks {
         }};
 
         payloadConstructor = new Constructor("payload-constructor"){{
-            requirements(Category.units, with(Items.silicon, 50, Items.thorium, 70, Items.graphite, 50));
+            requirements(Category.units, with(Items.silicon, 50, Items.lead, 70, Items.graphite, 50));
             hasPower = true;
             consumePower(2f);
             size = 3;
         }};
 
         largePayloadConstructor = new Constructor("large-payload-constructor"){{
-            requirements(Category.units, with(Items.silicon, 100, Items.thorium, 150, Items.graphite, 50, Items.phaseFabric, 40));
+            requirements(Category.units, with(Items.silicon, 100, Items.lead, 150, Items.graphite, 50, Items.phaseFabric, 40));
             hasPower = true;
             consumePower(2f);
             maxBlockSize = 4;
@@ -687,7 +932,7 @@ public class DTBlocks {
             requirements(Category.power, with(DTItems.iron, 300, Items.silicon, 200, Items.graphite, 300, Items.surgeAlloy, 100));
         }};
 
-        stirlingGenerator = new ThermalGenerator("stirling-generator"){{
+        ventTurbine = new ThermalGenerator("vent-turbine"){{
             requirements(Category.power, with(DTItems.iron, 60));
             attribute = Attribute.steam;
             displayEfficiencyScale = 1f / 9f;
@@ -710,35 +955,280 @@ public class DTBlocks {
             fogRadius = 3;
             researchCost = with(DTItems.iron, 15);
         }};
-        solarPanel = new ConsumeGenerator("solar-panel"){{
+        spaceSolarPanel = new SpaceSolarGenerator("space-solar-panel"){{
             requirements(Category.power, with(DTItems.spaceStationPanel, 60));
             powerProduction = 5f;
             rotate = true;
+            expandSpeed = 0.05f;
             rotateDraw = false;
             envEnabled = envRequired = Env.space;
-            drawer = new DrawMulti(new DrawDefault(), new DrawSideRegion());
+            spaceFloor = new Floor[]{Blocks.space.asFloor(), Blocks.empty.asFloor()};
+            spaceRect = new Rect(1, -1, 13, 3);
+        }};
+        rotateSolarPanel = new RotateSolarGenerator("rotate-solar-panel"){{
+            requirements(Category.power, with(DTItems.iron, 150,Items.silicon, 140, Items.graphite, 100));
+            size = 3;
+            powerProduction = 1.4f;
+        }};
+
+        ironPowerNode = new PowerNode("iron-power-node"){{
+            requirements(Category.power, with(DTItems.iron, 1, Items.lead, 3));
+            maxNodes = 10;
+            laserRange = 6;
+        }};
+
+        ironPowerNodeLarge = new PowerNode("iron-power-node-large"){{
+            requirements(Category.power, with(DTItems.silver, 5, Items.lead, 10, Items.silicon, 3));
+            size = 2;
+            maxNodes = 15;
+            laserRange = 15f;
+        }};
+
+        powerCapacitor = new Battery("power-capacitor"){{
+            requirements(Category.power, with(DTItems.silver, 5, Items.lead, 20, Items.silicon, 10));
+            size = 2;
+            consumePowerBuffered(16000f);
+            baseExplosiveness = 1f;
         }};
         //units
-        AssemblerConstructModule = new UnitAssemblerConstructModule("assembler-construct-module"){{
+        asemblerConstructModule = new UnitAssemblerConstructModule("assembler-construct-module"){{
             size = 3;
             squareSprite = false;
             buildSpeed = 1.1f;
             consumeLiquid(Liquids.hydrogen, 3f / 60f);
             consumePower(20f/60f);
-            requirements(Category.units, ItemStack.with(Items.tungsten, 60));
+            requirements(Category.units, ItemStack.with(Items.tungsten, 200, Items.silicon, 300, Items.graphite, 500));
         }};
 
-        AssemblerExpandInterfaceModule = new UnitAssemblerInterfaceModule("assembler-expand-interface-module"){{
+        assemblerExpandInterfaceModule = new UnitAssemblerInterfaceModule("assembler-expand-interface-module"){{
             requirements(Category.units, with(Items.oxide, 200, Items.tungsten, 400, Items.silicon,200, Items.graphite, 200));
             regionSuffix = "-dark";
             researchCostMultiplier = 0.75f;
 
             size = 3;
         }};
+
+        unitFabricator = new UnitFactory("unit-fabricator"){{
+            requirements(Category.units, with(DTItems.iron, 60, Items.lead, 70));
+            plans = Seq.with(
+                    new UnitPlan(DTUnitTypes.lancet, 60f * 15, with(Items.silicon, 15)),
+                    new UnitPlan(DTUnitTypes.verity, 60f * 35, with(Items.silicon, 30, Items.lead, 15))
+            );
+            size = 3;
+            consumePower(1.2f);
+        }};
+
+        additiveRefabricator = new Reconstructor("additive-refabricator"){{
+            requirements(Category.units, with(DTItems.iron, 200, Items.lead, 120, Items.silicon, 90));
+
+            size = 3;
+            consumePower(3f);
+            consumeItems(with(Items.silicon, 40, Items.graphite, 40));
+
+            constructTime = 60f * 10f;
+
+            upgrades.addAll(
+                    new UnitType[]{DTUnitTypes.lancet, DTUnitTypes.talwar},
+                    new UnitType[]{DTUnitTypes.verity, DTUnitTypes.truth}
+            );
+        }};
+
+        multiplicativeRefabricator = new Reconstructor("multiplicative-refabricator"){{
+            requirements(Category.units, with(Items.lead, 650, Items.silicon, 450, DTItems.silver, 350, DTItems.iridium, 650));
+
+            size = 5;
+            consumePower(6f);
+            consumeItems(with(Items.silicon, 130, DTItems.silver, 80, Items.metaglass, 40));
+
+            constructTime = 60f * 30f;
+
+            upgrades.addAll(
+                    new UnitType[]{DTUnitTypes.talwar, DTUnitTypes.estoc},
+                    new UnitType[]{DTUnitTypes.truth, DTUnitTypes.solve}
+            );
+        }};
+
+        exponentialRefabricatingPlatform = new ReconstructPlatform("exponential-refabricating-platform"){{
+            requirements(Category.units, with(Items.lead, 2000, Items.silicon, 1000, DTItems.silver, 2000, DTItems.iridium, 750, DTItems.magnetismAlloy, 450, DTItems.conductionAlloy, 600));
+
+            size = 7;
+            consumePower(13f);
+            consumeItems(with(Items.silicon, 850, DTItems.silver, 750, DTItems.conductionAlloy, 650));
+
+            constructTime = 60f * 60f * 1.5f;
+
+            dronePos = new float[]{
+                    30, 30,
+                    -30,30,
+                    -30,-30,
+                    30,-30
+            };
+
+            droneType = DTUnitTypes.refabricatingDrone;
+
+            upgrades.addAll(
+                    new UnitType[]{DTUnitTypes.estoc, DTUnitTypes.spear},
+                    new UnitType[]{DTUnitTypes.solve, DTUnitTypes.essence}
+            );
+        }};
+
+        tetrativeRefabricatingPlatform = new ReconstructPlatform("tetrative-refabricating-platform"){{
+            requirements(Category.units, with(Items.lead, 4000, Items.silicon, 3000, DTItems.iridium, 1000, DTItems.conductionAlloy, 600, DTItems.magnetismAlloy, 600, Items.surgeAlloy, 800));
+
+            size = 9;
+            consumePower(25f);
+            consumeItems(with(Items.silicon, 1000, DTItems.conductionAlloy, 600, Items.surgeAlloy, 500, DTItems.magnetismAlloy, 350));
+
+            constructTime = 60f * 60f * 4;
+
+            dronePos = new float[]{
+                    38, 38,
+                    -38,38,
+                    -38,-38,
+                    38,-38
+            };
+
+            droneType = DTUnitTypes.refabricatingDrone;
+
+            upgrades.addAll(
+                    new UnitType[]{DTUnitTypes.spear, DTUnitTypes.epee},
+                    new UnitType[]{DTUnitTypes.essence, DTUnitTypes.celestial}
+            );
+        }};
+
         //endregion
         //region turret
 
         //TODO balancing
+
+         overheat = new LaserTurret("overheat"){{
+            requirements(Category.turret, with(Items.copper, 1200, Items.lead, 350, Items.graphite, 300, Items.surgeAlloy, 325, Items.silicon, 325));
+            shootEffect = Fx.shootBigSmoke2;
+            shootCone = 40f;
+            recoil = 4f;
+            size = 5;
+            shake = 2f;
+            range = 195f;
+            reload = 90f;
+            firingMoveFract = 0.5f;
+            shootDuration = 230f;
+            shootSound = Sounds.laserbig;
+            loopSound = Sounds.beam;
+            loopSoundVolume = 2f;
+            envEnabled |= Env.space;
+
+            shootType = new ContinuousLaserBulletType(78){{
+                length = 200f;
+                hitEffect = Fx.hitMeltdown;
+                hitColor = Pal.meltdownHit;
+                status = StatusEffects.melting;
+                drawSize = 420f;
+
+                incendChance = 0.4f;
+                incendSpread = 5f;
+                incendAmount = 1;
+                ammoMultiplier = 1f;
+            }
+                @Override
+                public void draw(Bullet b){
+                    super.draw(b);
+                    if(b.timer.get(2, 7)){
+                        float fout = Mathf.clamp(b.time > b.lifetime - fadeTime ? 1f - (b.time - (lifetime - fadeTime)) / fadeTime : 1f);
+                        float realLength = Damage.findLength(b, length * fout, laserAbsorb, pierceCap);
+                        Vec2 target = new Vec2();
+                        target.trns(b.rotation(), realLength);
+                        target.add(b.x,b.y);
+                        for (int i = 0; i < 2; i++) {
+                            DTFx.chainFire.at(b.x,b.y,0,Color.valueOf("fedf30"), target);
+                        }
+                    }
+                }
+            };
+
+            scaledHealth = 200;
+            coolant = consumeCoolant(0.5f);
+            consumePower(17f);
+        }};
+
+        impact = new ItemTurret("impact"){{
+            requirements(Category.turret, with(Items.metaglass, 200, Items.lead, 400, Items.silicon, 400, Items.copper, 500));
+
+            ammo(Items.graphite, new FlakBulletType(10f, 20){{
+                        hitSize = 4.8f;
+                        width = 10f;
+                        height = 15f;
+                        shootEffect = Fx.shootBig;
+                        ammoMultiplier = 4;
+                        knockback = 0.5f;
+                        collidesGround = false;
+                    }},
+                    Items.blastCompound, new FlakBulletType(10f, 20){{
+                        hitSize = 4.8f;
+                        width = 10f;
+                        height = 13f;
+                        shootEffect = Fx.shootBig;
+                        ammoMultiplier = 4;
+                        knockback = 0.5f;
+                        collidesGround = false;
+                    }},
+                    Items.metaglass, new FlakBulletType(10f, 20){{
+                        ammoMultiplier = 4f;
+                        shootEffect = Fx.shootSmall;
+                        width = 10f;
+                        height = 13f;
+                        hitEffect = Fx.flakExplosion;
+                        splashDamage = 45f;
+                        splashDamageRadius = 25f;
+                        fragBullet = new BasicBulletType(3f, 12, "bullet"){{
+                            width = 5f;
+                            height = 12f;
+                            shrinkY = 1f;
+                            lifetime = 20f;
+                            backColor = Pal.gray;
+                            frontColor = Color.white;
+                            despawnEffect = Fx.none;
+                        }};
+                        fragBullets = 4;
+                        explodeRange = 20f;
+                        collidesGround = false;
+                    }}
+            );
+            shoot = new ShootBarrel(){{
+                barrels = new float[]{
+                        2f, 2f, 0f,
+                        8f, 0f, 0f,
+                        -2f,2f, 0f,
+                        -8f,0f, 0f
+                };
+                shots = 2;
+                shotDelay = 2;
+            }};
+            shootY = 12f;
+
+            reload = 5f;
+            rotateSpeed = 3f;
+            shootCone = 30f;
+            consumeAmmoOnce = true;
+            shootSound = Sounds.shootAltLong;
+
+            drawer = new DrawTurret();
+
+            targetGround = false;
+            targetAir = true;
+            inaccuracy = 8f;
+
+            scaledHealth = 100;
+            range = 360f;
+            size = 4;
+
+            coolant = consume(new ConsumeCoolant());
+            coolantMultiplier = 2f;
+            ammoPerShot = 1;
+            maxAmmo = 60;
+
+            limitRange(-5f);
+        }};
+
         fracture = new ItemTurret("fracture"){{
             requirements(Category.turret, with(Items.surgeAlloy, 200, Items.oxide, 400, Items.silicon, 400, Items.beryllium, 500));
 
@@ -900,7 +1390,7 @@ public class DTBlocks {
             limitRange(-5f);
         }};
         dissolve = new ContinuousLiquidTurret("dissolve"){{
-            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
+            requirements(Category.turret, with(DTItems.nitride, 200, Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
 
             reload = 50f;
             shake = 5f;
@@ -943,12 +1433,19 @@ public class DTBlocks {
                             moveX = 2f;
                             moveY = -2f;
                         }},
-                        new RegionPart("-back"){{
+                        new RegionPart("-wing"){{
                             heatProgress = PartProgress.warmup;
                             progress = PartProgress.warmup;
                             mirror = true;
-                            moveX = 2f;
-                            moveY = 2f;
+                            moveX = 1.5f;
+                            moveY = -4f;
+                            children.add(new RegionPart("-back"){{
+                                heatProgress = PartProgress.warmup;
+                                progress = PartProgress.warmup;
+                                mirror = true;
+                                moveX = 2f;
+                                moveY = 2f;
+                            }});
                         }},
                         new HaloPart(){{
                             mirror = true;
@@ -1378,7 +1875,80 @@ public class DTBlocks {
                 backColor = Pal.heal;
                 collidesTeam = true;
             }};
-            requirements(Category.turret, with(DTItems.iridium, 1));
+            requirements(Category.turret, with(DTItems.iron, 60, Items.graphite, 50, Items.silicon, 70));
+        }};
+
+        shard = new PowerTurret("shard"){{
+            requirements(Category.turret, with(DTItems.iron, 60, Items.lead, 70, Items.silicon, 60));
+            range = 145f;
+
+            shoot.firstShotDelay = 40f;
+
+            recoil = 2f;
+            reload = 60f;
+            shake = 2f;
+            shootEffect = Fx.lancerLaserShoot;
+            smokeEffect = Fx.none;
+            heatColor = Color.red;
+            size = 2;
+            scaledHealth = 280;
+            targetAir = false;
+            moveWhileCharging = false;
+            accurateDelay = true;
+            shootSound = Sounds.laser;
+            coolant = consumeCoolant(0.2f);
+
+            consumePower(6f);
+
+            shootType = new LaserBulletType(140){{
+                colors = new Color[]{Pal.lancerLaser.cpy().a(0.4f), Pal.lancerLaser, Color.white};
+                //TODO merge
+                chargeEffect = new MultiEffect(Fx.lancerLaserCharge, Fx.lancerLaserChargeBegin);
+
+                buildingDamageMultiplier = 0.25f;
+                hitEffect = Fx.hitLancer;
+                hitSize = 4;
+                lifetime = 16f;
+                drawSize = 400f;
+                collidesAir = false;
+                length = 173f;
+                ammoMultiplier = 1f;
+                pierceCap = 4;
+            }};
+        }};
+        aerolite = new ItemTurret("aerolite"){{
+            scaledHealth = 260;
+            size = 2;
+            targetAir = false;
+            targetGround = true;
+            rotateSpeed = 5;
+            coolant = consumeCoolant(0.2f);
+            drawer = new DrawTurret("framed-");
+            reload = 40;
+            maxAmmo = 10;
+            range = 190;
+            shootSound = Sounds.bang;
+            inaccuracy = 3;
+            shootEffect = Fx.shootSmokeSquareBig;
+            ammo(
+                    DTItems.iron, new ArtilleryBulletType(4f, 30){{
+                        knockback = 0.8f;
+                        lifetime = 80f;
+                        width = height = 15f;
+                        collidesTiles = false;
+                        splashDamageRadius = 25f * 0.75f;
+                        splashDamage = 20f;
+                    }},
+                    Items.graphite, new ArtilleryBulletType(4f, 20){{
+                        knockback = 0.8f;
+                        lifetime = 80f;
+                        width = height = 13f;
+                        collidesTiles = false;
+                        splashDamageRadius = 25f * 0.75f;
+                        splashDamage = 33f;
+                    }}
+            );
+            requirements(Category.turret, with(DTItems.iron, 60, Items.graphite, 50, Items.silicon, 70));
         }};
         sparkover = new ElectricTowerTurret("sparkover"){{
             hasPower = true;
@@ -1395,16 +1965,38 @@ public class DTBlocks {
 
             requirements(Category.turret, with(DTItems.iron, 200, Items.silicon, 110, DTItems.iridium, 90));
         }};
+
+        focus = new ContinuousTurret("focus"){{
+            consumePower(3);
+            loopSound = Sounds.tractorbeam;
+            requirements(Category.turret, with(DTItems.iron,150, Items.silicon, 100, Items.lead, 160));
+            shootType = new PointLaserBulletType(){{
+                beamEffectInterval = 7;
+                color = Color.valueOf("9fb6ff");
+                sprite = "disintegration-focus-laser";
+            }};
+            drawer = new DrawTurret("framed-"){{
+                parts.addAll(new RegionPart("-side"){{
+                    moveX = 1;
+                    moveY = -2;
+                    mirror = true;
+                }});
+            }};
+            range = 120f;
+            rotateSpeed = 3f;
+            size = 2;
+            scaledHealth = 200;
+        }};
         axe = new ItemTurret("axe") {{
             requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, DTItems.iron, 90));
 
             reload = 300f;
             shake = 4f;
-            range = 540f;
+            range = 440f;
             recoil = 2f;
             rotateSpeed = 3f;
 
-            shootCone = 6;
+            shootCone = 10;
             size = 2;
             envEnabled |= Env.space;
 
@@ -1459,7 +2051,6 @@ public class DTBlocks {
                         new RegionPart("-display"){{
                             progress = PartProgress.reload;
                             moveY = -4f;
-                            moves.add(new PartMove(PartProgress.constant(1), 0, 1, 0));
                         }},
                         new RegionPart("-top"){}
                 );
@@ -1610,6 +2201,103 @@ public class DTBlocks {
             shake = 3f;
             limitRange(9f);
         }};
+
+        condense = new ContinuousTurret("condense"){{
+            loopSound = Sounds.tractorbeam;
+            requirements(Category.turret, with());
+            size = 5;
+            range = 250;
+            aimChangeSpeed = 0.9f;
+            rotateSpeed = 1f;
+            consumePower(17f);
+            drawer = new DrawTurret("framed-");
+            shootType = new PointLaserBulletType(){{
+                sprite = "disintegration-freeze-laser";
+                damage = 200f;
+                buildingDamageMultiplier = 0.3f;
+
+                hitColor = Color.valueOf("77bcfe");
+                status = DTStatusEffects.frozen;
+            }
+
+
+            @Override
+            public void draw(Bullet b){
+                Lines.stroke(3);
+                Draw.color(Color.valueOf("77aaff"));
+                Lines.ellipse((b.x+b.aimX)/2,(b.y+b.aimY)/2,10,Mathf.dst(b.x,b.y,b.aimX,b.aimY)/20,b.fslope()*(Mathf.absin(3,0.3f)+0.2f),Mathf.atan2(b.x-b.aimX,b.y-b.aimY)*Mathf.radiansToDegrees);
+                super.draw(b);
+
+                rand.setSeed(b.id);
+                float base = (Time.time / 30);
+                Draw.color(Color.valueOf("97dcfe"));
+                Lines.stroke(b.fslope()*(Mathf.absin(1.7f,0.3f)+3f));
+                Lines.circle(b.aimX,b.aimY,b.fslope()*Mathf.absin(3,2f)+6.5f);
+                for(int i = 0; i < 20; i++){
+                    float fin = (rand.random(1f) + base) % 1f, fout = 1f - fin;
+                    float angle = rand.random(360f) + b.rotation();
+                    float len = 36 * Interp.pow2Out.apply(fout);
+                    Draw.color(Color.valueOf("97dcfe"));
+                    Lines.stroke(Interp.pow3Out.apply(fin) * 2 * b.fslope());
+                    Lines.lineAngle(b.aimX + Angles.trnsx(angle, len), b.aimY + Angles.trnsy(angle, len), angle, 12 * Interp.pow3Out.apply(fin) * b.fslope());
+                }
+            }
+            };
+        }};
+
+        blaze = new LaserTurret("blaze"){{
+            requirements(Category.turret, with(DTItems.iron, 1200, Items.lead, 350, Items.graphite, 300, Items.surgeAlloy, 325, Items.silicon, 325));
+            shootEffect = Fx.shootBigSmoke2;
+            shootCone = 40f;
+            recoil = 4f;
+            size = 5;
+            shake = 2f;
+            range = 195f;
+            reload = 90f;
+            firingMoveFract = 0.5f;
+            rotateSpeed = 2;
+            shootDuration = 230f;
+            shootSound = Sounds.laserbig;
+            loopSound = Sounds.beam;
+            loopSoundVolume = 2f;
+            envEnabled |= Env.space;
+
+            drawer = new DrawTurret("framed-");
+
+            shootType = new ContinuousLaserBulletType(80){{
+                length = 250f;
+                width = 12f;
+                hitEffect = Fx.hitMeltdown;
+                hitColor = Pal.meltdownHit;
+                status = StatusEffects.melting;
+                drawSize = 420f;
+
+                incendChance = 0.4f;
+                incendSpread = 5f;
+                incendAmount = 1;
+                ammoMultiplier = 1f;
+                colors = new Color[]{Color.valueOf("ec945855"), Color.valueOf("fcb44aaa"), Color.valueOf("ffbc5a"), Color.white};
+            }
+                @Override
+                public void draw(Bullet b){
+                    super.draw(b);
+                    if(b.timer.get(2, 7)){
+                        float fout = Mathf.clamp(b.time > b.lifetime - fadeTime ? 1f - (b.time - (lifetime - fadeTime)) / fadeTime : 1f);
+                        float realLength = Damage.findLength(b, length * fout, laserAbsorb, pierceCap);
+                        Vec2 target = new Vec2();
+                        target.trns(b.rotation(), realLength);
+                        target.add(b.x,b.y);
+                        for (int i = 0; i < 2; i++) {
+                            DTFx.chainFire.at(b.x,b.y,0,Color.valueOf("fedf30"), target);
+                        }
+                    }
+                }
+            };
+
+            scaledHealth = 200;
+            coolant = consumeCoolant(0.5f);
+            consumePower(17f);
+        }};
         //endregion
         //region drill
         quarry = new Quarry("quarry"){{
@@ -1634,8 +2322,19 @@ public class DTBlocks {
         pressureDrill = new Drill("pressure-drill"){{
             requirements(Category.production, with(DTItems.iron, 12), true);
             tier = 2;
-            drillTime = 600;
+            drillTime = 500;
             size = 2;
+
+            envEnabled ^= Env.space;
+
+            consumeLiquid(Liquids.water, 0.05f).boost();
+        }};
+
+        stiffDrill = new Drill("stiff-drill"){{
+            requirements(Category.production, with(DTItems.iron, 50, Items.graphite, 10), true);
+            tier = 3;
+            drillTime = 280;
+            size = 3;
 
             envEnabled ^= Env.space;
 
@@ -1678,14 +2377,24 @@ public class DTBlocks {
                 legCount = 4;
                 drawCell = true;
                 hidden = true;
-                weapons.add(new PortableBlockWeapon(){{
+                abilities.add(new PortableBlockAbility(){{
                     placeEffect = Fx.mineImpactWave;
                     placeSound = Sounds.drillImpact;
                 }});
             }};
             requirements(Category.production, with(Items.copper, 12));
         }};
-        ((PortableBlockWeapon)((PortableDrill)portableDrill).portableUnitType.weapons.get(0)).unitContent = portableDrill;
+        ((PortableBlockAbility)((PortableDrill)portableDrill).portableUnitType.abilities.get(0)).unitContent = portableDrill;
+
+        new PortableDrillUnloadPoint("portable-drill-unloader"){{
+            size = 2;
+            range = 90f;
+            update = true;
+            solid = true;
+            hasItems = true;
+            itemCapacity = 50;
+            requirements(Category.production, with(Items.copper, 12));
+        }};
         //endregion
         //region effect
         repairDroneStation = new RepairDroneStation("repair-drone-station"){{
@@ -1700,14 +2409,16 @@ public class DTBlocks {
             requirements(Category.effect, with(DTItems.iron, 15, Items.silicon, 12));
             hasShadow = false;
             health = 50;
-            bullet = new ExplosionBulletType(100, 10){{
+            bullet = new ExplosionBulletType(20, 10){{
                 hitEffect = Fx.pointHit;
             }};
             tileDamage = 7f;
             tendrils = 0;
         }};
 
-        ((ItemTurret)ambush).ammoTypes.forEach(b -> ((BlockBulletType)b.value.fragBullet).bulletContent = blastMine);
+        for (BulletType b : ((ItemTurret)ambush).ammoTypes.values()) {
+            ((BlockBulletType)b.fragBullet).bulletContent = blastMine;
+        }
 
         for (int i = 1; i <= 9; i+=2) {
             int finalI = i;
@@ -1745,6 +2456,15 @@ public class DTBlocks {
             size = 10;
             health = 9000;
         }};
+
+        orbitalLaunchPad = new OrbitalLaunchPad("orbital-launch-pad"){{
+            requirements(Category.effect, BuildVisibility.shown, with(Items.copper, 350, Items.silicon, 140, Items.lead, 200, Items.titanium, 150));
+            size = 5;
+            itemCapacity = 100;
+            launchTime = 60f * 20;
+            hasPower = true;
+            consumePower(4f);
+        }};
         //endregion
         //region debug
         sandboxBlock = new DebugBlock("sandbox-block"){{
@@ -1774,7 +2494,7 @@ public class DTBlocks {
         shaderTestBlock = new ShaderTestBlock("shader-test-block"){{
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
-            //shader = new Shaders.ShockwaveShader();
+            shader = DTShaders.blackHole;
             hasShadow = false;
             requirements(Category.effect, with(), true);
         }};

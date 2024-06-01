@@ -24,6 +24,11 @@ public class SphereMesh extends HexMesh {
                 double height = Math.pow(Simplex.noise3d(0, octaves, persistence, scl, position.x, position.y, position.z), pow) * mag;
                 return Tmp.c1.set(colors[Mathf.clamp((int)(height * colors.length), 0, colors.length - 1)]).mul(colorScale);
             }
+
+            @Override
+            public boolean skip(Vec3 position){
+                return false;
+            }
         }, divisions, Shaders.planet);
     }
 }

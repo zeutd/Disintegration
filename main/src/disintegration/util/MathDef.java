@@ -24,4 +24,11 @@ public class MathDef {
     public static int randomSeedRange(long seed){
         return Mathf.randomSeed(seed, 0, 1) == 0 ? -1 : 1;
     }
+
+    /*public static float smoothMin(float k, float a, float b){{
+
+    }}
+    public static float smoothMin(float k, Float... values){{
+
+    }}*/
 }

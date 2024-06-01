@@ -4,7 +4,7 @@ import arc.files.Fi;
 import arc.files.ZipFi;
 import arc.struct.Seq;
 import arc.util.serialization.Jval;
-import arclibrary.graphics.g3d.render.GenericRenderer3D;
+import disintegration.core.ExportHandler;
 import disintegration.core.SpaceStationReader;
 import disintegration.type.SpaceStation;
 import disintegration.ui.DTUI;
@@ -20,20 +20,18 @@ public class DTVars {
     public static int spaceStationBaseRequirement = 2;
     public static boolean debugMode = true;
 
-    public static DTUI DTUI = new DTUI();
-    public static SpaceStationReader spaceStationReader = new SpaceStationReader();
-    public static GenericRenderer3D renderer3D = new GenericRenderer3D();
+    public static DTUI DTUI;
+    public static SpaceStationReader spaceStationReader;
+    public static ExportHandler exportHandler;
 
+    public static Fi modFile;
     public static Fi DTRoot = DTUtil.getFiChild(Vars.dataDirectory, modName + "/");
-    public static ZipFi DTModFile;
-    public static Fi SpaceStationFi = DTUtil.createFi(DTRoot, "spaceStations.txt");
+    public static Fi spaceStationFi = DTUtil.createFi(DTRoot, "spaceStations.txt");
 
     public static Seq<SpaceStation> spaceStations = new Seq<>();
     public static Seq<Planet> spaceStationPlanets = new Seq<>();
 
     public static ZipFi modFi(){
-        Fi tmp = Vars.mods.getMod(modName).file;
-        if (tmp != null && tmp.exists()) return new ZipFi(tmp);
         Seq<Fi> modFiles = Vars.modDirectory.findAll(f -> {
             Fi metaFile = null;
             try {
@@ -52,8 +50,8 @@ public class DTVars {
         });
         return new ZipFi(modFiles.first());
     }
-    public static void init() {
-        DTUI.init();
-        //renderer3D.init();
+
+    public static void init(){
+        modFile = modFi();
     }
 }
