@@ -24,7 +24,7 @@ public class SpreadGenerator extends ConsumeGenerator {
             super.updateTile();
             if(warmup() >= spreadMinWarmup){
                 for (Liquid spreadLiquid : spreadLiquids) {
-                    proximity.forEach(b -> {
+                    proximity.each(b -> {
                         if (spreadTarget == null || spreadTarget.get(b)) {
                             Puddles.deposit(b.tile, spreadLiquid, spreadAmount);
                         }

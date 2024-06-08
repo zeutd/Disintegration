@@ -45,15 +45,15 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
     Block[][] arr =
             {
                     {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.stone, Blocks.stone},
-                    {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.stone, Blocks.stone, Blocks.stone},
-                    {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.stone, Blocks.stone, Blocks.stone},
-                    {Blocks.ice, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.stone, Blocks.stone, Blocks.stone, Blocks.snow, DTBlocks.greenIce, Blocks.ice},
-                    {Blocks.deepwater, Blocks.ice, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice},
+                    {Blocks.ice, Blocks.snow, Blocks.snow, DTBlocks.greenIce, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.stone, Blocks.stone, Blocks.stone},
+                    {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.hotrock, Blocks.sand, Blocks.sand, Blocks.sand, DTBlocks.greenIce, Blocks.stone, Blocks.stone, Blocks.stone},
+                    {Blocks.ice, Blocks.snow, Blocks.hotrock, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.stone, Blocks.stone, Blocks.stone, Blocks.snow, DTBlocks.greenIce, Blocks.ice},
+                    {Blocks.deepwater, Blocks.ice, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.hotrock, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice},
                     {Blocks.deepwater, Blocks.ice, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.snow, DTBlocks.greenIce, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.snow, Blocks.ice},
-                    {Blocks.deepwater, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice},
-                    {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.hotrock, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice, Blocks.ice},
-                    {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice, Blocks.ice},
-                    {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice},
+                    {Blocks.deepwater, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.snow, DTBlocks.greenIce, Blocks.snow, Blocks.sand, Blocks.sand, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice},
+                    {Blocks.ice, Blocks.snow, DTBlocks.greenIce, Blocks.snow, Blocks.sand, Blocks.snow, Blocks.sand, Blocks.hotrock, Blocks.sand, DTBlocks.greenIce, Blocks.snow, Blocks.ice, Blocks.ice},
+                    {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.hotrock, Blocks.sand, Blocks.ice, Blocks.snow, Blocks.ice, Blocks.ice},
+                    {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.hotrock, Blocks.ice, Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice},
                     {Blocks.ice, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice},
                     {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.snow, DTBlocks.greenIce, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice},
                     {Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, DTBlocks.greenIce, Blocks.snow, Blocks.snow, Blocks.snow, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice, Blocks.ice}
@@ -118,7 +118,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
     public Color getColor(Vec3 position){
         Block block = getBlock(position);
         //replace salt with sand color
-        if(block == Blocks.salt) return Blocks.sand.mapColor;
+        if(block == Blocks.hotrock) return Blocks.snow.mapColor;
         return Tmp.c1.set(block.mapColor).a(1f - block.albedo);
     }
 
@@ -493,8 +493,8 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
             ores.add(DTBlocks.oreIridium);
         }
 
-        if(Simplex.noise3d(seed, 2, 0.5, scl, sector.tile.v.x + 2, sector.tile.v.y, sector.tile.v.z)*nmag + poles > 0.7f*addscl){
-            ores.add(Blocks.oreThorium);
+        if(rand.chance(0.25)){
+            ores.add(Blocks.oreScrap);
         }
 
         FloatSeq frequencies = new FloatSeq();
@@ -543,7 +543,9 @@ public class OmurloPlanetGenerator extends PlanetGenerator{
 
             //hotrock tweaks
             if(floor == Blocks.hotrock){
-                if(Math.abs(0.5f - noise(x - 90, y, 4, 0.8, 80)) > 0.035){
+                if(Math.abs(0.5f - noise(x - 90, y, 4, 0.8, 80)) > 0.05){
+                    floor = Blocks.ice;
+                } else if(Math.abs(0.5f - noise(x - 90, y, 4, 0.8, 160)) > 0.02){
                     floor = Blocks.basalt;
                 }else{
                     ore = Blocks.air;

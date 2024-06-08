@@ -48,7 +48,7 @@ import static mindustry.Vars.tilesize;
 public class DTUnitTypes {
     public static DrawPart.PartProgress time = p -> Time.time;
     public static DrawPart.PartProgress timeSin = p -> Mathf.absin( 20f, 1f);
-    public static @EntityDef({Unitc.class}) UnitType lancet, talwar, estoc, spear, epee, knife, separate, attract, spaceStationDrone;
+    public static @EntityDef({Unitc.class}) UnitType lancet, talwar, estoc, spear, epee, knife, separate, attract, blend, spaceStationDrone;
     public static @EntityDef({Unitc.class, Mechc.class}) UnitType verity, truth, solve, essence, celestial;
     public static @EntityDef({Unitc.class, BuildingTetherc.class, Payloadc.class}) UnitType refabricatingDrone, repairDrone;
     public static @EntityDef({Unitc.class, InnerWorldc.class}) UnitType physics;

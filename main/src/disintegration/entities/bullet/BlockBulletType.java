@@ -11,6 +11,7 @@ import mindustry.world.Block;
 import mindustry.world.Build;
 import mindustry.world.Tile;
 
+import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
 
 public class BlockBulletType extends ArtilleryBulletType {
@@ -18,7 +19,7 @@ public class BlockBulletType extends ArtilleryBulletType {
 
     public boolean rotateSprite;
 
-    public Effect bulletBuildEffect = Fx.mine;
+    public Effect bulletBuildEffect = Fx.mineImpact;
 
     public BlockBulletType(){
         this(Blocks.air);
@@ -26,7 +27,7 @@ public class BlockBulletType extends ArtilleryBulletType {
     public BlockBulletType(Block bulletContent){
         super();
         this.bulletContent = bulletContent;
-        width = height = bulletContent.size * 8;
+        width = height = bulletContent.size * tilesize;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class BlockBulletType extends ArtilleryBulletType {
     @Override
     public void despawned(Bullet b){
         Tile tile = world.tile(b.tileX(), b.tileY());
-        if (tile != null && Build.validPlace(bulletContent, b.team, tile.x, tile.y, 0, true)) {
+        if (tile != null && Build.validPlace(bulletContent, b.team, tile.x, tile.y, 0)) {
             tile.setBlock(bulletContent, b.team);
             bulletBuildEffect.at(tile.x, tile.y, 0, bulletContent);
         }

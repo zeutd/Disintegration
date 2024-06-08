@@ -20,6 +20,7 @@ import mindustry.entities.Effect;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
+import mindustry.world.Block;
 
 import static arc.Core.atlas;
 import static arc.graphics.g2d.Draw.alpha;
@@ -28,6 +29,7 @@ import static arc.graphics.g2d.Lines.lineAngle;
 import static arc.graphics.g2d.Lines.stroke;
 import static arc.math.Angles.randLenVectors;
 import static java.lang.Math.min;
+import static mindustry.Vars.tilesize;
 
 public class DTFx {
     public static final Rand rand = new Rand();
@@ -323,7 +325,22 @@ public class DTFx {
                     });
                 });
             }
-        }).layer(Layer.bullet - 1f)
+        }).layer(Layer.bullet - 1f),
+
+        blockFly = new Effect(120f, 500f, e -> {
+            if(!(e.data instanceof Block block)) return;
+            rand.setSeed(e.id);
+            float angle = e.rotation + rand.range(10);
+            rand.setSeed(e.id * 2L);
+            float rotate = rand.range(20);
+            rand.setSeed(e.id * 3L);
+            float len = rand.random(225f, 250f);
+            Draw.reset();
+            Draw.alpha(e.fout(0.5f));
+            Draw.rect(block.fullIcon, e.x + Angles.trnsx(angle, len) * e.fin(Interp.pow10Out), e.y + Angles.trnsy(angle, len) * e.fin(Interp.pow10Out), e.fin() * rotate);
+            //Draw.rect(block.fullIcon, e.x, e.y);
+            //Fill.rect(e.x, e.y, 100, 100);
+        }).layer(Layer.blockOver)
 
     ;
 }

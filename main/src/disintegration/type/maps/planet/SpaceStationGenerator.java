@@ -28,7 +28,7 @@ public class SpaceStationGenerator extends BlankPlanetGenerator {
 
         tiles.eachTile(t -> t.setFloor(background));
 
-        WorldDef.getAreaTile(new Vec2(sx, sy), core.size + 4, core.size + 4).forEach(t -> {
+        WorldDef.getAreaTile(new Vec2(sx, sy), core.size + 4, core.size + 4).each(t -> {
             t.setFloor(ground);
         });
         world.tile(sx + core.size / 2 + 3, sy + core.size / 2 + 3).setBlock(core, Team.sharded);

@@ -48,7 +48,7 @@ public class FloorBuilder extends Block {
             WorldDef.getAreaTile(new Vec2(
                     tileX() - (float)range / 2 + Geometry.d4x(rotation) * (float)floorOffset / 2,
                     tileY() - (float)range / 2 + Geometry.d4y(rotation) * (float)floorOffset / 2),
-                    range, range).forEach(t -> {
+                    range, range).each(t -> {
                 if(t != null &&
                         whiteList != null ? whiteList.contains(t.floor()) :
                         blackList != null ? !blackList.contains(t.floor()) : true

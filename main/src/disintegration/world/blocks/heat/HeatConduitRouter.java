@@ -19,6 +19,7 @@ import mindustry.world.blocks.heat.HeatConsumer;
 public class HeatConduitRouter extends HeatConductor{
     public TextureRegion topRegion;
     public TextureRegion botRegion;
+    public TextureRegion baseRegion;
     public TextureRegion heatRegion;
     public TextureRegion capRegion;
     public Color botColor = Color.valueOf("2f2d39");
@@ -36,6 +37,7 @@ public class HeatConduitRouter extends HeatConductor{
         super.load();
         topRegion = Core.atlas.find(name + "-top");
         botRegion = Core.atlas.find(name + "-bottom");
+        baseRegion = Core.atlas.find(name + "-base", botRegion);
         heatRegion = Core.atlas.find(name + "-heat");
         capRegion = Core.atlas.find(name + "-cap");
     }
@@ -69,6 +71,7 @@ public class HeatConduitRouter extends HeatConductor{
             Draw.color(botColor);
             Draw.rect(botRegion, x, y, rotdeg());
             Draw.color();
+            Draw.rect(baseRegion, x, y);
             Draw.rect(topRegion, x, y, rotdeg());
             Draw.blend(Blending.additive);
             Draw.tint(heatColor1, heatColor2, Mathf.clamp(heatFrac() / 4));

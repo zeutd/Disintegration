@@ -13,7 +13,7 @@ import java.io.IOException;
 public class DTUtil {
     public static <T> Seq<T> listItem(Seq<T> array){
         Seq<T> result = new Seq<>();
-        array.forEach(a -> {
+        array.each(a -> {
             if(!result.contains(a) && a != null){
                 result.add(a);
             }

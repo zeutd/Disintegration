@@ -194,7 +194,7 @@ public class Quarry extends Block {
     }
     public Seq<Item> getDropArray(Seq<Tile> tiles){
         Seq<Item> items = new Seq<>();
-        tiles.forEach(tile -> {
+        tiles.each(tile -> {
             if (tile != null && tile.block() == Blocks.air) items.add(getDrop(tile));
             else items.add((Item)null);
         });

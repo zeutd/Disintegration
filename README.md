@@ -1,7 +1,7 @@
 English | [ÖÐÎÄ](README_zh_CN.md)
 
 + **Discord Server:**
-  [![Discord](https://img.shields.io/discord/825801593466388520.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord&color=17cf48)](https://discord.gg/yNmbMcuwyW)
+  [![Discord](https://img.shields.io/discord/825801593466388520.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord&color=17cf48)](https://discord.gg/XGq7NBz8RZ)
 + **QQ**: 676206144
 
 ![](images/qq-QRcode.png)

@@ -33,6 +33,7 @@ public class SpaceStationReader implements ApplicationListener {
                 DTVars.spaceStationPlanets.add(parent);
                 Sector sector = spaceStation.getSector(PlanetGrid.Ptile.empty);
                 sector.save = control.saves.importSave(control.saves.getSectorFile(sector));
+                sector.loadInfo();
             }
         }
 

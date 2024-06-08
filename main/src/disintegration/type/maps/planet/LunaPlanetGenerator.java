@@ -2,17 +2,27 @@ package disintegration.type.maps.planet;
 
 import arc.graphics.Color;
 import arc.math.Mathf;
+import arc.math.geom.Geometry;
+import arc.math.geom.Point2;
+import arc.math.geom.Vec2;
 import arc.math.geom.Vec3;
+import arc.struct.FloatSeq;
 import arc.struct.Seq;
+import arc.util.Log;
 import arc.util.Tmp;
+import arc.util.noise.Ridged;
 import arc.util.noise.Simplex;
 import mindustry.content.Blocks;
+import mindustry.game.Schematics;
 import mindustry.graphics.Pal;
 import mindustry.maps.generators.PlanetGenerator;
 import mindustry.world.Block;
+import mindustry.world.TileGen;
+import mindustry.world.blocks.environment.Floor;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static mindustry.Vars.world;
 
 public class LunaPlanetGenerator extends PlanetGenerator {
     {
@@ -21,6 +31,8 @@ public class LunaPlanetGenerator extends PlanetGenerator {
     public float rimWidth = 0.25f, rimSteepness = 1f, floorHeight = -0.2f;
 
     float scl = 2f;
+
+    float airScl = 14f, airThresh = 0.13f;
 
     public float cavityShape(float x){
         return x * x - 1;
@@ -64,8 +76,76 @@ public class LunaPlanetGenerator extends PlanetGenerator {
     }
 
     public Block getBlock(Vec3 position){
-        float tar = Simplex.noise3d(seed, 4, 0.6f, 1f/10f, position.x, position.y + 999f, position.z) * 0.3f + Tmp.v31.dst(0, 0, 1f) * 0.2f;
-        if (tar > 0.25f) return Blocks.stone;
-        return Blocks.shale;
+        float tar = Simplex.noise3d(seed, 4, 0.6f, 5f/10f, position.x, position.y + 999f, position.z) * 0.3f + Tmp.v31.dst(0, 0, 1f) * 0.2f;
+        if (tar > 0.47f) return Blocks.stone;
+        return Blocks.dacite;
+    }
+
+    @Override
+    public void genTile(Vec3 position, TileGen tile){
+        tile.floor = getBlock(position);
+        tile.block = tile.floor.asFloor().wall;
+
+        if(Ridged.noise3d(seed + 1, position.x, position.y, position.z, 2, airScl) > airThresh){
+            tile.block = Blocks.air;
+        }
+    }
+    @Override
+    protected void generate(){
+        float length = width/2.6f;
+        Vec2 trns = Tmp.v1.trns(rand.random(360f), length);
+        int
+                spawnX = (int)(trns.x + width/2f), spawnY = (int)(trns.y + height/2f);
+        pass((x, y) -> {
+            Floor tmp = floor.asFloor();
+            if(noise(x, y, 20f, 1f) > 0.7 && block == Blocks.dacite){
+                tmp = Blocks.stone.asFloor();
+            }else if(noise(x, y, 40f, 1f) > 0.7 && block == Blocks.stone){
+                tmp = Blocks.dacite.asFloor();
+            }
+
+            if(noise(x, y, 60f, 1f) > 0.8){
+                tmp = Blocks.ice.asFloor();
+            }
+            floor = tmp;
+            block = floor.asFloor().wall;
+            if(noise(x, y, airScl, 1f) > airThresh){
+                block = Blocks.air;
+            }
+
+            float max = 0;
+            for(Point2 p : Geometry.d8){
+                max = Math.max(max, world.getDarkness(x + p.x, y + p.y));
+            }
+            if(max > 0){
+                block = floor.asFloor().wall;
+            }
+        });
+        float poles = Math.abs(sector.tile.v.y);
+        Seq<Block> ores = Seq.with(Blocks.oreCopper, Blocks.oreLead, Blocks.oreCoal, Blocks.oreTitanium, Blocks.oreThorium, Blocks.oreScrap);
+        FloatSeq frequencies = new FloatSeq();
+        for(int i = 0; i < ores.size; i++){
+            frequencies.add(rand.random(-0.1f, 0.01f) - i * 0.01f + poles * 0.04f);
+        }
+        pass((x, y) -> {
+            if(!floor.asFloor().hasSurface()) return;
+
+            int offsetX = x - 4, offsetY = y + 23;
+            for(int i = ores.size - 1; i >= 0; i--){
+                Block entry = ores.get(i);
+                float freq = frequencies.get(i);
+                if(Math.abs(0.5f - noise(offsetX, offsetY + i*999, 2, 0.7, (40 + i * 2))) > 0.22f + i*0.01 &&
+                        Math.abs(0.5f - noise(offsetX, offsetY - i*999, 1, 1, (30 + i * 4))) > 0.37f + freq){
+                    ore = entry;
+                    break;
+                }
+            }
+
+            if(ore == Blocks.oreScrap && rand.chance(0.33)){
+                floor = Blocks.metalFloorDamaged;
+            }
+        });
+
+        Schematics.placeLaunchLoadout(spawnX, spawnY);
     }
 }

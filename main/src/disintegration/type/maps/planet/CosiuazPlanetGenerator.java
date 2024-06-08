@@ -6,6 +6,7 @@ import arc.math.geom.Geometry;
 import arc.math.geom.Point2;
 import arc.math.geom.Vec2;
 import arc.math.geom.Vec3;
+import arc.util.Log;
 import arc.util.Tmp;
 import arc.util.noise.Ridged;
 import arc.util.noise.Simplex;
@@ -33,7 +34,7 @@ public class CosiuazPlanetGenerator extends PlanetGenerator{
     public static float redThresh = 3.1f;
     public static float airThresh = 0.1f, airScl = 10;
 
-    Block[] terrain = {DTBlocks.obsidianFloor, DTBlocks.obsidianFloor, Blocks.basalt, Blocks.carbonStone, Blocks.slag, DTBlocks.obsidianFloor, DTBlocks.obsidianFloor, Blocks.carbonStone};
+    Block[] terrain = {Blocks.slag, Blocks.slag, Blocks.slag, Blocks.slag, Blocks.carbonStone, DTBlocks.obsidianFloor, DTBlocks.obsidianFloor, Blocks.carbonStone};
 
     {
         baseSeed = 2;
@@ -69,7 +70,7 @@ public class CosiuazPlanetGenerator extends PlanetGenerator{
     }
 
     float rawHeight(Vec3 position){
-        if (crater(position))return 0.1f;
+        if (crater(position))return 0.35f;
         return Simplex.noise3d(seed, octaves, persistence, 1f/heightScl, 10f + position.x, 10f + position.y, 10f + position.z);
     }
 
@@ -81,7 +82,11 @@ public class CosiuazPlanetGenerator extends PlanetGenerator{
         float radians = 360f / 18f * 15.5f * Mathf.degreesToRadians;
         Vec3 centre = new Vec3(cos(radians), 0f, sin(radians));
         //float rad = position.angleRad(centre);
-        return position.dst(centre) <= 0.7f;
+        //return position.dst(centre) <= 0.5f;
+        float dst = centre.dst(position);
+        float noise = Math.abs(0.5f - Simplex.noise3d(seed + 3, 7, 0f, 2f, position.x, position.y, position.z));
+        return (dst < 1 && 0 < noise && noise < 0 + 0.5 * Mathf.pow(1 - dst, 1.3f));
+        //return false;
     }
 
     Block getBlock(Vec3 position){

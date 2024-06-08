@@ -1,9 +1,13 @@
 package disintegration.content;
 
 import arc.graphics.Color;
+import arc.graphics.Mesh;
+import arc.graphics.gl.Shader;
+import arc.math.Mathf;
 import arc.struct.ObjectMap;
 import disintegration.graphics.g3d.SphereMesh;
 import disintegration.type.SpaceStation;
+import disintegration.type.maps.planet.CaelpsePlanetGenerator;
 import disintegration.type.maps.planet.CosiuazPlanetGenerator;
 import disintegration.type.maps.planet.LunaPlanetGenerator;
 import disintegration.type.maps.planet.OmurloPlanetGenerator;
@@ -12,9 +16,8 @@ import mindustry.content.Blocks;
 import mindustry.content.Items;
 import mindustry.content.Planets;
 import mindustry.game.Team;
-import mindustry.graphics.g3d.HexMesh;
-import mindustry.graphics.g3d.HexSkyMesh;
-import mindustry.graphics.g3d.MultiMesh;
+import mindustry.graphics.Shaders;
+import mindustry.graphics.g3d.*;
 import mindustry.type.Planet;
 import mindustry.world.meta.Attribute;
 import mindustry.world.meta.Env;
@@ -22,7 +25,7 @@ import mindustry.world.meta.Env;
 public class DTPlanets {
     static Planet sun = Planets.sun;
 
-    public static Planet luna, omurlo, cosiuaz, terminsi;
+    public static Planet luna, omurlo, cosiuaz, caelpse, terminsi, twinCenter;
 
     public static final ObjectMap<Planet, Boolean> canSpaceStation = new ObjectMap<>();
 
@@ -35,6 +38,7 @@ public class DTPlanets {
         }
     }
     public static void load(){
+        Planets.serpulo.hiddenItems.add(DTItems.nitride);
         luna = new Planet("luna", Planets.serpulo, 0.7f, 2){{
             generator = new LunaPlanetGenerator();
             meshLoader = () -> new HexMesh(this, 5);
@@ -45,8 +49,6 @@ public class DTPlanets {
             startSector = 10;
             hasAtmosphere = false;
             tidalLock = true;
-            orbitSpacing = 2f;
-            totalRadius += 10f;
             lightSrcTo = 0.5f;
             lightDstFrom = 0.2f;
             clearSectorOnLose = true;
@@ -56,18 +58,21 @@ public class DTPlanets {
 
             updateLighting = false;
         }};
-        //WIP
-        cosiuaz = new Planet("cosiuaz", sun, 0.8f, 2){{
+        twinCenter = new Planet("twin-center", sun, 0f){{
+            hasAtmosphere = false;
+            orbitSpacing = 0.5f;
+        }};
+        cosiuaz = new Planet("cosiuaz", twinCenter, 0.8f, 2){{
             minZoom = 0.65f;
             generator = new CosiuazPlanetGenerator();
             meshLoader = () -> new HexMesh(this, 6);
             cloudMeshLoader = () -> new MultiMesh(
-                    new HexSkyMesh(this, 1, 0.15f, 0.14f, 5, Color.valueOf("eba768").a(0.75f), 2, 0.42f, 1f, 0.43f),
-                    new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("eea293").a(0.75f), 2, 0.42f, 1.2f, 0.45f)
+                    new HexSkyMesh(this, 1, 0.15f, 0.14f, 5, Color.valueOf("eb6748").a(0.75f), 2, 0.42f, 1f, 0.43f),
+                    new HexSkyMesh(this, 3, 0.6f, 0.15f, 5, Color.valueOf("ee8253").a(0.75f), 2, 0.42f, 1.2f, 0.45f)
             );
             alwaysUnlocked = true;
-            landCloudColor = Color.valueOf("ed6542");
-            atmosphereColor = Color.valueOf("f07218");
+            landCloudColor = Color.valueOf("bd7552");
+            atmosphereColor = Color.valueOf("d06218");
             defaultEnv = Env.scorching | Env.terrestrial;
             startSector = 10;
             atmosphereRadIn = 0.02f;
@@ -103,10 +108,60 @@ public class DTPlanets {
 
             unlockedOnLand.add(Blocks.coreBastion);
         }};
+
+        caelpse = new Planet("caelpse", twinCenter, 0.5f, 2){{
+            minZoom = 1.5f;
+            generator = new CaelpsePlanetGenerator();
+            meshLoader = () -> new HexMesh(this, 5);
+            alwaysUnlocked = true;
+            landCloudColor = Color.valueOf("fd5542");
+            atmosphereColor = Color.valueOf("ff5218");
+            defaultEnv = Env.scorching | Env.terrestrial;
+            startSector = 10;
+            atmosphereRadIn = 0.02f;
+            atmosphereRadOut = 0.3f;
+            tidalLock = true;
+            orbitSpacing = 2f;
+            totalRadius += 10f;
+            lightSrcTo = 0.5f;
+            lightDstFrom = 0.2f;
+            clearSectorOnLose = true;
+            defaultCore = Blocks.coreBastion;
+            iconColor = Color.valueOf("dd5b24");
+            allowWaves = true;
+            allowWaveSimulation = true;
+            allowSectorInvasion = false;
+            allowLaunchSchematics = true;
+            hiddenItems.addAll(Items.serpuloItems).removeAll(Items.erekirItems);
+
+            updateLighting = false;
+
+            defaultAttributes.set(Attribute.heat, 0.8f);
+
+            ruleSetter = r -> {
+                r.waveTeam = DTTeam.rebel;
+                r.placeRangeCheck = false;
+                r.showSpawns = true;
+                r.fog = true;
+                r.staticFog = true;
+                r.lighting = false;
+                r.coreDestroyClear = true;
+                r.onlyDepositCore = true;
+            };
+
+            unlockedOnLand.add(Blocks.coreBastion);
+        }
+        @Override
+        public float getOrbitAngle(){
+            return Mathf.mod(cosiuaz.getOrbitAngle() + 180f, 360f);
+        }};
+
         Vars.content.planets().each(p -> p.parent == p.solarSystem, p -> {
             p.orbitRadius += sun.orbitSpacing;
-            cosiuaz.orbitRadius = sun.orbitSpacing + sun.radius;
+            twinCenter.orbitRadius = sun.orbitSpacing + sun.radius;
         });
+        cosiuaz.orbitRadius += 0.5f;
+        caelpse.orbitRadius += 0.5f;
         omurlo = new Planet("omurlo", sun, 1f, 3){{
                 generator = new OmurloPlanetGenerator();
                 /*Prov<OBJModel> modelLoader = () -> {
@@ -144,7 +199,7 @@ public class DTPlanets {
                 unlockedOnLand.add(DTBlocks.corePedestal);
             }};
 
-        terminsi = new Planet("terminsi", sun, 2.6f){{
+        terminsi = new Planet("terminsi", sun, 2.7f){{
             bloom = true;
             accessible = true;
             alwaysUnlocked = true;
@@ -158,7 +213,7 @@ public class DTPlanets {
 
             meshLoader = () -> new SphereMesh(
                     this, 6,
-                    5, 0.4, 0.6, 1.3, 1,
+                    5, 0.4, 1, 1.3, 1,
                     0.8f,
                     Color.valueOf("3f53ff"),
                     Color.valueOf("4661ff"),

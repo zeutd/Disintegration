@@ -86,7 +86,7 @@ public class LaserDevice extends Block {
 
     @Override
     public TextureRegion[] icons(){
-        return drawer.icons(this);
+        return drawer.finalIcons(this);
     }
 
     @Override

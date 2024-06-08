@@ -27,7 +27,7 @@ public class PortableDrill extends Drill {
     public class PortableDrillBuild extends DrillBuild implements ControlBlock {
         @Nullable
         public BlockUnitc unit;
-        public Unit portableUnit;
+        public @Nullable Unit portableUnit;
         public Unit unit() {
             if (unit == null) {
                 unit = (BlockUnitc) UnitTypes.block.create(team);
@@ -45,7 +45,7 @@ public class PortableDrill extends Drill {
         @Override
         public void updateTile(){
             super.updateTile();
-            if(unit != null && isControlled()){
+            if(unit != null && unit.isPlayer()){
                 portableUnit = portableUnitType.create(team);
                 portableUnit.set(x, y);
                 portableUnit.add();

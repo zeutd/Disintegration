@@ -55,7 +55,7 @@ public class PortableDrillUnloadPoint extends Block {
             if(timer(timerDump, dumpTime)){
                 dump();
                 if (seq.isEmpty()) return;
-                seq.forEach(b -> {
+                seq.each(b -> {
                     if(!(b instanceof PortableDrill.PortableDrillBuild && b.dst(this) < range)) return;
                     b.items().each((item, amount) -> {
                         if(items.get(item) < itemCapacity) {

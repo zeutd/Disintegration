@@ -17,27 +17,14 @@ import mindustry.world.draw.DrawBlock;
 import static arc.Core.atlas;
 
 public class DrawLaser extends DrawBlock {
-    public TextureRegion laser, laserEnd, arrowRegion;
+    public TextureRegion laser, laserEnd;
 
-    public boolean drawArrow;
 
-    public DrawLaser(boolean drawArrow){
-        this.drawArrow = drawArrow;
-    }
-
-    @Override
-    public TextureRegion[] icons(Block block){
-        return new TextureRegion[]{drawArrow ? arrowRegion : DrawDef.noneRegion};
-    }
-
-    @Override
-    public void drawPlan(Block block, BuildPlan plan, Eachable<BuildPlan> list){
-        if(drawArrow) Draw.rect(arrowRegion, plan.drawx(), plan.drawy(), plan.rotation * 90);
+    public DrawLaser(){
     }
 
     @Override
     public void draw(Building build){
-        if(drawArrow) Draw.rect(arrowRegion, build.x, build.y, build.rotation * 90);
         Draw.z(Layer.blockOver);
         for (int i = 0; i < 3; i++) {
             if (build instanceof LaserBlock b &&(b).l()[i] != 0) {
@@ -51,6 +38,5 @@ public class DrawLaser extends DrawBlock {
     public void load(Block block){
         laser = atlas.find("disintegration-laser-beam");
         laserEnd = atlas.find("disintegration-laser-beam-end");
-        arrowRegion = atlas.find(block.name + "-arrow");
     }
 }

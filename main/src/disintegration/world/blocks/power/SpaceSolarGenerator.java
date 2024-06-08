@@ -103,7 +103,6 @@ public class SpaceSolarGenerator extends SolarGenerator{
 
     public Rect getRectTile(Rect rect, float x, float y, int rotation){
         spaceRect.getCenter(Tmp.v1);
-        Tmp.v1.set(Mathf.floor(Tmp.v1.x), Mathf.floor(Tmp.v1.y));
         float width = rotation == 0 || rotation == 2 ? spaceRect.width : spaceRect.height;
         float height = rotation == 0 || rotation == 2 ? spaceRect.height : spaceRect.width;
         for (int i = 0; i < rotation; i++) {
@@ -137,7 +136,7 @@ public class SpaceSolarGenerator extends SolarGenerator{
                 Rect rect = getRectTile(Tmp.r1, tileX(), tileY(), rotation);
                 rect.getPosition(Tmp.v1);
                 e = 1;
-                WorldDef.getAreaTile(Tmp.v1, Mathf.round(rect.width), Mathf.round(rect.height)).forEach(t -> {
+                WorldDef.getAreaTile(Tmp.v1, Mathf.round(rect.width), Mathf.round(rect.height)).each(t -> {
                     if (t != null) {
                         boolean b = false;
                         for (Floor floor : spaceFloor) {
