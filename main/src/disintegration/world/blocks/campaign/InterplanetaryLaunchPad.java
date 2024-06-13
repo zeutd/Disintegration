@@ -2,8 +2,8 @@ package disintegration.world.blocks.campaign;
 
 import arc.Core;
 import arc.Events;
-import arc.Graphics;
 import arc.audio.Sound;
+import arc.func.Boolf;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
@@ -19,13 +19,14 @@ import arc.util.Tmp;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.DTVars;
-import disintegration.gen.entities.OrbitalLaunchPayload;
-import disintegration.gen.entities.OrbitalLaunchPayloadc;
-import disintegration.gen.entities.SpaceLaunchPayload;
-import disintegration.gen.entities.SpaceLaunchPayloadc;
+import disintegration.gen.entities.InterplanetaryLaunchPayload;
+import disintegration.gen.entities.InterplanetaryLaunchPayloadc;
+import disintegration.world.blocks.campaign.InterplanetaryLaunchPad;
 import disintegration.type.SpaceStation;
 import ent.anno.Annotations;
 import mindustry.content.Fx;
+import mindustry.content.Planets;
+import mindustry.ctype.ContentType;
 import mindustry.entities.Effect;
 import mindustry.game.EventType;
 import mindustry.game.Team;
@@ -43,14 +44,12 @@ import mindustry.world.Tile;
 import mindustry.world.meta.BlockFlag;
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
-import disintegration.world.blocks.campaign.SpaceLaunchPad;
 
 import static disintegration.DTVars.spaceStationPlanets;
 import static disintegration.DTVars.spaceStations;
 import static mindustry.Vars.*;
-import static mindustry.Vars.ui;
 
-public class SpaceLaunchPad extends Block{
+public class InterplanetaryLaunchPad extends Block{
     /** Time inbetween launches. */
     public float launchTime = 1f;
     public Sound launchSound = Sounds.none;
@@ -59,7 +58,7 @@ public class SpaceLaunchPad extends Block{
     public TextureRegion podRegion;
     public Color lightColor = Color.valueOf("eab678");
 
-    public SpaceLaunchPad(String name){
+    public InterplanetaryLaunchPad(String name){
         super(name);
         hasItems = true;
         solid = true;
@@ -72,7 +71,7 @@ public class SpaceLaunchPad extends Block{
     public void load(){
         super.load();
         lightRegion = Core.atlas.find(name + "-light");
-        podRegion = Core.atlas.find(name + "-pod", "disintegration-space-launchpod");
+        podRegion = Core.atlas.find(name + "-pod", "disintegration-space-launchpod-large");
     }
 
     @Override
@@ -88,7 +87,7 @@ public class SpaceLaunchPad extends Block{
 
         addBar("items", entity -> new Bar(() -> Core.bundle.format("bar.items", entity.items.total()), () -> Pal.items, () -> (float)entity.items.total() / itemCapacity));
 
-        addBar("progress", (SpaceLaunchPadBuild build) -> new Bar(() -> Core.bundle.get("bar.launchcooldown"), () -> Pal.ammo, () -> Mathf.clamp(build.launchCounter / launchTime)));
+        addBar("progress", (InterplanetaryLaunchPadBuild build) -> new Bar(() -> Core.bundle.get("bar.launchcooldown"), () -> Pal.ammo, () -> Mathf.clamp(build.launchCounter / launchTime)));
     }
 
     @Override
@@ -101,9 +100,9 @@ public class SpaceLaunchPad extends Block{
         return false;
     }
 
-    public class SpaceLaunchPadBuild extends Building {
+    public class InterplanetaryLaunchPadBuild extends Building {
 
-        public Sector dest;
+        public Planet dest;
 
         public int readDestId = -1;
         public float launchCounter;
@@ -158,7 +157,7 @@ public class SpaceLaunchPad extends Block{
         public void updateTile(){
             if(!state.isCampaign() || !(state.rules.sector.planet instanceof SpaceStation)) return;
             if(readDestId != -1){
-                dest = DTVars.spaceStationPlanets.find(p -> p.children.contains(state.rules.sector.planet)).sectors.get(readDestId);
+                dest = content.getByID(ContentType.planet, readDestId);
                 readDestId = -1;
             }
             //increment launchCounter then launch when full and base conditions are met
@@ -166,12 +165,12 @@ public class SpaceLaunchPad extends Block{
                 //if there are item requirements, use those.
                 consume();
                 launchSound.at(x, y);
-                SpaceLaunchPayload entity = SpaceLaunchPayload.create();
+                InterplanetaryLaunchPayload entity = InterplanetaryLaunchPayload.create();
                 items.each((item, amount) -> entity.stacks.add(new ItemStack(item, amount)));
                 entity.set(this);
                 entity.lifetime(120f);
                 entity.team(team);
-                entity.sector = dest;
+                entity.to = dest;
                 entity.add();
                 Fx.launchPod.at(this);
                 items.clear();
@@ -188,8 +187,8 @@ public class SpaceLaunchPad extends Block{
 
             table.row();
             table.label(() -> Core.bundle.format("launch.destination",
-                    dest == null || !dest.hasBase() ? Core.bundle.get("sectors.nonelaunch") :
-                            "[accent]" + dest.name())).pad(4).wrap().width(200f).left();
+                    dest == null || !dest.getSector(PlanetGrid.Ptile.empty).hasBase() ? Core.bundle.get("sectors.nonelaunch") :
+                            "[accent]" + dest.name)).pad(4).wrap().width(200f).left();
         }
 
         @Override
@@ -198,15 +197,24 @@ public class SpaceLaunchPad extends Block{
                 deselect();
                 return;
             }
-
-            table.button(Icon.upOpen, Styles.cleari, () -> {
-                ui.planet.showSelect(spaceStationPlanets.find(p -> p.children.contains(state.rules.sector.planet)).getLastSector(), other -> {
-                    if(state.isCampaign() && other.planet.children.contains(state.rules.sector.planet)){
-                        dest = other;
-                    }
-                });
-                deselect();
-            }).size(40f);
+            for(int i = 0; i < content.planets().size; i++){
+                Planet planet = content.planets().get(i);
+                if(spaceStations.contains(s -> s == planet) && planet != state.rules.planet){
+                    table.button(planet.localizedName,
+                                    Icon.icons.get(planet.parent.icon + "Small",
+                                            Icon.icons.get(planet.parent.icon, Icon.planet)),
+                                    Styles.flatTogglet, () -> {
+                                        dest = planet;
+                                        deselect();
+                                    })
+                            .width(190).height(40).growX()
+                            .update(bb -> bb.setChecked(dest == planet))
+                            .with(w -> w.marginLeft(10f))
+                            .get().getChildren().get(1)
+                            .setColor(planet.parent.iconColor);
+                    table.row();
+                }
+            }
         }
 
         @Override
@@ -231,15 +239,15 @@ public class SpaceLaunchPad extends Block{
         }
     }
 
-    @Annotations.EntityDef(SpaceLaunchPayloadc.class)
+    @Annotations.EntityDef(InterplanetaryLaunchPayloadc.class)
     @Annotations.EntityComponent(base = true)
-    static abstract class SpaceLaunchPayloadComp implements Drawc, Timedc, Teamc{
+    static abstract class InterplanetaryLaunchPayloadComp implements Drawc, Timedc, Teamc{
         @Annotations.Import
         float x,y;
 
         Seq<ItemStack> stacks = new Seq<>();
         transient Interval in = new Interval();
-        transient Sector sector;
+        transient Planet to;
 
         @Override
         public void draw(){
@@ -265,7 +273,7 @@ public class SpaceLaunchPad extends Block{
 
             Draw.z(Layer.weather - 1);
 
-            TextureRegion region = blockOn() instanceof SpaceLaunchPad p ? p.podRegion : Core.atlas.find("disintegration-space-launchpod");
+            TextureRegion region = blockOn() instanceof InterplanetaryLaunchPad p ? p.podRegion : Core.atlas.find("disintegration-space-launchpod-large");
             scale *= region.scl();
             float rw = region.width * scale, rh = region.height * scale;
 
@@ -303,19 +311,19 @@ public class SpaceLaunchPad extends Block{
 
             //actually launch the items upon removal
             if(team() == state.rules.defaultTeam){
-                if(sector != null && (sector != state.rules.sector || net.client())){
+                if(to != null && (to.getSector(PlanetGrid.Ptile.empty) != state.rules.sector || net.client())){
                     ItemSeq dest = new ItemSeq();
 
                     for(ItemStack stack : stacks){
                         dest.add(stack);
 
                         //update export
-                        DTVars.exportHandler.handleItemSpaceExport(stack, sector);
+                        DTVars.exportHandler.handleItemInterplanetaryExport(stack, state.rules.planet, to);
                         Events.fire(new EventType.LaunchItemEvent(stack));
                     }
 
                     if(!net.client()){
-                        sector.addItems(dest);
+                        to.getSector(PlanetGrid.Ptile.empty).addItems(dest);
                     }
                 }
             }

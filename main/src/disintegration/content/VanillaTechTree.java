@@ -1,0 +1,30 @@
+package disintegration.content;
+
+import mindustry.content.Blocks;
+import mindustry.content.Items;
+import mindustry.content.Planets;
+
+import static disintegration.util.DTUtil.addTechNode;
+import static disintegration.util.DTUtil.insertTechNode;
+import static mindustry.content.TechTree.*;
+
+public class VanillaTechTree {
+    public static void load(){
+        addTechNode(Planets.serpulo.techTree, Blocks.payloadRouter, DTBlocks.payloadLoader);
+        addTechNode(Planets.serpulo.techTree, DTBlocks.payloadLoader, DTBlocks.payloadUnloader);
+        addTechNode(Planets.serpulo.techTree, DTBlocks.payloadLoader, DTBlocks.payloadConstructor);
+        addTechNode(Planets.serpulo.techTree, DTBlocks.payloadConstructor, DTBlocks.largePayloadConstructor);
+        addTechNode(Planets.serpulo.techTree, DTBlocks.payloadConstructor, DTBlocks.payloadDeconstructor);
+
+        addTechNode(Planets.erekir.techTree, Blocks.carbideWallLarge, DTBlocks.nitrideWall);
+        addTechNode(Planets.erekir.techTree, DTBlocks.nitrideWall, DTBlocks.nitrideWallLarge);
+        addTechNode(Planets.erekir.techTree, Blocks.breach, DTBlocks.permeation);
+        addTechNode(Planets.erekir.techTree, DTBlocks.permeation, DTBlocks.aegis);
+        addTechNode(Planets.erekir.techTree, Blocks.diffuse, DTBlocks.encourage);
+        addTechNode(Planets.erekir.techTree, DTBlocks.encourage, DTBlocks.blade);
+        addTechNode(Planets.erekir.techTree, DTBlocks.blade, DTBlocks.fracture);
+        addTechNode(Planets.erekir.techTree, DTBlocks.aegis, DTBlocks.dissolve);
+        addTechNode(Planets.erekir.techTree, Blocks.carbideCrucible, DTBlocks.nitrideSynthesizer);
+        addTechNode(Planets.erekir.techTree, Items.carbide, DTItems.nitride);
+    }
+}

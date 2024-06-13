@@ -51,7 +51,7 @@ public class DTUnitTypes {
     public static @EntityDef({Unitc.class}) UnitType lancet, talwar, estoc, spear, epee, knife, separate, attract, blend, spaceStationDrone;
     public static @EntityDef({Unitc.class, Mechc.class}) UnitType verity, truth, solve, essence, celestial;
     public static @EntityDef({Unitc.class, BuildingTetherc.class, Payloadc.class}) UnitType refabricatingDrone, repairDrone;
-    public static @EntityDef({Unitc.class, InnerWorldc.class}) UnitType physics;
+    public static @EntityDef(value = {Unitc.class, InnerWorldc.class}, serialize = false) UnitType physics;
     public static void load(){
         /*
         UnitTypes.gamma.weapons.get(0).bullet.homingPower = 0.1f;

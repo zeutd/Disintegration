@@ -12,6 +12,7 @@ import disintegration.ui.DTUI;
 import mindustry.Vars;
 import mindustry.game.EventType;
 import mindustry.mod.Mod;
+import mindustry.world.meta.Env;
 import rhino.ImporterTopLevel;
 import rhino.NativeJavaPackage;
 
@@ -26,8 +27,10 @@ public class DisintegrationJavaMod extends Mod{
         DTGroups.init();
         app.addListener(DTVars.spaceStationReader = new SpaceStationReader());
         app.addListener(DTVars.exportHandler = new ExportHandler());
+        app.addListener(DTVars.exportHandler = new ExportHandler());
         DTVars.exportHandler.init();
         Events.run(EventType.Trigger.update, DTGroups::update);
+        Events.on(EventType.TurnEvent.class, ignored -> DTVars.exportHandler.updateItem((int) Vars.turnDuration / 60));
         /*Events.run(EventType.Trigger.draw, DTVars.renderer3D.models::clear);
         Events.run(EventType.Trigger.postDraw, () -> {
             DTVars.renderer3D.cam.position.set(Core.camera.position, Core.camera.height);
@@ -37,6 +40,13 @@ public class DisintegrationJavaMod extends Mod{
 
     @Override
     public void init(){
+        Vars.content.units().each(u -> {
+            if(u.flying)u.envEnabled |= Env.space;
+        });
+        Vars.content.blocks().each(b -> {
+            b.envDisabled &= ~Env.space;
+            b.envEnabled |= Env.space;
+        });
         DTPlanets.init();
         app.addListener(DTVars.DTUI = new DTUI());
         Vars.content.planets().each(p -> p.parent == p.solarSystem, p -> {
@@ -68,5 +78,7 @@ public class DisintegrationJavaMod extends Mod{
         DTLoadouts.load();
         DTPlanets.load();
         DTSectorPresets.load();
+        OmurloTechTree.load();
+        VanillaTechTree.load();
     }
 }

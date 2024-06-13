@@ -9,10 +9,9 @@ sourceSets.main.java.srcDirs = ["/main/src"]
 
 repositories{
     mavenCentral()
-    maven{url 'https://oss.sonatype.org/content/repositories/snapshots/'}
-    maven{url 'https://oss.sonatype.org/content/repositories/releases/'}
-    maven{url 'https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository'}
-    maven{url 'https://jitpack.io'}
+    maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
+    maven{ url  'https://raw.githubusercontent.com/Zelaux/Repo/master/repository' }
+    maven{ url 'https://www.jitpack.io' }
 }
 
 java{
@@ -95,7 +94,7 @@ task jarAndroid{
         def d8 = isWindows ? "d8.bat" : "d8"
 
         //dex and desugar files - this requires d8 in your PATH
-        "$d8 $dependencies --min-api 26 --output ${project.archivesBaseName}Android.jar ${project.archivesBaseName}Desktop.jar"
+        "$d8 $dependencies --min-api 14 --output ${project.archivesBaseName}Android.jar ${project.archivesBaseName}Desktop.jar"
                 .execute(null, new File("$buildDir/libs")).waitForProcessOutput(System.out, System.err)
     }
 }

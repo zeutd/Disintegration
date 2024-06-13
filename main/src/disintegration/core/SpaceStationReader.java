@@ -2,6 +2,8 @@ package disintegration.core;
 
 import arc.ApplicationListener;
 import arc.Core;
+import arc.files.Fi;
+import arc.util.Log;
 import arc.util.serialization.Json;
 import arc.util.serialization.JsonValue;
 import disintegration.DTVars;
@@ -12,6 +14,7 @@ import mindustry.ctype.ContentType;
 import mindustry.game.Saves;
 import mindustry.graphics.g3d.PlanetGrid;
 import mindustry.io.JsonIO;
+import mindustry.io.SaveIO;
 import mindustry.type.Planet;
 import mindustry.type.Sector;
 
@@ -19,7 +22,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Objects;
 
-import static mindustry.Vars.control;
+import static disintegration.DTVars.modName;
+import static disintegration.DTVars.spaceStations;
+import static mindustry.Vars.*;
 
 public class SpaceStationReader implements ApplicationListener {
     public void read() throws IOException {
@@ -27,13 +32,26 @@ public class SpaceStationReader implements ApplicationListener {
             Planet parent = Vars.content.planet(s);
             if(parent != null){
                 String whiteSpace = Objects.equals(Core.bundle.get("spacestationwhitespace"), "true") ? " " : "";
-                SpaceStation spaceStation = new SpaceStation(parent.name + "-spacestation", parent);
+                content.setCurrentMod(mods.getMod(modName));
+                SpaceStation spaceStation = new SpaceStation(parent.name + "-space-station", parent);
                 spaceStation.localizedName = parent.localizedName + whiteSpace + Core.bundle.get("spacestation");
                 DTVars.spaceStations.add(spaceStation);
                 DTVars.spaceStationPlanets.add(parent);
                 Sector sector = spaceStation.getSector(PlanetGrid.Ptile.empty);
-                sector.save = control.saves.importSave(control.saves.getSectorFile(sector));
+                try {
+                    Fi f = control.saves.getSectorFile(sector);
+                    if(f.exists()) {
+                        Saves.SaveSlot slot = control.saves.new SaveSlot(f);
+                        slot.meta = SaveIO.getMeta(f);
+                        sector.save = slot;
+                        slot.setAutosave(true);
+                    }
+                }catch (Exception e){
+                    Log.err(e);
+                }
                 sector.loadInfo();
+                sector.info.wasCaptured = true;
+                sector.info.spawnPosition = 0;
             }
         }
 

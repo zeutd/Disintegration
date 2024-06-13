@@ -1,6 +1,7 @@
 package disintegration.world.blocks.production;
 
 import arc.struct.Seq;
+import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.gen.Building;
 import mindustry.graphics.Drawf;
@@ -41,13 +42,14 @@ public class PortableDrillUnloadPoint extends Block {
     }
 
     public class PortableDrillUnloadPointBuild extends Building {
-        public int timerDetect = timers++;
+        public int lastChange = -2;
 
         public Seq<Building> seq = new Seq<>();
         @Override
         public void updateTile(){
             super.updateTile();
-            if(timer(timerDetect, detectTime)){
+            if(lastChange != Vars.world.tileChanges){
+                lastChange = Vars.world.tileChanges;
                 seq.clear();
                 seq.addAll(indexer.getFlagged(team, BlockFlag.drill));
                 seq.removeAll(b -> !(b instanceof PortableDrill.PortableDrillBuild && b.dst(this) < range));

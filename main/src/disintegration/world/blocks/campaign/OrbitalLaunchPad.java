@@ -67,7 +67,7 @@ public class OrbitalLaunchPad extends Block {
     public void load(){
         super.load();
         lightRegion = Core.atlas.find(name + "-light");
-        podRegion = Core.atlas.find(name + "-pod", "disintegration-launchpod-large");
+        podRegion = Core.atlas.find(name + "-pod", "disintegration-space-launchpod-large");
     }
 
     @Override
@@ -88,7 +88,7 @@ public class OrbitalLaunchPad extends Block {
 
     @Override
     public boolean canPlaceOn(Tile tile, Team team, int rotation){
-        return spaceStations.contains(p -> state.isCampaign() && p.parent == state.rules.planet);
+        return spaceStations.contains(p -> state.isCampaign() && p.parent == state.rules.sector.planet);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class OrbitalLaunchPad extends Block {
 
         @Override
         public void updateTile(){
-            if(!state.isCampaign() || !spaceStations.contains(p -> p.parent == state.rules.planet)) return;
+            if(!state.isCampaign() || !spaceStations.contains(p -> p.parent == state.rules.sector.planet)) return;
 
             //increment launchCounter then launch when full and base conditions are met
             if((launchCounter += edelta()) >= launchTime && items.total() >= itemCapacity){
@@ -220,7 +220,7 @@ public class OrbitalLaunchPad extends Block {
 
             Draw.z(Layer.weather - 1);
 
-            TextureRegion region = blockOn() instanceof OrbitalLaunchPad p ? p.podRegion : Core.atlas.find("disintegration-launchpod-large");
+            TextureRegion region = blockOn() instanceof OrbitalLaunchPad p ? p.podRegion : Core.atlas.find("disintegration-space-launchpod-large");
             scale *= region.scl();
             float rw = region.width * scale, rh = region.height * scale;
 
@@ -256,7 +256,7 @@ public class OrbitalLaunchPad extends Block {
         public void remove(){
             if(!state.isCampaign()) return;
 
-            Planet spaceStation = spaceStations.find(p -> p.parent == state.rules.planet);
+            Planet spaceStation = spaceStations.find(p -> p.parent == state.rules.sector.planet);
             Sector sector = spaceStation.getSector(PlanetGrid.Ptile.empty);
             //actually launch the items upon removal
             if(team() == state.rules.defaultTeam){

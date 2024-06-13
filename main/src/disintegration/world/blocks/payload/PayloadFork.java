@@ -73,6 +73,8 @@ public class PayloadFork extends VelocityPayloadConveyor{
     }
 
     public class PayloadForkBuild extends VelocityPayloadConveyorBuild{
+
+        public int lastChange;
         public @Nullable UnlockableContent sorted;
         public int dir;
 
@@ -130,7 +132,8 @@ public class PayloadFork extends VelocityPayloadConveyor{
         @Override
         public void updateTile(){
             super.updateTile();
-            if(timer(timerDump, dumpTime)) {
+            if(lastChange != world.tileChanges) {
+                lastChange = world.tileChanges;
                 for (int i = 0; i < points.length; i++) {
                     Tmp.p1.set(points[i]).rotate(rotation);
                     Tile tile1 = Vars.world.tile(tileX() + Tmp.p1.x, tileY() + Tmp.p1.y);
@@ -167,8 +170,8 @@ public class PayloadFork extends VelocityPayloadConveyor{
             payloads.each(p -> {
                 Vec2 v = payVectors.get(p);
                 p.set(x + v.x, y + v.y, payRotation);
-                Tmp.v1.set(dests.get(p)).sub(p).setLength(p.size() / 2);
-                if(!payloads.contains(p2 -> p != p2 && dests.get(p) == dests.get(p2) && p2.within(p.x() + Tmp.v1.x, p.y() + Tmp.v1.y, p.size()))) v.approach(Tmp.v1.set(dests.get(p).x - x, dests.get(p).y - y), velocities.get(p) * delta());
+                Tmp.v1.set(dests.get(p)).sub(p).setLength(p.size());
+                if(!payloads.contains(p2 -> p != p2 && dests.get(p) == dests.get(p2) && p2.within(p.x() + Tmp.v1.x, p.y() + Tmp.v1.y, p.size() / 2))) v.approach(Tmp.v1.set(dests.get(p).x - x, dests.get(p).y - y), velocities.get(p) * delta());
                 if(v.within(Tmp.v1, 0.001f)){
                     Tile next;
                     if(dests.get(p) == buildings[0]){
