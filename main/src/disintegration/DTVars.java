@@ -4,6 +4,7 @@ import arc.files.Fi;
 import arc.files.ZipFi;
 import arc.struct.Seq;
 import arc.util.serialization.Jval;
+import disintegration.core.DTRenderer;
 import disintegration.core.ExportHandler;
 import disintegration.core.SpaceStationReader;
 import disintegration.type.SpaceStation;
@@ -20,6 +21,7 @@ public class DTVars {
     public static int spaceStationBaseRequirement = 2;
     public static boolean debugMode = true;
 
+    public static DTRenderer renderer;
     public static DTUI DTUI;
     public static SpaceStationReader spaceStationReader;
     public static ExportHandler exportHandler;

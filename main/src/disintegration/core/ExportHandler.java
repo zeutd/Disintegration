@@ -35,38 +35,28 @@ public class ExportHandler implements ApplicationListener {
         handleItemOrbitalExport(stack.item, stack.amount, sector);
     }
     public void handleItemOrbitalExport(Item item, int amount, Sector sector){
-        if(orbitalExport.get(sector) == null || orbitalExport.get(sector).get(item) == null) {
-            orbitalExport.put(sector, new ObjectMap<>());
-            orbitalExport.get(sector).put(item, new SectorInfo.ExportStat());
-        }
-        orbitalExport.get(sector).get(item).counter += amount;
+        if(orbitalExport.get(sector) == null) orbitalExport.put(sector, new ObjectMap<>());
+        if(orbitalExport.get(sector).get(item) == null) orbitalExport.get(sector).put(item, new SectorInfo.ExportStat());
+        orbitalExport.get(sector, new ObjectMap<>()).get(item, new SectorInfo.ExportStat()).counter += amount;
     }
 
     public void handleItemSpaceExport(ItemStack stack, Sector sector){
         handleItemSpaceExport(stack.item, stack.amount, sector);
     }
     public void handleItemSpaceExport(Item item, int amount, Sector sector){
-        if(spaceExport.get(sector) == null || spaceExport.get(sector).get(item) == null) {
-            spaceExport.put(sector, new ObjectMap<>());
-            spaceExport.get(sector).put(item, new SectorInfo.ExportStat());
-        }
-        spaceExport.get(sector).get(item).counter += amount;
+        if(spaceExport.get(sector) == null) spaceExport.put(sector, new ObjectMap<>());
+        if(spaceExport.get(sector).get(item) == null) spaceExport.get(sector).put(item, new SectorInfo.ExportStat());
+        spaceExport.get(sector, new ObjectMap<>()).get(item, new SectorInfo.ExportStat()).counter += amount;
     }
 
     public void handleItemInterplanetaryExport(ItemStack stack, Planet from, Planet to){
         handleItemInterplanetaryExport(stack.item, stack.amount, from, to);
     }
     public void handleItemInterplanetaryExport(Item item, int amount, Planet from, Planet to){
-        if(
-                interplanetaryExport.get(from) == null
-                || interplanetaryExport.get(from).get(to) == null
-                || interplanetaryExport.get(from).get(to).get(item) == null
-        ) {
-            interplanetaryExport.put(from, new ObjectMap<>());
-            interplanetaryExport.get(from).put(to, new ObjectMap<>());
-            interplanetaryExport.get(from).get(to).put(item, new SectorInfo.ExportStat());
-        }
-        interplanetaryExport.get(from).get(to).get(item).counter += amount;
+        if(interplanetaryExport.get(from) == null) interplanetaryExport.put(from, new ObjectMap<>());
+        if(interplanetaryExport.get(from).get(to) == null) interplanetaryExport.get(from).put(to, new ObjectMap<>());
+        if(interplanetaryExport.get(from).get(to).get(item) == null) interplanetaryExport.get(from).get(to).put(item, new SectorInfo.ExportStat());
+        interplanetaryExport.get(from, new ObjectMap<>()).get(to, new ObjectMap<>()).get(item, new SectorInfo.ExportStat()).counter += amount;
     }
     @Override
     public void init(){
@@ -171,6 +161,7 @@ public class ExportHandler implements ApplicationListener {
                 Sector toSec = to.getSector(PlanetGrid.Ptile.empty);
                 ItemSeq items = new ItemSeq();
                 map1.each((item, stat) -> {
+                    Log.info("" + from + " " + to + " " + item + " " + stat);
                     items.add(item, (int) (stat.mean * newSecondsPassed * fromSec.getProductionScale()));
                 });
                 toSec.info.lastImported.add(items);

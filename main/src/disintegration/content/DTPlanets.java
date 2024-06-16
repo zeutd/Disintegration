@@ -224,8 +224,8 @@ public class DTPlanets {
             );
 
             cloudMeshLoader = () -> new MultiMesh(
-                    new HexSkyMesh(this, 7, 0.35f, 0.01f, 6, Color.valueOf("93ccff").a(0.4f), 1, 0.09f, 1.7f, 0.43f),
-                    new HexSkyMesh(this, 8, 0.7f, 0.03f, 6, Color.valueOf("62acff").a(0.4f), 1, 0.07f, 1.3f, 0.45f)
+                    new HexSkyMesh(this, 7, 0.35f, 0.02f, 6, Color.valueOf("93ccff").a(0.4f), 3, 0.09f, 1f, 0.3f),
+                    new HexSkyMesh(this, 8, 0.7f, 0.03f, 6, Color.valueOf("62acff").a(0.4f), 3, 0.07f, 1.3f, 0.45f)
             );
         }};
     }

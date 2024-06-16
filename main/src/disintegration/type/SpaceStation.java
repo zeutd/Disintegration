@@ -1,9 +1,13 @@
 package disintegration.type;
 
+import arc.graphics.g2d.Draw;
+import arc.math.Mathf;
 import disintegration.content.DTBlocks;
 import disintegration.type.maps.planet.SpaceStationGenerator;
+import mindustry.graphics.Shaders;
 import mindustry.graphics.g3d.HexMesh;
 import mindustry.graphics.g3d.PlanetGrid;
+import mindustry.graphics.g3d.PlanetParams;
 import mindustry.type.Planet;
 import mindustry.type.Sector;
 import mindustry.world.meta.Env;
@@ -18,8 +22,8 @@ public class SpaceStation extends Planet {
         updateLighting = false;
         drawOrbit = true;
         accessible = true;
-        //clipRadius = -1;
-        orbitRadius = parent.radius + 2f;
+        clipRadius = 2;
+        orbitRadius = parent.radius + 0.8f;
         alwaysUnlocked = true;
         defaultEnv = Env.space;
         icon = "commandRally";

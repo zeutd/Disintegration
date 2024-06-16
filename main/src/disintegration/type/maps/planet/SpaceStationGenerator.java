@@ -35,7 +35,7 @@ public class SpaceStationGenerator extends BlankPlanetGenerator {
 
         state.rules.planetBackground = new PlanetParams(){{
             planet = sector.planet.parent;
-            zoom = planet.orbitRadius / 32;
+            zoom = planet.orbitRadius - planet.parent.radius;
             camPos.setZero();
             sector.planet.addParentOffset(camPos);
         }};

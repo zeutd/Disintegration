@@ -28,11 +28,12 @@ import static mindustry.Vars.*;
 
 public class SpaceStationReader implements ApplicationListener {
     public void read() throws IOException {
+        content.setCurrentMod(mods.getMod(modName));
         for (String s : DTVars.spaceStationFi.readString().split("/")) {
             Planet parent = Vars.content.planet(s);
+            Log.info(parent);
             if(parent != null){
                 String whiteSpace = Objects.equals(Core.bundle.get("spacestationwhitespace"), "true") ? " " : "";
-                content.setCurrentMod(mods.getMod(modName));
                 SpaceStation spaceStation = new SpaceStation(parent.name + "-space-station", parent);
                 spaceStation.localizedName = parent.localizedName + whiteSpace + Core.bundle.get("spacestation");
                 DTVars.spaceStations.add(spaceStation);
@@ -54,7 +55,7 @@ public class SpaceStationReader implements ApplicationListener {
                 sector.info.spawnPosition = 0;
             }
         }
-
+        content.setCurrentMod(null);
     }
     @Override
     public void exit(){
