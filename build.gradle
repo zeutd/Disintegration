@@ -1,17 +1,47 @@
 plugins{
     id 'java'
-    id 'com.github.GlennFolker.EntityAnno' version "$entVersion"
 }
 
 version '1.0'
 
 sourceSets.main.java.srcDirs = ["/main/src"]
+allprojects{
+    apply plugin: "java"
 
-repositories{
-    mavenCentral()
-    maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
-    maven{ url  'https://raw.githubusercontent.com/Zelaux/Repo/master/repository' }
-    maven{ url 'https://www.jitpack.io' }
+    group = "com.github.zeutd"
+
+    ext{
+        //the build number that this mod is made for
+        //mindustryVersion = 'v146'
+        //jabelVersion = "93fde537c7"
+        sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+        gamePath = "D:/mdt/V7/Mindustry.exe"
+        modPath = "${System.getenv("USERPROFILE")}/AppData/Roaming/Mindustry/mods"
+        isWindows = System.getProperty("os.name").toLowerCase().contains("windows")
+
+        arcModule = {String module ->
+            return "com.github.Anuken.Arc$module:$arcVersion"
+        }
+        arcLibrary = {String module ->
+            return "com.github.Zelaux.ArcLibrary$module:$arcLibraryVersion"
+        }
+        mindustry = {String module ->
+            return "com.github.Anuken.Mindustry$module:$mindustryVersion"
+        }
+    }
+    repositories{
+        mavenCentral()
+        maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
+        maven{ url  'https://raw.githubusercontent.com/Zelaux/Repo/master/repository' }
+        maven{ url 'https://www.jitpack.io' }
+    }
+    dependencies{
+        compileOnly "${mindustry(':core')}"
+        compileOnly "${arcModule(':arc-core')}"
+        implementation "${arcLibrary(':graphics-draw3d')}"
+        implementation "${arcLibrary(':graphics-g3d')}"
+        implementation "${arcLibrary(':graphics-extendedDraw')}"
+    }
 }
 
 java{
@@ -23,59 +53,6 @@ java{
         options.incremental = true
         options.encoding = 'UTF-8'
     }
-}
-
-ext{
-    //the build number that this mod is made for
-    //mindustryVersion = 'v146'
-    //jabelVersion = "93fde537c7"
-    sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
-    gamePath = "D:/mdt/V7/Mindustry.exe"
-    modPath = "${System.getenv("USERPROFILE")}/AppData/Roaming/Mindustry/mods"
-    isWindows = System.getProperty("os.name").toLowerCase().contains("windows")
-
-    arc = {String module ->
-        return "com.github.Anuken.Arc$module:$arcVersion"
-    }
-    arcLibrary = {String module ->
-        return "com.github.Zelaux.ArcLibrary$module:$arcLibraryVersion"
-    }
-    mindustry = {String module ->
-        return "com.github.Anuken.Mindustry$module:$mindustryVersion"
-    }
-}
-
-//java 8 backwards compatibility flag
-/*allprojects{
-    tasks.withType(JavaCompile){
-        options.compilerArgs.addAll(['--release', '8'])
-    }
-}*/
-
-dependencies{
-    // i.
-    compileOnly "${mindustry(':core')}"
-    compileOnly "${arc(':arc-core')}"
-    implementation "${arcLibrary(':graphics-draw3d')}"
-    implementation "${arcLibrary(':graphics-g3d')}"
-    implementation "${arcLibrary(':graphics-extendedDraw')}"
-
-    // ii.
-    annotationProcessor "com.github.GlennFolker.EntityAnno:downgrader:$entVersion"
-
-    // iii.
-    compileOnly "com.github.GlennFolker.EntityAnno:entity:$entVersion"
-    // iv.
-    kapt "com.github.GlennFolker.EntityAnno:entity:$entVersion"
-}
-
-entityAnno{
-    modName = 'disintegration'
-    mindustryVersion = project['mindustryVersion']
-    revisionDir = file("$rootDir/revisions/")
-    fetchPackage = 'disintegration.fetched'
-    genSrcPackage = 'disintegration.entities.comp'
-    genPackage = 'disintegration.gen.entities'
 }
 
 task jarAndroid{
