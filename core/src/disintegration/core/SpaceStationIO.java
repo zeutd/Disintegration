@@ -20,12 +20,16 @@ import java.util.Objects;
 import static disintegration.DTVars.modName;
 import static mindustry.Vars.*;
 
-public class SpaceStationReader implements ApplicationListener {
+public class SpaceStationIO implements ApplicationListener {
     public void read() throws IOException {
         content.setCurrentMod(mods.getMod(modName));
         for (String s : DTVars.spaceStationFi.readString().split("/")) {
             Planet parent = Vars.content.planet(s);
+<<<<<<<< HEAD:core/src/disintegration/core/SpaceStationReader.java
             if (parent != null) {
+========
+            if(parent != null){
+>>>>>>>> 8f9fcea (3):core/src/disintegration/core/SpaceStationIO.java
                 String whiteSpace = Objects.equals(Core.bundle.get("spacestationwhitespace"), "true") ? " " : "";
                 SpaceStation spaceStation = new SpaceStation(parent.name + "-space-station", parent);
                 spaceStation.localizedName = parent.localizedName + whiteSpace + Core.bundle.get("spacestation");
@@ -63,12 +67,15 @@ public class SpaceStationReader implements ApplicationListener {
             }
             writer.flush();
             writer.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException ignored) {
+
         }
     }
+<<<<<<<< HEAD:core/src/disintegration/core/SpaceStationReader.java
 
     @Override
     public void update() {
     }
+========
+>>>>>>>> 8f9fcea (3):core/src/disintegration/core/SpaceStationIO.java
 }
