@@ -19,7 +19,7 @@ public class ContinuousMendProjector extends MendProjector {
 
         public void updateTargets() {
             targets.clear();
-            indexer.eachBlock(this, range + phaseHeat * phaseRangeBoost, b -> b.damaged() && !b.isHealSuppressed(), targets::add);
+            indexer.eachBlock(this, range + phaseHeat * phaseRangeBoost, b -> true, targets::add);
         }
 
         @Override
@@ -28,7 +28,7 @@ public class ContinuousMendProjector extends MendProjector {
                 lastChange = world.tileChanges;
                 updateTargets();
             }
-            boolean canHeal = !checkSuppression() && !targets.isEmpty();
+            boolean canHeal = !checkSuppression() && !targets.isEmpty() && targets.contains(b -> b.damaged() && !b.isHealSuppressed());
 
             smoothEfficiency = Mathf.lerpDelta(smoothEfficiency, efficiency, 0.08f);
             heat = Mathf.lerpDelta(heat, efficiency > 0 && canHeal ? 1f : 0f, 0.08f);
@@ -39,10 +39,11 @@ public class ContinuousMendProjector extends MendProjector {
                 consume();
             }
 
-            targets.each(other -> {
+            for(Building other : targets){
+                if(!other.damaged() || other.isHealSuppressed())continue;
                 other.heal(other.maxHealth() * (healPercent + phaseHeat * phaseBoost) / 100f * edelta());
                 other.recentlyHealed();
-            });
+            }
         }
     }
 }

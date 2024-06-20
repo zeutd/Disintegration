@@ -25,7 +25,7 @@ public class DTBullets {
 
         nitrideLaser = new LaserBulletType(100) {{
             pierceCap = 8;
-            length = 160;
+            length = 80;
             colors = new Color[]{Color.valueOf("9a9dbf").a(0.4f), Color.valueOf("9a9dbf"), Color.valueOf("ededed")};
         }};
     }
