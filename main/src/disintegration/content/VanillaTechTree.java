@@ -13,6 +13,13 @@ public class VanillaTechTree {
         addTechNode(Planets.serpulo.techTree, DTBlocks.payloadLoader, DTBlocks.payloadConstructor);
         addTechNode(Planets.serpulo.techTree, DTBlocks.payloadConstructor, DTBlocks.largePayloadConstructor);
         addTechNode(Planets.serpulo.techTree, DTBlocks.payloadConstructor, DTBlocks.payloadDeconstructor);
+        addTechNode(Planets.serpulo.techTree, Blocks.graphitePress, DTBlocks.spaceStationPanelCompressor);
+        addTechNode(Planets.serpulo.techTree, Blocks.graphitePress, DTBlocks.spaceStationPanelCompressorLarge);
+        addTechNode(Planets.serpulo.techTree, Items.titanium, DTItems.spaceStationPanel);
+        addTechNode(Planets.serpulo.techTree, Blocks.launchPad, DTBlocks.spaceStationLaunchPad);
+        addTechNode(Planets.serpulo.techTree, DTBlocks.spaceStationLaunchPad, DTBlocks.spaceLaunchPad);
+        addTechNode(Planets.serpulo.techTree, DTBlocks.spaceStationLaunchPad, DTBlocks.orbitalLaunchPad);
+        addTechNode(Planets.serpulo.techTree, DTBlocks.spaceLaunchPad, DTBlocks.interplanetaryLaunchPad);
 
         addTechNode(Planets.erekir.techTree, Blocks.carbideWallLarge, DTBlocks.nitrideWall);
         addTechNode(Planets.erekir.techTree, DTBlocks.nitrideWall, DTBlocks.nitrideWallLarge);

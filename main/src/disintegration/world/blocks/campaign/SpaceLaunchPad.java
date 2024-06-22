@@ -45,6 +45,7 @@ import mindustry.world.meta.StatUnit;
 
 import static disintegration.DTVars.spaceStationPlanets;
 import static mindustry.Vars.*;
+import disintegration.world.blocks.campaign.*;
 
 public class SpaceLaunchPad extends Block {
     /**
@@ -64,6 +65,8 @@ public class SpaceLaunchPad extends Block {
         update = true;
         configurable = true;
         flags = EnumSet.of(BlockFlag.launchPad);
+        config(Integer.class, ((SpaceLaunchPadBuild build, Integer value) -> build.dest = state.rules.planet.parent.sectors.get(value)));
+        saveConfig = true;
     }
 
     @Override
@@ -205,6 +208,11 @@ public class SpaceLaunchPad extends Block {
                 });
                 deselect();
             }).size(40f);
+        }
+
+        @Override
+        public Object config(){
+            return dest.id;
         }
 
         @Override

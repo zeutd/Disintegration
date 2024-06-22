@@ -41,6 +41,7 @@ import mindustry.world.meta.StatUnit;
 import static disintegration.DTVars.spaceStations;
 import static mindustry.Vars.net;
 import static mindustry.Vars.state;
+import disintegration.world.blocks.campaign.*;
 
 public class OrbitalLaunchPad extends Block {
     /**
@@ -65,7 +66,7 @@ public class OrbitalLaunchPad extends Block {
     public void load() {
         super.load();
         lightRegion = Core.atlas.find(name + "-light");
-        podRegion = Core.atlas.find(name + "-pod", "disintegration-space-launchpod-large");
+        podRegion = Core.atlas.find(name + "-pod", "disintegration-launchpod-large");
     }
 
     @Override
@@ -218,7 +219,7 @@ public class OrbitalLaunchPad extends Block {
 
             Draw.z(Layer.weather - 1);
 
-            TextureRegion region = blockOn() instanceof OrbitalLaunchPad p ? p.podRegion : Core.atlas.find("disintegration-space-launchpod-large");
+            TextureRegion region = blockOn() instanceof OrbitalLaunchPad p ? p.podRegion : Core.atlas.find("disintegration-launchpod-large");
             scale *= region.scl();
             float rw = region.width * scale, rh = region.height * scale;
 

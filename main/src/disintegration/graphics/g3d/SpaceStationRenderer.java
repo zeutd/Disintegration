@@ -4,6 +4,8 @@ import arc.graphics.Color;
 import arc.graphics.Gl;
 import arc.graphics.g3d.VertexBatch3D;
 import arc.math.Angles;
+import arc.math.Mathf;
+import arc.math.geom.Vec2;
 import arc.math.geom.Vec3;
 import arc.struct.Seq;
 import arc.util.Log;
@@ -19,7 +21,8 @@ import static disintegration.DTVars.exportHandler;
 import static disintegration.DTVars.spaceStations;
 
 public class SpaceStationRenderer{
-    private static final Seq<Vec3> points = new Seq<>();
+    private static final Seq<Vec2> points = new Seq<>();
+    private static final Vec2 aP = new Vec2(), bP = new Vec2();
     public void update(){
 
     }
@@ -32,21 +35,25 @@ public class SpaceStationRenderer{
                     if(stat.mean > min[0]) min[0] = stat.mean;
                 });
                 if(min[0] < 0.01f) return;
-                drawArc(Vars.renderer.planets.batch, t.position, s.position, Pal.accent, Color.clear, 80, 3 * (int)s.position.dst(t.position));
+                aP.set(t.position.x, t.position.z);
+                bP.set(s.position.x, s.position.z);
+                drawArc(Vars.renderer.planets.batch, aP, bP, Pal.accent, Color.clear, 80, 3 * (int)s.position.dst(t.position));
             });
         });
     }
-    public void drawArc(VertexBatch3D batch, Vec3 a, Vec3 b, Color from, Color to, float timeScale, int pointCount){
+    public void drawArc(VertexBatch3D batch, Vec2 a, Vec2 b, Color from, Color to, float timeScale, int pointCount){
         //increase curve height when on opposite side of planet, so it doesn't tunnel through
         points.clear();
-        Tmp.v31.set(a).lerp(b, 1f/2f).setLength(lerp(a.len(), b.len(), 1f/2f) * 1.1f);
-        points.addAll(a, Tmp.v31, b);
-        Tmp.bz3.set(points);
+        Tmp.v1.set(a).setAngle(Mathf.slerp(a.angle(), b.angle(), 1f/3f)).setLength(lerp(a.len(), b.len(), 1f/3f) * 1.1f);
+        Tmp.v2.set(a).setAngle(Mathf.slerp(a.angle(), b.angle(), 2f/3f)).setLength(lerp(a.len(), b.len(), 2f/3f) * 1.1f);
+        points.addAll(a, Tmp.v1, Tmp.v2, b);
+        Tmp.bz2.set(points);
         for(int i = 0; i < pointCount + 1; i++){
             float f = i / (float)pointCount;
             Tmp.c1.set(from).lerp(to, (f + Time.globalTime / timeScale) % 1f);
             batch.color(Tmp.c1);
-            batch.vertex(Tmp.bz3.valueAt(Tmp.v33, f));
+            Tmp.bz2.valueAt(Tmp.v3, f);
+            batch.vertex(Tmp.v31.set(Tmp.v3.x, 0, Tmp.v3.y));
         }
         batch.flush(Gl.lineStrip);
     }

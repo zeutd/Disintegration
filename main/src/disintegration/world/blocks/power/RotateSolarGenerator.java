@@ -44,7 +44,7 @@ public class RotateSolarGenerator extends SolarGenerator {
             Draw.rect(baseRegion, x, y);
             if (Vars.state.rules.sector == null) angle = -45;
             else {
-                if (timer.get(60 * 5)) {
+                if (timer.get(30)) {
                     angle = (Vars.state.rules.sector.getLight() * 90 - 45);
                 }
             }

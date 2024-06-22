@@ -151,7 +151,7 @@ public class DTBlocks {
             nitrideSynthesizer,
             boiler, airCompressor, electrolyser, siliconRefiner, graphiteCompressor, steelSmelter, steelBlastFurnace, conductionAlloySmelter, magnetismAlloySmelter, surgeFurnace,
             algalPond, blastCompoundMixer,
-            centrifuge, spaceStationPanelCompressor,
+            centrifuge, spaceStationPanelCompressor, spaceStationPanelCompressorLarge,
     //payload
             payloadAccelerator, payloadDecelerator, magnetizedPayloadRail, magnetizedPayloadRailShort, payloadRedirector, payloadRedirectorPoint, payloadCross, payloadCrossPoint, payloadSeparator, payloadForkLeft, payloadForkRight, payloadForkPoint,
             payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
@@ -895,6 +895,19 @@ public class DTBlocks {
             hasItems = true;
 
             consumeItems(with(Items.titanium, 2, Items.copper, 1));
+            consumePower(0.5f);
+        }};
+
+        spaceStationPanelCompressorLarge = new GenericCrafter("space-station-panel-compressor-large"){{
+            requirements(Category.crafting, with(Items.copper, 70, Items.metaglass, 50, Items.titanium, 70));
+
+            craftEffect = DTFx.compressSmoke;
+            outputItem = new ItemStack(DTItems.spaceStationPanel, 3);
+            craftTime = 40f;
+            size = 3;
+            hasItems = true;
+
+            consumeItems(with(Items.titanium, 5, Items.copper, 3));
             consumePower(0.5f);
         }};
         //endregion
@@ -2559,6 +2572,7 @@ public class DTBlocks {
         }};
         sabre = new PowerTurret("sabre"){{
             requirements(Category.turret, with());
+            buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             Color color = Color.valueOf("d370d3");
             shootType = new WarpBulletType(8f, 20f){{
                 sprite = "missile-large";
@@ -2851,7 +2865,6 @@ public class DTBlocks {
             new FloorBuilder("space-station-builder-" + finalI){{
                 requirements(Category.effect, with(DTItems.spaceStationPanel, 20 + 2 * finalI * finalI));
                 size = 1;
-                envEnabled = envRequired = Env.space;
                 range = finalI;
                 rotate = true;
                 floorOffset = range + 1;
@@ -2867,7 +2880,6 @@ public class DTBlocks {
             new FloorBuilder("space-station-breaker-" + finalI){{
                 requirements(Category.effect, with(DTItems.spaceStationPanel, 20));
                 size = 1;
-                envEnabled = envRequired = Env.space;
                 range = finalI;
                 floor = Blocks.empty.asFloor();
                 buildCostMultiplier = 0.05f;
@@ -2884,7 +2896,7 @@ public class DTBlocks {
         }};
 
         orbitalLaunchPad = new OrbitalLaunchPad("orbital-launch-pad"){{
-            requirements(Category.effect, BuildVisibility.campaignOnly, with(Items.copper, 350, Items.silicon, 140, Items.lead, 200, Items.titanium, 150));
+            requirements(Category.effect, BuildVisibility.campaignOnly, with(DTItems.spaceStationPanel, 500));
             size = 5;
             itemCapacity = 100;
             launchTime = 60f * 20;
@@ -2911,57 +2923,57 @@ public class DTBlocks {
         //endregion
         //region debug
         sandboxBlock = new DebugBlock("sandbox-block"){{
+            requirements(Category.effect, with(), true);
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             runs = b -> Vars.state.rules.infiniteResources = !Vars.state.rules.infiniteResources;
             buildCostMultiplier = 0.01f;
-            requirements(Category.effect, with(), true);
         }};
 
         editorBlock = new DebugBlock("editor-block"){{
+            requirements(Category.effect, with(), true);
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             runs = b -> Vars.state.rules.editor = !Vars.state.rules.editor;
             buildCostMultiplier = 0.01f;
-            requirements(Category.effect, with(), true);
         }};
 
         cheatBlock = new DebugBlock("cheat-block"){{
+            requirements(Category.effect, with(), true);
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             runs = b -> Vars.state.rules.teams.get(b.team).cheat = Vars.state.rules.teams.get(b.team).cheat;
             buildCostMultiplier = 0.01f;
-            requirements(Category.effect, with(), true);
         }};
 
         shaderTestBlock = new ShaderTestBlock("shader-test-block"){{
+            requirements(Category.effect, with(), true);
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             shader = DTShaders.blackHole;
             hasShadow = false;
-            requirements(Category.effect, with(), true);
         }};
         dpsBlock = new DPSBlock("dps-block"){{
+            requirements(Category.effect, with(), true);
             size = 5;
             health = 999999;
             envEnabled = Env.any;
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
-            requirements(Category.effect, with(), true);
         }};
 
         blackHoleBlock = new BlackHoleBlock("black-hole-block"){{
+            requirements(Category.effect, with(), true);
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             buildCostMultiplier = 0.01f;
-            requirements(Category.effect, with(), true);
         }};
 
         blackHoleClearBlock = new DebugBlock("black-hole-clear-block"){{
+            requirements(Category.effect, with(), true);
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
             buildCostMultiplier = 0.01f;
             runs = b -> DTGroups.blackHole.each(Entityc::remove);
-            requirements(Category.effect, with(), true);
         }};
         //endregion
     }

@@ -9,6 +9,7 @@ import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
 import arc.graphics.g3d.VertexBatch3D;
 import arc.input.KeyCode;
+import arc.math.Angles;
 import arc.math.Mat;
 import arc.math.Mathf;
 import arc.math.geom.Vec2;
@@ -109,8 +110,9 @@ public class ExportOverviewDialog extends BaseDialog {
         //increase curve height when on opposite side of planet, so it doesn't tunnel through
         points.clear();
 
-        Tmp.v1.set(a).lerp(b, 1f/2f).setLength(lerp(a.len(), b.len(), 1f/2f));
-        points.addAll(a, Tmp.v1, b);
+        Tmp.v1.set(a).setAngle(Mathf.slerp(a.angle(), b.angle(), 1f/3f)).setLength(lerp(a.len(), b.len(), 1f/3f) * 1.1f);
+        Tmp.v2.set(a).setAngle(Mathf.slerp(a.angle(), b.angle(), 2f/3f)).setLength(lerp(a.len(), b.len(), 2f/3f) * 1.1f);
+        points.addAll(a, Tmp.v1, Tmp.v2, b);
         Tmp.bz2.set(points);
         for(int i = 0; i < pointCount + 1; i++){
             float f = i / (float)pointCount;

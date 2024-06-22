@@ -4,7 +4,10 @@ import arc.files.Fi;
 import arc.files.ZipFi;
 import arc.struct.Seq;
 import arc.util.serialization.Jval;
+import arclibrary.graphics.g3d.render.GenericRenderer3D;
+import arclibrary.graphics.g3d.render.Renderer3D;
 import disintegration.core.*;
+import disintegration.graphics.DTLoadRenderer;
 import disintegration.type.SpaceStation;
 import disintegration.ui.DTUI;
 import disintegration.util.DTUtil;
@@ -17,8 +20,10 @@ public class DTVars {
     public static String modName = "disintegration";
     public static int spaceStationRequirement = 10000;
     public static int spaceStationBaseRequirement = 2;
-    public static boolean debugMode = true;
+    public static boolean debugMode = false;
 
+    public static DTLoadRenderer loadRenderer = new DTLoadRenderer();
+    public static GenericRenderer3D renderer3D;
     public static DTRenderer renderer;
     public static DTUI DTUI;
     public static SpaceStationIO spaceStationIO;

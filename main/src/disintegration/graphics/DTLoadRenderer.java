@@ -4,6 +4,7 @@ import arc.Core;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Font;
 import arc.util.OS;
+import mindustry.graphics.Layer;
 
 import static arc.Core.assets;
 
@@ -12,6 +13,7 @@ public class DTLoadRenderer {
     public StringBuilder assetText = new StringBuilder();
 
     public void draw() {
+        Draw.z(Layer.max);
         if (assets.getLoadedAssets() != lastLength) {
             assetText.setLength(0);
             for (String name : assets.getAssetNames()) {

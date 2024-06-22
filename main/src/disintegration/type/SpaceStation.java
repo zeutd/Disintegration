@@ -19,7 +19,7 @@ public class SpaceStation extends Planet {
         drawOrbit = true;
         accessible = true;
         clipRadius = 2;
-        orbitRadius = parent.radius + 0.8f;
+        orbitRadius = parent.radius + 1f;
         alwaysUnlocked = true;
         defaultEnv = Env.space;
         icon = "commandRally";

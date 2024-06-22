@@ -9,16 +9,21 @@ import arc.graphics.g2d.Draw;
 import arc.graphics.gl.FrameBuffer;
 import arc.graphics.gl.Shader;
 import arc.struct.FloatSeq;
+import arclibrary.graphics.g3d.model.obj.ObjectShader;
 import disintegration.DTVars;
 import mindustry.game.EventType;
+import mindustry.graphics.Shaders;
+import mindustry.graphics.g3d.ShaderSphereMesh;
 
 import static mindustry.Vars.state;
 
 public class DTShaders {
     public static BlackHoleShader blackHole;
+    public static ObjectShader objectShader;
 
     public static void init() {
         blackHole = new BlackHoleShader();
+        objectShader = new ObjectShader(Shaders.getShaderFi("screenspace.vert"), Shaders.getShaderFi("screenspace.frag"));
     }
 
     public static class BlackHoleShader extends Shader {

@@ -1,21 +1,57 @@
 package disintegration.content;
 
+import arc.graphics.Color;
+import arc.math.Interp;
 import arc.math.Mathf;
 import arc.util.Time;
+import disintegration.ai.types.RepairDroneAI;
+import disintegration.entities.abilities.WarpAbility;
+import disintegration.gen.entities.EntityRegistry;
+import disintegration.gen.entities.InnerWorldUnit;
+import disintegration.gen.entities.InnerWorldc;
+import disintegration.gen.entities.PayloadBuildingTetherUnit;
+import disintegration.graphics.Pal2;
+import disintegration.type.unit.OmurloUnitType;
+import disintegration.type.unit.WorldUnitType;
+import ent.anno.Annotations;
+import mindustry.ai.types.AssemblerAI;
+import mindustry.ai.types.BuilderAI;
+import mindustry.content.Fx;
+import mindustry.content.Items;
+import mindustry.content.Liquids;
+import mindustry.content.StatusEffects;
+import mindustry.entities.abilities.EnergyFieldAbility;
+import mindustry.entities.abilities.MoveEffectAbility;
+import mindustry.entities.bullet.LaserBoltBulletType;
+import mindustry.entities.bullet.*;
+import mindustry.entities.effect.MultiEffect;
+import mindustry.entities.effect.WaveEffect;
+import mindustry.entities.part.RegionPart;
+import mindustry.entities.pattern.ShootBarrel;
+import mindustry.entities.pattern.ShootSpread;
+import mindustry.graphics.Layer;
+import mindustry.graphics.Pal;
+import mindustry.type.ammo.ItemAmmoType;
+import mindustry.type.ammo.PowerAmmoType;
+import mindustry.type.unit.ErekirUnitType;
+import mindustry.type.unit.MissileUnitType;
+import mindustry.type.unit.NeoplasmUnitType;
+import mindustry.type.weapons.*;
 import mindustry.entities.part.DrawPart;
+import mindustry.gen.*;
 import mindustry.type.UnitType;
+import mindustry.type.Weapon;
+import mindustry.world.meta.Env;
+
+import static mindustry.Vars.tilesize;
 
 public class DTUnitTypes {
     public static DrawPart.PartProgress time = p -> Time.time;
     public static DrawPart.PartProgress timeSin = p -> Mathf.absin(20f, 1f);
-    /*public static @EntityDef({Unitc.class}) UnitType lancet, talwar, estoc, spear, epee, knife, separate, attract, blend, spaceStationDrone;
-    public static @EntityDef({Unitc.class, Mechc.class}) UnitType verity, truth, solve, essence, celestial;
-    public static @EntityDef({Unitc.class, BuildingTetherc.class, Payloadc.class}) UnitType refabricatingDrone, repairDrone;
-    public static @EntityDef(value = {Unitc.class, InnerWorldc.class}, serialize = false) UnitType physics;*/
-    public static  UnitType lancet, talwar, estoc, spear, epee, knife, separate, attract, blend, spaceStationDrone;
-    public static  UnitType verity, truth, solve, essence, celestial;
-    public static  UnitType refabricatingDrone, repairDrone;
-    public static  UnitType physics;
+    public static @Annotations.EntityDef({Unitc.class}) UnitType lancet, talwar, estoc, spear, epee, knife, separate, attract, blend, spaceStationDrone;
+    public static @Annotations.EntityDef({Unitc.class, Mechc.class}) UnitType verity, truth, solve, essence, celestial;
+    public static @Annotations.EntityDef({Unitc.class, BuildingTetherc.class, Payloadc.class}) UnitType refabricatingDrone, repairDrone;
+    public static @Annotations.EntityDef(value = {Unitc.class, InnerWorldc.class}, serialize = false) UnitType physics;
 
     public static void load() {
         /*
@@ -38,7 +74,7 @@ public class DTUnitTypes {
         //air-Hyper
         //T1 lancet
 
-        /*lancet = EntityRegistry.content("lancet", UnitEntity.class, name -> new OmurloUnitType(name) {{
+        lancet = EntityRegistry.content("lancet", UnitEntity.class, name -> new OmurloUnitType(name) {{
             speed = 3.7f;
             accel = 0.08f;
             drag = 0.04f;
@@ -822,6 +858,6 @@ public class DTUnitTypes {
             health = 70;
             worldWidth = 10;
             worldHeight = 10;
-        }});*/
+        }});
     }
 }

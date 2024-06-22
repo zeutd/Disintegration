@@ -22,6 +22,7 @@ import disintegration.gen.entities.InterplanetaryLaunchPayload;
 import disintegration.gen.entities.InterplanetaryLaunchPayloadc;
 import disintegration.type.SpaceStation;
 import ent.anno.Annotations;
+import mindustry.Vars;
 import mindustry.content.Fx;
 import mindustry.ctype.ContentType;
 import mindustry.entities.Effect;
@@ -44,6 +45,7 @@ import mindustry.world.Tile;
 import mindustry.world.meta.BlockFlag;
 import mindustry.world.meta.Stat;
 import mindustry.world.meta.StatUnit;
+import disintegration.world.blocks.campaign.*;
 
 import static disintegration.DTVars.spaceStations;
 import static mindustry.Vars.*;
@@ -66,6 +68,8 @@ public class InterplanetaryLaunchPad extends Block {
         update = true;
         configurable = true;
         flags = EnumSet.of(BlockFlag.launchPad);
+        config(Integer.class, ((InterplanetaryLaunchPadBuild build, Integer value) -> build.dest = content.planets().get(value)));
+        saveConfig = true;
     }
 
     @Override
@@ -216,6 +220,10 @@ public class InterplanetaryLaunchPad extends Block {
                     table.row();
                 }
             }
+        }
+        @Override
+        public Object config(){
+            return dest.id;
         }
 
         @Override
