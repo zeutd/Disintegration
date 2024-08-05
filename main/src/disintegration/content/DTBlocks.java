@@ -46,6 +46,7 @@ import disintegration.world.blocks.laser.LaserDevice;
 import disintegration.world.blocks.laser.LaserReactor;
 import disintegration.world.blocks.laser.LaserReflector;
 import disintegration.world.blocks.payload.*;
+import disintegration.world.blocks.power.PowerDriver;
 import disintegration.world.blocks.power.RotateSolarGenerator;
 import disintegration.world.blocks.power.SpaceSolarGenerator;
 import disintegration.world.blocks.power.SpreadGenerator;
@@ -56,10 +57,7 @@ import disintegration.world.blocks.production.Quarry;
 import disintegration.world.blocks.units.ReconstructPlatform;
 import disintegration.world.blocks.units.UnitAssemblerConstructModule;
 import disintegration.world.blocks.units.UnitAssemblerInterfaceModule;
-import disintegration.world.draw.DrawAllRotate;
-import disintegration.world.draw.DrawFusion;
-import disintegration.world.draw.DrawLaser;
-import disintegration.world.draw.DrawTurbine;
+import disintegration.world.draw.*;
 import mindustry.Vars;
 import mindustry.content.*;
 import mindustry.entities.Damage;
@@ -91,14 +89,8 @@ import mindustry.world.blocks.environment.OreBlock;
 import mindustry.world.blocks.environment.StaticWall;
 import mindustry.world.blocks.environment.SteamVent;
 import mindustry.world.blocks.liquid.Conduit;
-import mindustry.world.blocks.payloads.Constructor;
-import mindustry.world.blocks.payloads.PayloadDeconstructor;
-import mindustry.world.blocks.payloads.PayloadLoader;
-import mindustry.world.blocks.payloads.PayloadUnloader;
-import mindustry.world.blocks.power.Battery;
-import mindustry.world.blocks.power.ConsumeGenerator;
-import mindustry.world.blocks.power.PowerNode;
-import mindustry.world.blocks.power.ThermalGenerator;
+import mindustry.world.blocks.payloads.*;
+import mindustry.world.blocks.power.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.blocks.storage.CoreBlock;
 import mindustry.world.blocks.units.Reconstructor;
@@ -155,9 +147,10 @@ public class DTBlocks {
     //payload
             payloadAccelerator, payloadDecelerator, magnetizedPayloadRail, magnetizedPayloadRailShort, payloadRedirector, payloadRedirectorPoint, payloadCross, payloadCrossPoint, payloadSeparator, payloadForkLeft, payloadForkRight, payloadForkPoint,
             payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
+            payloadDuct,
     //power
             neoplasmGenerator, excitationReactor, ventTurbine, turbineGenerator, spaceSolarPanel, rotateSolarPanel,
-            ironPowerNode, ironPowerNodeLarge, powerCapacitor,
+            ironPowerNode, ironPowerNodeLarge, powerCapacitor, arcReactor, powerDriver,
     //units
             asemblerConstructModule, assemblerExpandInterfaceModule,
             unitFabricator,
@@ -1137,6 +1130,12 @@ public class DTBlocks {
             consumePower(2f);
             size = 3;
         }};
+        payloadDuct = new PayloadConveyor("payload-duct"){{
+            requirements(Category.units, with(Items.graphite, 50));
+            size = 2;
+            interp = Interp.linear;
+            moveTime = 10f;
+        }};
         //endregion
         //region power
         neoplasmGenerator = new SpreadGenerator("neoplasm-generator"){{
@@ -1286,6 +1285,24 @@ public class DTBlocks {
             size = 2;
             consumePowerBuffered(16000f);
             baseExplosiveness = 1f;
+        }};
+
+        arcReactor = new ConsumeGenerator("arc-reactor"){{
+            requirements(Category.power, with(DTItems.silver, 1));
+            size = 5;
+            ambientSound = Sounds.pulse;
+            ambientSoundVolume = 0.07f;
+            health = 900;
+            powerProduction = 130f;
+            itemDuration = 200f;
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawArcs(), new DrawDefault());
+            consumeItems(with(Items.surgeAlloy, 1, DTItems.magnetismAlloy, 1));
+        }};
+
+        powerDriver = new PowerDriver("power-driver"){{
+            size = 3;
+            requirements(Category.power, ItemStack.with());
+
         }};
         //units
         asemblerConstructModule = new UnitAssemblerConstructModule("assembler-construct-module"){{
@@ -2230,7 +2247,7 @@ public class DTBlocks {
 
             shootType = new LaserBulletType(140){{
                 colors = new Color[]{Pal.lancerLaser.cpy().a(0.4f), Pal.lancerLaser, Color.white};
-                //TODO merge
+
                 chargeEffect = new MultiEffect(Fx.lancerLaserCharge, Fx.lancerLaserChargeBegin);
 
                 buildingDamageMultiplier = 0.25f;
@@ -2945,14 +2962,13 @@ public class DTBlocks {
             runs = b -> Vars.state.rules.teams.get(b.team).cheat = Vars.state.rules.teams.get(b.team).cheat;
             buildCostMultiplier = 0.01f;
         }};
-
+        /*
         shaderTestBlock = new ShaderTestBlock("shader-test-block"){{
             requirements(Category.effect, with(), true);
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
-            shader = DTShaders.blackHole;
-            hasShadow = false;
-        }};
+            shader = DTShaders.arc;
+        }};*/
         dpsBlock = new DPSBlock("dps-block"){{
             requirements(Category.effect, with(), true);
             size = 5;

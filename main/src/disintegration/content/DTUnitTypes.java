@@ -1,9 +1,12 @@
 package disintegration.content;
 
 import arc.graphics.Color;
+import arc.graphics.g2d.Lines;
 import arc.math.Interp;
 import arc.math.Mathf;
+import arc.math.geom.Vec2;
 import arc.util.Time;
+import arc.util.Tmp;
 import disintegration.ai.types.RepairDroneAI;
 import disintegration.entities.abilities.WarpAbility;
 import disintegration.gen.entities.EntityRegistry;
@@ -16,19 +19,24 @@ import disintegration.type.unit.WorldUnitType;
 import ent.anno.Annotations;
 import mindustry.ai.types.AssemblerAI;
 import mindustry.ai.types.BuilderAI;
+import mindustry.ai.types.SuicideAI;
 import mindustry.content.Fx;
 import mindustry.content.Items;
 import mindustry.content.Liquids;
 import mindustry.content.StatusEffects;
+import mindustry.entities.Effect;
 import mindustry.entities.abilities.EnergyFieldAbility;
 import mindustry.entities.abilities.MoveEffectAbility;
 import mindustry.entities.bullet.LaserBoltBulletType;
 import mindustry.entities.bullet.*;
 import mindustry.entities.effect.MultiEffect;
 import mindustry.entities.effect.WaveEffect;
+import mindustry.entities.part.HoverPart;
 import mindustry.entities.part.RegionPart;
 import mindustry.entities.pattern.ShootBarrel;
 import mindustry.entities.pattern.ShootSpread;
+import mindustry.entities.units.WeaponMount;
+import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.type.ammo.ItemAmmoType;
@@ -41,14 +49,21 @@ import mindustry.entities.part.DrawPart;
 import mindustry.gen.*;
 import mindustry.type.UnitType;
 import mindustry.type.Weapon;
+import mindustry.world.meta.BlockFlag;
 import mindustry.world.meta.Env;
 
+import static arc.graphics.g2d.Draw.color;
+import static arc.graphics.g2d.Lines.lineAngle;
+import static arc.graphics.g2d.Lines.stroke;
+import static arc.math.Angles.randLenVectors;
 import static mindustry.Vars.tilesize;
 
 public class DTUnitTypes {
     public static DrawPart.PartProgress time = p -> Time.time;
     public static DrawPart.PartProgress timeSin = p -> Mathf.absin(20f, 1f);
-    public static @Annotations.EntityDef({Unitc.class}) UnitType lancet, talwar, estoc, spear, epee, knife, separate, attract, blend, spaceStationDrone;
+    public static @Annotations.EntityDef({Unitc.class}) UnitType lancet, talwar, estoc, epee, colibri, albatross, crane, eagle, phoenix, separate, attract, blend, spaceStationDrone;
+    public static @Annotations.EntityDef({Unitc.class, Payloadc.class}) UnitType spear;
+    public static @Annotations.EntityDef({Unitc.class, ElevationMovec.class}) UnitType assist, strike, coverture;
     public static @Annotations.EntityDef({Unitc.class, Mechc.class}) UnitType verity, truth, solve, essence, celestial;
     public static @Annotations.EntityDef({Unitc.class, BuildingTetherc.class, Payloadc.class}) UnitType refabricatingDrone, repairDrone;
     public static @Annotations.EntityDef(value = {Unitc.class, InnerWorldc.class}, serialize = false) UnitType physics;
@@ -174,7 +189,7 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-        spear = EntityRegistry.content("spear", UnitEntity.class, name -> new OmurloUnitType(name) {{
+        spear = EntityRegistry.content("spear", PayloadUnit.class, name -> new OmurloUnitType(name) {{
             speed = 1.5f;
             accel = 0.03f;
             drag = 0.06f;
@@ -186,6 +201,7 @@ public class DTUnitTypes {
             engineOffset = 23f;
             faceTarget = true;
             engineSize = 5f;
+            payloadCapacity = 16f * 64f;
             weapons.add(new PointDefenseWeapon("disintegration-point-defense-mount-blue") {{
                 x = 16f;
                 y = -16f;
@@ -384,6 +400,216 @@ public class DTUnitTypes {
             );
         }});
 
+        colibri = EntityRegistry.content("colibri", UnitEntity.class, name -> new OmurloUnitType(name) {{
+            speed = 2.7f;
+            accel = 0.08f;
+            drag = 0.04f;
+            flying = true;
+            health = 70;
+            engineOffset = 0f;
+            targetFlags = new BlockFlag[]{BlockFlag.generator, null};
+            hitSize = 9;
+            circleTarget = true;
+
+            weapons.add(new Weapon(){{
+                reload = 30f;
+                ejectEffect = Fx.none;
+                shootSound = Sounds.malignShoot;
+                bullet = new LaserBulletType(20f){{
+                    colors = new Color[]{Pal2.attackRed.cpy().mul(1f, 1f, 1f, 0.4f), Pal2.attackRed, Color.white};
+                    length = 80f;
+                    hitEffect = Fx.hitLancer;
+                    recoil = -5f;
+                }};
+            }
+                @Override
+                protected void shoot(Unit unit, WeaponMount mount, float shootX, float shootY, float rotation){
+                    super.shoot(unit, mount, shootX, shootY, rotation);
+                    Tmp.v1.trns(rotation, 50f);
+                    unit.x += Tmp.v1.x;
+                    unit.y += Tmp.v1.y;
+                }
+            });
+        }});
+
+        albatross = EntityRegistry.content("albatross", UnitEntity.class, name -> new OmurloUnitType(name) {{
+            aiController = SuicideAI::new;
+            speed = 2.7f;
+            accel = 0.08f;
+            drag = 0.04f;
+            flying = true;
+            health = 70;
+            engineOffset = 5.5f;
+            targetFlags = new BlockFlag[]{BlockFlag.generator, null};
+            hitSize = 9;
+
+            weapons.add(new Weapon(){{
+                reload = 30f;
+                shootCone = 180f;
+                ejectEffect = Fx.none;
+                shootSound = Sounds.plasmaboom;
+                mirror = false;
+                x = shootY = 0f;
+                shootOnDeath = true;
+                bullet = new BulletType(0f, 0f){{
+                    killShooter = true;
+                    instantDisappear = true;
+                    fragBullets = 5;
+                    fragBullet = new LaserBulletType(10f){{
+                        colors = new Color[]{Pal2.attackRed.cpy().mul(1f, 1f, 1f, 0.4f), Pal2.attackRed, Color.white};
+                        length = 100f;
+                        width = 25f;
+                        hitEffect = Fx.hitLancer;
+                    }};
+                }};
+            }});
+        }});
+
+        crane = EntityRegistry.content("crane", UnitEntity.class, name -> new OmurloUnitType(name) {{
+            speed = 2f;
+            accel = 0.08f;
+            drag = 0.04f;
+            armor = 2;
+            flying = true;
+            health = 600;
+            engineOffset = 10f;
+            engineSize = 3f;
+            hitSize = 15;
+            faceTarget = false;
+            circleTarget = true;
+
+            weapons.add(new Weapon() {{
+                minShootVelocity = 0.75f;
+                mirror = false;
+                shootY = 0f;
+                x = 0f;
+                reload = 60f;
+                shootCone = 180f;
+                ejectEffect = Fx.none;
+                inaccuracy = 360f;
+                ignoreRotation = true;
+                shootSound = Sounds.plasmadrop;
+                shoot.shots = 5;
+                bullet = new BombBulletType(120f, 45f) {{
+                    speed = 1f;
+                    velocityRnd = 1f;
+                    drag = 0.1f;
+                    width = 10f;
+                    height = 12f;
+                    hitEffect = Fx.flakExplosion;
+                    shootEffect = Fx.none;
+                    smokeEffect = Fx.none;
+                    backColor = Pal2.attackRed;
+                    hitSound = Sounds.plasmaboom;
+
+                    status = StatusEffects.blasted;
+                    statusDuration = 60f;
+                }};
+            }});
+        }});
+
+        eagle = EntityRegistry.content("eagle", UnitEntity.class, name -> new OmurloUnitType(name) {{
+            flying = true;
+            drag = 0.06f;
+            speed = 1.1f;
+            rotateSpeed = 3.2f;
+            accel = 0.1f;
+            health = 6000f;
+            armor = 4f;
+            hitSize = 36f;
+            engineOffset = 18f;
+            engineSize = 3f;
+
+            weapons.add(new Weapon() {{
+                mirror = false;
+                shootY = 0f;
+                x = 0f;
+                shoot.firstShotDelay = 40;
+                shootStatus = StatusEffects.unmoving;
+                shootStatusDuration = 30f;
+                reload = 180f;
+                ejectEffect = Fx.none;
+                chargeSound = Sounds.lasercharge2;
+                shootSound = Sounds.pulseBlast;
+                bullet = new BasicBulletType(10f, 50f) {{
+                    sprite = "disintegration-dart";
+                    width = 18f;
+                    height = 6f;
+                    hitEffect = Fx.hitBeam;
+                    pierce = true;
+                    pierceCap = 6;
+                    shootEffect = Fx.none;
+                    smokeEffect = Fx.none;
+                    recoil = 10f;
+                    chargeEffect = new Effect(40, e -> {
+                        color(Pal2.attackRed);
+                        stroke(e.finpow() * 1.5f);
+
+                        randLenVectors(e.id, 10, e.foutpowdown() * 17f, (x, y) -> {
+                            float ang = Mathf.angle(x, y);
+                            lineAngle(e.x + x, e.y + y, ang, 5f * e.finpow());
+                        });
+                    });
+                    frontColor = Pal2.attackRed;
+                    backColor = Pal2.attackRed;
+                    hitSound = Sounds.plasmaboom;
+                    despawnHit = true;
+                    trailColor = Pal2.attackRed;
+                    trailWidth = 2f;
+                    trailLength = 20;
+                }};
+            }});
+        }});
+
+        phoenix = EntityRegistry.content("phoenix", UnitEntity.class, name -> new OmurloUnitType(name) {{
+            lowAltitude = true;
+            flying = true;
+            drag = 0.06f;
+            speed = 1.1f;
+            rotateSpeed = 3.2f;
+            accel = 0.1f;
+            health = 6000f;
+            armor = 4f;
+            hitSize = 36f;
+            engineOffset = 18f;
+            engineSize = 3f;
+
+            weapons.add(new Weapon() {{
+                shootStatusDuration = 60f * 2f;
+                shootStatus = StatusEffects.unmoving;
+                parentizeEffects = true;
+                shootY = 0f;
+                x = 8f;
+                reload = 360f;
+                shoot.firstShotDelay = DTFx.redLaserCharge.lifetime;
+                ejectEffect = Fx.none;
+                chargeSound = Sounds.lasercharge2;
+                shootSound = Sounds.pulseBlast;
+                bullet = new LaserBulletType(){{
+                    length = 460f;
+                    damage = 560f;
+                    width = 75f;
+                    recoil = 1f;
+                    lifetime = 65f;
+
+                    lightningSpacing = 35f;
+                    lightningLength = 5;
+                    lightningDelay = 1.1f;
+                    lightningLengthRand = 15;
+                    lightningDamage = 50;
+                    lightningAngleRand = 40f;
+                    largeHit = true;
+                    lightColor = lightningColor = Pal2.attackRed;
+
+                    chargeEffect = DTFx.redLaserCharge;
+
+                    sideAngle = 15f;
+                    sideWidth = 0f;
+                    sideLength = 0f;
+                    colors = new Color[]{Pal2.attackRed.cpy().a(0.4f), Pal2.attackRed, Color.white};
+                }};
+            }});
+        }});
         verity = EntityRegistry.content("verity", MechUnit.class, name -> new OmurloUnitType(name) {{
             canBoost = true;
             boostMultiplier = 1.6f;
@@ -597,6 +823,162 @@ public class DTUnitTypes {
                         }};
                     }}
             );
+        }});
+        assist = EntityRegistry.content("assist", ElevationMoveUnit.class, name -> new OmurloUnitType(name){{
+            hovering = true;
+            shadowElevation = 0.1f;
+
+            drag = 0.07f;
+            speed = 1.8f;
+            rotateSpeed = 4f;
+
+            accel = 0.09f;
+            health = 600f;
+            armor = 1f;
+            hitSize = 11f;
+            engineOffset = 7f;
+            engineSize = 2f;
+            itemCapacity = 0;
+            useEngineElevation = false;
+            researchCostMultiplier = 0f;
+
+            abilities.add(new MoveEffectAbility(0f, -7f, Pal2.attackRed, Fx.missileTrailShort, 4f){{
+                teamColor = true;
+            }});
+
+            for(float f : new float[]{-3f, 3f}){
+                parts.add(new HoverPart(){{
+                    x = 3.9f;
+                    y = f;
+                    mirror = true;
+                    radius = 6f;
+                    phase = 90f;
+                    stroke = 2f;
+                    layerOffset = -0.001f;
+                    color = Pal2.attackRed;
+                }});
+            }
+
+            weapons.add(new Weapon("disintegration-assist-weapon"){{
+                rotateSpeed = 6f;
+                y = 0f;
+                x = 0f;
+                top = true;
+                mirror = false;
+                reload = 40f;
+                rotate = true;
+
+                bullet = new BasicBulletType(4f, 40){{
+                    sprite = "missile-large";
+                    smokeEffect = Fx.shootBigSmoke;
+                    shootEffect = Fx.shootBigColor;
+                    width = 5f;
+                    height = 7f;
+                    lifetime = 40f;
+                    hitSize = 4f;
+                    hitColor = backColor = trailColor = Pal2.attackRed;
+                    frontColor = Color.white;
+                    trailWidth = 1.7f;
+                    trailLength = 5;
+                    despawnEffect = hitEffect = Fx.hitBulletColor;
+                }};
+            }});
+        }});
+
+        strike = EntityRegistry.content("strike", ElevationMoveUnit.class, name -> new OmurloUnitType(name){{
+            hovering = true;
+            shadowElevation = 0.1f;
+
+            drag = 0.07f;
+            speed = 1.8f;
+            rotateSpeed = 4f;
+
+            accel = 0.09f;
+            health = 600f;
+            armor = 1f;
+            hitSize = 11f;
+            engineOffset = 9f;
+            engineSize = 2f;
+            itemCapacity = 0;
+            useEngineElevation = false;
+            researchCostMultiplier = 0f;
+
+            abilities.add(new MoveEffectAbility(0f, -9f, Pal2.attackRed, Fx.missileTrailShort, 4f){{
+                teamColor = true;
+            }});
+
+            for(float f : new float[]{-8f, 8f}){
+                parts.add(new HoverPart(){{
+                    x = 8f;
+                    y = f;
+                    mirror = true;
+                    radius = 10f;
+                    phase = 90f;
+                    stroke = 2f;
+                    layerOffset = -0.001f;
+                    color = Pal2.attackRed;
+                }});
+            }
+
+            weapons.add(new Weapon("disintegration-strike-weapon"){{
+                range = 80f;
+                rotateSpeed = 6f;
+                y = 0f;
+                x = 0f;
+                shootY = 0f;
+                top = true;
+                mirror = false;
+                reload = 30f;
+                rotate = true;
+
+                bullet = new RailBulletType(){{
+                    length = 160f;
+                    damage = 48f;
+                    hitColor = Pal2.attackRed;
+                    hitEffect = endEffect = Fx.hitBulletColor;
+                    pierceDamageFactor = 0.8f;
+
+                    smokeEffect = Fx.colorSpark;
+
+                    endEffect = new Effect(14f, e -> {
+                        color(e.color);
+                        Drawf.tri(e.x, e.y, e.fout() * 1.5f, 5f, e.rotation);
+                    });
+
+                    shootEffect = new Effect(10, e -> {
+                        color(e.color);
+                        float w = 1.2f + 7 * e.fout();
+
+                        Drawf.tri(e.x, e.y, w, 30f * e.fout(), e.rotation);
+                        color(e.color);
+
+                        for(int i : Mathf.signs){
+                            Drawf.tri(e.x, e.y, w * 0.9f, 18f * e.fout(), e.rotation + i * 90f);
+                        }
+
+                        Drawf.tri(e.x, e.y, w, 4f * e.fout(), e.rotation + 180f);
+                    });
+
+                    lineEffect = new Effect(20f, e -> {
+                        if(!(e.data instanceof Vec2 v)) return;
+
+                        color(e.color);
+                        stroke(e.fout() * 0.9f + 0.6f);
+
+                        Fx.rand.setSeed(e.id);
+                        for(int i = 0; i < 7; i++){
+                            Fx.v.trns(e.rotation, Fx.rand.random(8f, v.dst(e.x, e.y) - 8f));
+                            Lines.lineAngleCenter(e.x + Fx.v.x, e.y + Fx.v.y, e.rotation + e.finpow(), e.foutpowdown() * 20f * Fx.rand.random(0.5f, 1f) + 0.3f);
+                        }
+
+                        e.scaled(14f, b -> {
+                            stroke(b.fout() * 1.5f);
+                            color(e.color);
+                            Lines.line(e.x, e.y, v.x, v.y);
+                        });
+                    });
+                }};
+            }});
         }});
 
         separate = EntityRegistry.content("separate", UnitEntity.class, name -> new OmurloUnitType(name) {{

@@ -5,7 +5,6 @@ uniform sampler2D u_texture;
 
 uniform vec2 u_campos;
 uniform vec2 u_resolution;
-uniform vec2 u_pos;
 uniform vec4 u_blackholes[MAX_BLACKHOLES];
 uniform int u_blackhole_count;
 

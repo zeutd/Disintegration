@@ -1,6 +1,7 @@
 package disintegration.content;
 
 import arc.graphics.Color;
+import mindustry.content.Fx;
 import mindustry.entities.bullet.BasicBulletType;
 import mindustry.entities.bullet.BulletType;
 import mindustry.entities.bullet.LaserBulletType;
@@ -27,6 +28,7 @@ public class DTBullets {
             pierceCap = 8;
             length = 80;
             colors = new Color[]{Color.valueOf("9a9dbf").a(0.4f), Color.valueOf("9a9dbf"), Color.valueOf("ededed")};
+            hitEffect = Fx.hitLancer;
         }};
     }
 }
