@@ -352,13 +352,34 @@ public class DTFx {
 
         randLenVectors(e.id, 20, 40f * e.fout(), (x, y) -> {
             Fill.circle(e.x + x, e.y + y, e.fin() * 5f);
-            Drawf.light(e.x + x, e.y + y, e.fin() * 15f, Pal.heal, 0.7f);
+            Drawf.light(e.x + x, e.y + y, e.fin() * 15f, Pal2.attackRed, 0.7f);
         });
 
         color();
 
         Fill.circle(e.x, e.y, e.fin() * 10);
-        Drawf.light(e.x, e.y, e.fin() * 20f, Pal.heal, 0.7f);
-    }).followParent(true).rotWithParent(true)
+        Drawf.light(e.x, e.y, e.fin() * 20f, Pal2.attackRed, 0.7f);
+    }).followParent(true).rotWithParent(true),
+    healYellow = new Effect(11, e -> {
+        color(Pal.accent);
+        stroke(e.fout() * 2f);
+        Lines.circle(e.x, e.y, 2f + e.finpow() * 7f);
+    }),
+    healWaveDynamicYellow = new Effect(22, e -> {
+        color(Pal.accent);
+        stroke(e.fout() * 2f);
+        Lines.circle(e.x, e.y, 4f + e.finpow() * e.rotation);
+    }),
+    shootOrb = new Effect(10, e -> {
+        color(Pal.accent, e.fout());
+        stroke(e.fout());
+        Lines.circle(e.x, e.y, 6f);
+        Fill.circle(e.x, e.y, 3f);
+    }),
+            trailYellow = new Effect(10, e -> {
+                color(Pal.accent, e.fout());
+                stroke(e.fout());
+                lineAngle(e.x, e.y, e.rotation,10);
+            })
             ;
 }

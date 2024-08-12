@@ -179,6 +179,8 @@ public class DTBlocks {
     //debug
             sandboxBlock, dpsBlock, editorBlock, cheatBlock, shaderTestBlock, blackHoleBlock, blackHoleClearBlock
             ;
+    public static Seq<Block> spaceStationBuilders = new Seq<>();
+    public static Seq<Block> spaceStationBreakers = new Seq<>();
     public static void load() {
         Blocks.ice.mapColor.add(0.1f, 0.1f, 0.2f);
         Blocks.snow.mapColor.add(0.1f, 0.1f, 0.2f);
@@ -485,7 +487,8 @@ public class DTBlocks {
             @Override
             public boolean canReplace(Block other){
                 return false;
-            }};
+            }
+        };
         //endregion
         //region heat
         heatConduit = new HeatConduit("heat-conduit"){{
@@ -611,8 +614,8 @@ public class DTBlocks {
             hasLiquids = true;
             outputsLiquid = true;
             envEnabled = Env.any;
-            ambientSound = DTSounds.boiler;
-            ambientSoundVolume = 0.01f;
+            //ambientSound = DTSounds.boiler;
+            //ambientSoundVolume = 0.01f;
             drawer = new DrawMulti(
                     new DrawRegion("-bottom"),
                     new DrawLiquidTile(Liquids.water),
@@ -2316,6 +2319,7 @@ public class DTBlocks {
                 float rad = 70;
                 damage = 60;
                 splashDamage = 70f;
+                radius = rad;
                 splashDamageRadius = rad;
                 clipSize = 250f;
                 lifetime = 60f;
@@ -2879,8 +2883,8 @@ public class DTBlocks {
 
         for (int i = 1; i <= 9; i+=2) {
             int finalI = i;
-            new FloorBuilder("space-station-builder-" + finalI){{
-                requirements(Category.effect, with(DTItems.spaceStationPanel, 20 + 2 * finalI * finalI));
+            Block builder = new FloorBuilder("space-station-builder-" + finalI){{
+                requirements(Category.effect, with(DTItems.spaceStationPanel, 20 + DTVars.spaceStationBaseRequirement * finalI * finalI));
                 size = 1;
                 range = finalI;
                 rotate = true;
@@ -2890,11 +2894,12 @@ public class DTBlocks {
                 buildCostMultiplier = 0.05f;
                 whiteList = Seq.with(Blocks.empty.asFloor());
             }};
+            spaceStationBuilders.add(builder);
         }
 
         for (int i = 1; i <= 9; i+=2) {
             int finalI = i;
-            new FloorBuilder("space-station-breaker-" + finalI){{
+            Block breaker = new FloorBuilder("space-station-breaker-" + finalI){{
                 requirements(Category.effect, with(DTItems.spaceStationPanel, 20));
                 size = 1;
                 range = finalI;
@@ -2903,6 +2908,7 @@ public class DTBlocks {
                 returnItem = new ItemStack(DTItems.spaceStationPanel, DTVars.spaceStationBaseRequirement);
                 whiteList = Seq.with(spaceStationFloor.asFloor());
             }};
+            spaceStationBreakers.add(breaker);
         }
         //endregion
         //region campaign

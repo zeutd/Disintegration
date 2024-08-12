@@ -110,5 +110,6 @@ public class DisintegrationJavaMod extends Mod{
         DTSectorPresets.load();
         OmurloTechTree.load();
         VanillaTechTree.load();
+        SpaceStationTechTree.load();
     }
 }

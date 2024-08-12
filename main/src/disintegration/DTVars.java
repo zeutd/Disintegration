@@ -20,7 +20,7 @@ public class DTVars {
     public static String modName = "disintegration";
     public static int spaceStationRequirement = 10000;
     public static int spaceStationBaseRequirement = 2;
-    public static boolean debugMode = true;
+    public static boolean debugMode = false;
 
     public static DTLoadRenderer loadRenderer = new DTLoadRenderer();
     public static GenericRenderer3D renderer3D;

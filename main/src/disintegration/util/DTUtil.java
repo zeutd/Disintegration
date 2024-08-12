@@ -78,7 +78,9 @@ public class DTUtil {
         tree.each(node -> {
             if (node.content == parent) {
                 TechNode newNode = new TechNode(node, content, content.researchRequirements());
+                return;
             }
         });
+        TechNode newNode = new TechNode(tree, content, content.researchRequirements());
     }
 }
