@@ -56,7 +56,6 @@ public class CosiuazPlanetGenerator extends PlanetGenerator {
 
         //more obvious color
         if (block == Blocks.crystallineStone) block = Blocks.crystalFloor;
-        //TODO this might be too green
         //if(block == Blocks.beryllicStone) block = Blocks.arkyicStone;
 
         return Tmp.c1.set(block.mapColor).a(1f - block.albedo);
@@ -64,7 +63,6 @@ public class CosiuazPlanetGenerator extends PlanetGenerator {
 
     @Override
     public float getSizeScl() {
-        //TODO should sectors be 600, or 500 blocks?
         return 2000 * 1.07f * 6f / 5f;
     }
 

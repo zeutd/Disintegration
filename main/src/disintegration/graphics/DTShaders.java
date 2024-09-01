@@ -7,6 +7,7 @@ import arc.graphics.Blending;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.gl.FrameBuffer;
+import arc.graphics.gl.GLFrameBuffer;
 import arc.graphics.gl.Shader;
 import arc.math.geom.Vec2;
 import arc.struct.FloatSeq;

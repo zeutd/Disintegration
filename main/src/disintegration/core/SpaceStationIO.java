@@ -26,7 +26,7 @@ public class SpaceStationIO implements ApplicationListener {
         for (String s : DTVars.spaceStationFi.readString().split("/")) {
             Planet parent = Vars.content.planet(s);
             if (parent != null) {
-                String whiteSpace = Objects.equals(Core.bundle.get("spacestationwhitespace"), "true") ? " " : "";
+                String whiteSpace = Objects.equals(Core.bundle.get("whitespacebetween"), "true") ? " " : "";
                 SpaceStation spaceStation = new SpaceStation(parent.name + "-space-station", parent);
                 spaceStation.localizedName = parent.localizedName + whiteSpace + Core.bundle.get("spacestation");
                 DTVars.spaceStations.add(spaceStation);

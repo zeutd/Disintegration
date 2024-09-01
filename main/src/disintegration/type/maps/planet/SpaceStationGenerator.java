@@ -48,6 +48,6 @@ public class SpaceStationGenerator extends BlankPlanetGenerator {
 
     @Override
     public int getSectorSize(Sector sector) {
-        return 800;
+        return 600;
     }
 }

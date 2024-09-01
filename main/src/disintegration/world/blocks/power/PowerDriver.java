@@ -44,8 +44,13 @@ public class PowerDriver extends Block {
         sync = true;
 
         //point2 is relative
-        config(Point2.class, (PowerDriverBuild tile, Point2 point) -> tile.link = Point2.pack(point.x + tile.tileX(), point.y + tile.tileY()));
-        config(Integer.class, (PowerDriverBuild tile, Integer point) -> tile.link = point);
+        config(Point2.class, (PowerDriverBuild tile, Point2 point) -> {
+            tile.link = Point2.pack(point.x + tile.tileX(), point.y + tile.tileY());
+
+        });
+        config(Integer.class, (PowerDriverBuild tile, Integer point) -> {
+            tile.link = point;
+        });
     }
 
     @Override
@@ -53,6 +58,11 @@ public class PowerDriver extends Block {
         super.load();
         baseRegion = Core.atlas.find(name + "-base");
         rayRegion = Core.atlas.find(name + "-ray");
+    }
+
+    @Override
+    public TextureRegion[] icons(){
+        return new TextureRegion[]{baseRegion, region};
     }
 
     public class PowerDriverBuild extends Building{
@@ -84,6 +94,7 @@ public class PowerDriver extends Block {
 
                 power.graph.addGraph(other.power.graph);
             }else{
+                other.power.graph.remove(this);
                 power.links.removeValue(other.pos());
                 other.power.links.removeValue(pos());
                 power.graph.remove(other);

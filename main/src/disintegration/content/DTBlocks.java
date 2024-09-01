@@ -21,7 +21,6 @@ import disintegration.entities.bullet.BlockBulletType;
 import disintegration.entities.bullet.ConnectBulletType;
 import disintegration.entities.bullet.RandomSpreadBulletType;
 import disintegration.entities.bullet.WarpBulletType;
-import disintegration.graphics.DTShaders;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.campaign.InterplanetaryLaunchPad;
 import disintegration.world.blocks.campaign.OrbitalLaunchPad;
@@ -30,7 +29,6 @@ import disintegration.world.blocks.campaign.SpaceStationLaunchPad;
 import disintegration.world.blocks.debug.BlackHoleBlock;
 import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
-import disintegration.world.blocks.debug.ShaderTestBlock;
 import disintegration.world.blocks.defence.ContinuousMendProjector;
 import disintegration.world.blocks.defence.RepairDroneStation;
 import disintegration.world.blocks.defence.ShardWall;
@@ -46,14 +44,8 @@ import disintegration.world.blocks.laser.LaserDevice;
 import disintegration.world.blocks.laser.LaserReactor;
 import disintegration.world.blocks.laser.LaserReflector;
 import disintegration.world.blocks.payload.*;
-import disintegration.world.blocks.power.PowerDriver;
-import disintegration.world.blocks.power.RotateSolarGenerator;
-import disintegration.world.blocks.power.SpaceSolarGenerator;
-import disintegration.world.blocks.power.SpreadGenerator;
-import disintegration.world.blocks.production.CatalyzeCrafter;
-import disintegration.world.blocks.production.PortableDrill;
-import disintegration.world.blocks.production.PortableDrillUnloadPoint;
-import disintegration.world.blocks.production.Quarry;
+import disintegration.world.blocks.power.*;
+import disintegration.world.blocks.production.*;
 import disintegration.world.blocks.units.ReconstructPlatform;
 import disintegration.world.blocks.units.UnitAssemblerConstructModule;
 import disintegration.world.blocks.units.UnitAssemblerInterfaceModule;
@@ -79,6 +71,7 @@ import mindustry.graphics.Pal;
 import mindustry.type.*;
 import mindustry.type.unit.MissileUnitType;
 import mindustry.world.Block;
+import mindustry.world.blocks.defense.ForceProjector;
 import mindustry.world.blocks.defense.ShieldWall;
 import mindustry.world.blocks.defense.ShockMine;
 import mindustry.world.blocks.defense.Wall;
@@ -104,6 +97,8 @@ import mindustry.world.meta.Attribute;
 import mindustry.world.meta.BlockGroup;
 import mindustry.world.meta.BuildVisibility;
 import mindustry.world.meta.Env;
+import multicraft.IOEntry;
+import multicraft.Recipe;
 
 import static arc.graphics.g2d.Draw.color;
 import static arc.graphics.g2d.Lines.stroke;
@@ -127,6 +122,7 @@ public class DTBlocks {
             conductionAlloyWall, conductionAlloyWallLarge,
             nitrideWall, nitrideWallLarge,
             projectorWall,
+            circleForceProjector,
     //transport
             ironConveyor, alternateOverflowGate, ironSorter, invertedIronSorter, ironRouter, ironJunction, ironItemBridge,
             iridiumConveyor,
@@ -141,15 +137,16 @@ public class DTBlocks {
             laserDevice, laserReflector, laserRouter, laserSource,
     //factory
             nitrideSynthesizer,
-            boiler, airCompressor, electrolyser, siliconRefiner, graphiteCompressor, steelSmelter, steelBlastFurnace, conductionAlloySmelter, magnetismAlloySmelter, surgeFurnace,
+            solarBoiler, boiler, airCompressor, electrolyser, siliconRefiner, graphiteCompressor, steelSmelter, steelBlastFurnace, conductionAlloySmelter, magnetismAlloySmelter, surgeFurnace,
             algalPond, blastCompoundMixer,
             centrifuge, spaceStationPanelCompressor, spaceStationPanelCompressorLarge,
+            liquidCellPacker, liquidCellUnpacker,
     //payload
             payloadAccelerator, payloadDecelerator, magnetizedPayloadRail, magnetizedPayloadRailShort, payloadRedirector, payloadRedirectorPoint, payloadCross, payloadCrossPoint, payloadSeparator, payloadForkLeft, payloadForkRight, payloadForkPoint,
             payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
             payloadDuct,
     //power
-            neoplasmGenerator, excitationReactor, ventTurbine, turbineGenerator, spaceSolarPanel, rotateSolarPanel,
+            neoplasmGenerator, excitationReactor, ventTurbine, turbineGenerator, spaceSolarPanel, rotateSolarPanel, solarMirror,
             ironPowerNode, ironPowerNodeLarge, powerCapacitor, arcReactor, powerDriver,
     //units
             asemblerConstructModule, assemblerExpandInterfaceModule,
@@ -163,7 +160,7 @@ public class DTBlocks {
             awake, twist,
             shard, aerolite, regeneration, sparkover, focus, axe, ambush,
             voltage,
-            torch,
+            torch, holy,
             condense, blaze,
         //test
             sabre,
@@ -202,6 +199,8 @@ public class DTBlocks {
         Blocks.slagCentrifuge.buildVisibility = BuildVisibility.shown;
         Blocks.slagCentrifuge.consumeLiquid(Liquids.slag, 30f / 60f);
         ((GenericCrafter) Blocks.slagCentrifuge).outputLiquid = new LiquidStack(Liquids.gallium, 5f / 60f);
+
+        Blocks.unloader.requirements(Category.effect, with(Items.lead, 25, Items.silicon, 30));
         //region environment
         greenIce = new Floor("green-ice"){{
             dragMultiplier = 0.35f;
@@ -356,6 +355,21 @@ public class DTBlocks {
             size = 2;
         }};
 
+        circleForceProjector = new ForceProjector("circle-force-projector"){{
+            requirements(Category.effect, with(Items.lead, 100, DTItems.conductionAlloy, 125, Items.silicon, 125, DTItems.iron, 50));
+            size = 4;
+            phaseRadiusBoost = 80f;
+            radius = 132f;
+            shieldHealth = 1000f;
+            cooldownNormal = 1.5f;
+            cooldownLiquid = 1.2f;
+            cooldownBrokenBase = 0.35f;
+            sides = 20;
+
+            itemConsumer = consumeItem(DTItems.magnetismAlloy).boost();
+            consumePower(4f);
+        }};
+
         nitrideWall = new ShardWall("nitride-wall"){{
             shardChance = 0.2f;
             size = 1;
@@ -473,6 +487,7 @@ public class DTBlocks {
         spaceStationCore = new CoreBlock("space-station-core"){{
             requirements(Category.effect, BuildVisibility.editorOnly, with(DTItems.iron, 1300));
             alwaysUnlocked = true;
+            requiresCoreZone = true;
 
             isFirstTier = true;
             unitType = DTUnitTypes.spaceStationDrone;
@@ -480,15 +495,8 @@ public class DTBlocks {
             itemCapacity = 4000;
             size = 3;
 
-            generateIcons = false;
-
             unitCapModifier = 25;
-        }
-            @Override
-            public boolean canReplace(Block other){
-                return false;
-            }
-        };
+        }};
         //endregion
         //region heat
         heatConduit = new HeatConduit("heat-conduit"){{
@@ -634,6 +642,25 @@ public class DTBlocks {
             craftTime = 120;
 
             consumeLiquid(Liquids.water, 12f / 60f);
+        }};
+
+        solarBoiler = new SolarCrafter("solar-boiler"){{
+            requirements(Category.crafting, with(DTItems.iron, 65, Items.silicon, 40, Items.graphite, 60));
+            outputLiquid = new LiquidStack(DTLiquids.steam, 108f / 60f);
+            size = 5;
+            maxEfficiency = 3f;
+            hasLiquids = true;
+            outputsLiquid = true;
+            drawer = new DrawMulti(
+                    new DrawRegion("-bottom"),
+                    new DrawLiquidTile(DTLiquids.steam){},
+                    new DrawDefault(),
+                    new DrawRegion("-shadow"),
+                    new DrawGlowRegion("-glow")
+            );
+            liquidCapacity = 500f;
+
+            consumeLiquid(Liquids.water, 108f / 60f);
         }};
 
         airCompressor = new GenericCrafter("air-compressor"){{
@@ -1253,7 +1280,12 @@ public class DTBlocks {
                     new DrawLiquidTile(DTLiquids.steam),
                     new DrawAllRotate(0)
             );
-        }};
+        }
+            @Override
+            public boolean rotatedOutput(int x, int y) {
+                return false;
+            }
+        };
         spaceSolarPanel = new SpaceSolarGenerator("space-solar-panel"){{
             requirements(Category.power, with(DTItems.spaceStationPanel, 60));
             powerProduction = 5f;
@@ -1268,6 +1300,10 @@ public class DTBlocks {
             requirements(Category.power, with(DTItems.iron, 150,Items.silicon, 140, Items.graphite, 100));
             size = 3;
             powerProduction = 1.4f;
+        }};
+        solarMirror = new SolarMirror("solar-mirror"){{
+            requirements(Category.power, with(DTItems.iron, 150, Items.metaglass, 120, DTItems.silver, 90));
+            size = 3;
         }};
 
         ironPowerNode = new PowerNode("iron-power-node"){{
@@ -1307,7 +1343,7 @@ public class DTBlocks {
             requirements(Category.power, ItemStack.with());
 
         }};
-        //units
+        //region units
         asemblerConstructModule = new UnitAssemblerConstructModule("assembler-construct-module"){{
             size = 3;
             squareSprite = false;
@@ -1329,7 +1365,10 @@ public class DTBlocks {
             requirements(Category.units, with(DTItems.iron, 60, Items.lead, 70));
             plans = Seq.with(
                     new UnitPlan(DTUnitTypes.lancet, 60f * 15, with(Items.silicon, 15)),
-                    new UnitPlan(DTUnitTypes.verity, 60f * 35, with(Items.silicon, 30, Items.lead, 15))
+                    new UnitPlan(DTUnitTypes.verity, 60f * 15, with(Items.silicon, 20, Items.lead, 15)),
+                    new UnitPlan(DTUnitTypes.lancet, 60f * 25, with(Items.silicon, 20)),
+                    new UnitPlan(DTUnitTypes.verity, 60f * 25, with(Items.silicon, 25, DTItems.iron, 15)),
+                    new UnitPlan(DTUnitTypes.lancet, 60f * 35, with(Items.silicon, 30))
             );
             size = 3;
             consumePower(1.2f);
@@ -1346,7 +1385,10 @@ public class DTBlocks {
 
             upgrades.addAll(
                     new UnitType[]{DTUnitTypes.lancet, DTUnitTypes.talwar},
-                    new UnitType[]{DTUnitTypes.verity, DTUnitTypes.truth}
+                    new UnitType[]{DTUnitTypes.verity, DTUnitTypes.truth},
+                    new UnitType[]{DTUnitTypes.colibri, DTUnitTypes.albatross},
+                    new UnitType[]{DTUnitTypes.assist, DTUnitTypes.strike},
+                    new UnitType[]{DTUnitTypes.converge, DTUnitTypes.cover}
             );
         }};
 
@@ -1361,7 +1403,10 @@ public class DTBlocks {
 
             upgrades.addAll(
                     new UnitType[]{DTUnitTypes.talwar, DTUnitTypes.estoc},
-                    new UnitType[]{DTUnitTypes.truth, DTUnitTypes.solve}
+                    new UnitType[]{DTUnitTypes.truth, DTUnitTypes.solve},
+                    new UnitType[]{DTUnitTypes.albatross, DTUnitTypes.crane},
+                    new UnitType[]{DTUnitTypes.strike, DTUnitTypes.coverture},
+                    new UnitType[]{DTUnitTypes.cover, DTUnitTypes.protect}
             );
         }};
 
@@ -1385,7 +1430,10 @@ public class DTBlocks {
 
             upgrades.addAll(
                     new UnitType[]{DTUnitTypes.estoc, DTUnitTypes.spear},
-                    new UnitType[]{DTUnitTypes.solve, DTUnitTypes.essence}
+                    new UnitType[]{DTUnitTypes.solve, DTUnitTypes.essence},
+                    new UnitType[]{DTUnitTypes.crane, DTUnitTypes.eagle},
+                    new UnitType[]{DTUnitTypes.coverture, DTUnitTypes.attack},
+                    new UnitType[]{DTUnitTypes.protect, DTUnitTypes.defend}
             );
         }};
 
@@ -1409,7 +1457,10 @@ public class DTBlocks {
 
             upgrades.addAll(
                     new UnitType[]{DTUnitTypes.spear, DTUnitTypes.epee},
-                    new UnitType[]{DTUnitTypes.essence, DTUnitTypes.celestial}
+                    new UnitType[]{DTUnitTypes.essence, DTUnitTypes.axiom},
+                    new UnitType[]{DTUnitTypes.eagle, DTUnitTypes.phoenix},
+                    new UnitType[]{DTUnitTypes.attack, DTUnitTypes.devastate},
+                    new UnitType[]{DTUnitTypes.defend, DTUnitTypes.harbour}
             );
         }};
 
@@ -1549,9 +1600,8 @@ public class DTBlocks {
         fracture = new ItemTurret("fracture"){{
             requirements(Category.turret, with(Items.surgeAlloy, 200, Items.oxide, 400, Items.silicon, 400, Items.beryllium, 500));
 
-            ammo(Items.oxide ,new BasicBulletType(){{
+            ammo(Items.oxide ,new BasicBulletType(60, 5){{
                 lightOpacity = 0.7f;
-                damage = 60;
                 hitColor = lightColor = Pal.berylShot;
                 lightRadius = 70f;
                 clipSize = 250f;
@@ -1563,7 +1613,6 @@ public class DTBlocks {
                 frontColor = Color.white;
                 width = height = 12f;
                 shrinkY = 0f;
-                speed = 5f;
                 trailLength = 20;
                 trailWidth = 6f;
                 trailColor = Pal.berylShot;
@@ -1707,7 +1756,7 @@ public class DTBlocks {
             limitRange(-5f);
         }};
         dissolve = new ContinuousLiquidTurret("dissolve"){{
-            requirements(Category.turret, with(DTItems.nitride, 200, Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
+            requirements(Category.turret, with(DTItems.nitride, 200, Items.graphite, 70, Items.silicon, 120, Items.beryllium, 90, Items.surgeAlloy, 100));
 
             reload = 50f;
             shake = 5f;
@@ -1890,7 +1939,7 @@ public class DTBlocks {
         }};
 
          blade = new ItemTurret("blade") {{
-            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
+            requirements(Category.turret, with(Items.silicon, 40, Items.beryllium, 120, Items.graphite, 50));
 
             reload = 240f;
             shake = 4f;
@@ -1985,7 +2034,7 @@ public class DTBlocks {
         }};
 
         encourage = new ItemTurret("encourage"){{
-            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
+            requirements(Category.turret, with(Items.silicon, 180, Items.beryllium, 190, Items.tungsten, 70));
 
             reload = 300f;
             shake = 5f;
@@ -2077,7 +2126,7 @@ public class DTBlocks {
         }};
 
         aegis = new PowerTurret("aegis"){{
-            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, Items.beryllium, 90));
+            requirements(Category.turret, with(Items.silicon, 70, Items.beryllium, 90));
 
             reload = 60f;
             shake = 4f;
@@ -2176,6 +2225,7 @@ public class DTBlocks {
             targetAir = true;
             targetGround = false;
             rotateSpeed = 3;
+            researchCostMultiplier = 0.1f;
             consumePower(1.2f);
             drawer = new DrawTurret("framed-");
             reload = 30f;
@@ -2207,6 +2257,7 @@ public class DTBlocks {
             targetGround = true;
             targetHealing = true;
             rotateSpeed = 5;
+            researchCostMultiplier = 0.5f;
             consumePower(2f);
             drawer = new DrawTurret("framed-");
             reload = 10;
@@ -2229,7 +2280,7 @@ public class DTBlocks {
         shard = new PowerTurret("shard"){{
             requirements(Category.turret, with(DTItems.iron, 60, Items.lead, 70));
             range = 145f;
-
+            researchCostMultiplier = 0.1f;
             shoot.firstShotDelay = 40f;
 
             recoil = 2f;
@@ -2296,7 +2347,7 @@ public class DTBlocks {
                         splashDamage = 33f;
                     }}
             );
-            requirements(Category.turret, with(DTItems.iron, 60, Items.graphite, 50, Items.silicon, 70));
+            requirements(Category.turret, with(DTItems.iron, 60, Items.lead, 70, Items.graphite, 50, Items.silicon, 70));
         }};
 
         regeneration = new PowerTurret("regeneration"){{
@@ -2315,6 +2366,7 @@ public class DTBlocks {
             inaccuracy = 3;
             shootEffect = Fx.hitEmpSpark;
             smokeEffect = Fx.shootBigSmoke2;
+            targetHealing = true;
             shootType = new ConnectBulletType(){{
                 float rad = 70;
                 damage = 60;
@@ -2330,6 +2382,7 @@ public class DTBlocks {
                 scaleLife = true;
                 width = height = 12f;
                 shrinkY = 0f;
+                healPercent = 1f;
                 hitSound = Sounds.plasmaboom;
                 hitEffect = new Effect(50f, rad, e -> {
                     e.scaled(10f, b -> {
@@ -2348,7 +2401,7 @@ public class DTBlocks {
                 });
             }};
             limitRange(5);
-            requirements(Category.turret, with(DTItems.iron, 60, Items.graphite, 50, Items.silicon, 70));
+            requirements(Category.turret, with(DTItems.iron, 60, Items.graphite, 50, Items.silicon, 70, DTItems.silver, 50));
         }};
         sparkover = new ElectricTowerTurret("sparkover"){{
             hasPower = true;
@@ -2371,6 +2424,7 @@ public class DTBlocks {
             loopSound = Sounds.tractorbeam;
             requirements(Category.turret, with(DTItems.iron,50, Items.graphite, 100, Items.lead, 160));
             shootType = new PointLaserBulletType(){{
+                damage = 100f;
                 beamEffectInterval = 7;
                 color = Color.valueOf("9fb6ff");
                 sprite = "disintegration-focus-laser";
@@ -2388,11 +2442,11 @@ public class DTBlocks {
             scaledHealth = 200;
         }};
         axe = new ItemTurret("axe") {{
-            requirements(Category.turret, with(Items.graphite, 70, Items.silicon, 80, DTItems.iron, 90, Items.graphite, 90));
+            requirements(Category.turret, with(Items.silicon, 120, DTItems.iron, 90, Items.graphite, 160, DTItems.steel, 10));
 
             reload = 300f;
             shake = 4f;
-            range = 440f;
+            range = 300f;
             recoil = 2f;
             rotateSpeed = 3f;
 
@@ -2427,9 +2481,9 @@ public class DTBlocks {
                     engineSize = 1.75f;
                     engineOffset = 3.5f;
                     engineLayer = Layer.effect;
-                    speed = 4.8f;
+                    speed = 4f;
                     maxRange = 6f;
-                    lifetime = 115;
+                    lifetime = 75f;
                     outlineColor = Pal.darkOutline;
                     health = 5;
                     lowAltitude = true;
@@ -2458,7 +2512,7 @@ public class DTBlocks {
             limitRange();
         }};
         ambush = new ItemTurret("ambush"){{
-            requirements(Category.turret, with(DTItems.iron, 90, Items.graphite, 40));
+            requirements(Category.turret, with(DTItems.iron, 90, Items.graphite, 40, Items.silicon, 90, DTItems.steel, 10));
             ammo(
                     Items.silicon, new ArtilleryBulletType(3f, 1){{
                         knockback = 0.8f;
@@ -2544,9 +2598,8 @@ public class DTBlocks {
                 lightningColor = Pal.lancerLaser;
                 lightningLength = 8;
             }};
-            requirements(Category.turret, with(DTItems.iridium, 1));
+            requirements(Category.turret, with(DTItems.iridium, 100, DTItems.conductionAlloy, 60, DTItems.iron, 80, Items.silicon, 90));
         }};
-
         torch = new ContinuousLiquidTurret("torch"){{
             requirements(Category.turret, with(DTItems.silver, 40, Items.silicon, 100, Items.metaglass, 50, DTItems.steel, 70, Items.surgeAlloy, 50));
             size = 4;
@@ -2591,10 +2644,39 @@ public class DTBlocks {
                     }}
             );
         }};
-        sabre = new PowerTurret("sabre"){{
+        holy = new LaserTurret("holy"){{
+            requirements(Category.turret, with(DTItems.magnetismAlloy, 120, Items.silicon, 120, DTItems.steel, 70, Items.surgeAlloy, 80));
+            size = 4;
+            reload = 180f;
+            shootY = 11f;
+            drawer = new DrawTurret("framed-");
+
+            targetInterval = 5f;
+
+
+            loopSound = Sounds.laserbeam;
+            shootSound = Sounds.none;
+            loopSoundVolume = 1f;
+
+            shootWarmupSpeed = 0.07f;
+
+            shootType = new ContinuousLaserBulletType(){{
+                colors = new Color[]{Color.valueOf("62ae7f"), Color.valueOf("77e083"), Color.valueOf("acf4ba"), Color.white};
+                intervalBullets = 1;
+                bulletInterval = 3f;
+                intervalRandomSpread = 30f;
+                intervalBullet = new BasicBulletType(2, 10){{
+                    sprite = "circle";
+                    frontColor = backColor = Color.valueOf("77e083");
+                    weaveMag = 2;
+                    weaveScale = 10f;
+                }};
+            }};
+        }};
+        if(false)sabre = new PowerTurret("sabre"){{
             requirements(Category.turret, with());
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
-            Color color = Color.valueOf("d370d3");
+            Color color = Color.valueOf("dafff5");
             shootType = new WarpBulletType(8f, 20f){{
                 sprite = "missile-large";
 
@@ -2652,7 +2734,7 @@ public class DTBlocks {
             shootSound = Sounds.none;
             loopSoundVolume = 1f;
             loopSound = Sounds.laserbeam;
-            requirements(Category.turret, with());
+            requirements(Category.turret, with(DTItems.iron, 200, DTItems.magnetismAlloy, 200, DTItems.iridium, 150, DTItems.conductionAlloy, 90));
             size = 5;
             range = 250;
             aimChangeSpeed = 0.9f;
@@ -2765,10 +2847,10 @@ public class DTBlocks {
            consumePower(20);
            consumeLiquid(Liquids.hydrogen, 5f / 60f);
            consumeLiquid(Liquids.nitrogen, 6f / 60f).boost();
-           requirements(Category.production, with(DTItems.iridium, 1));
+           requirements(Category.production, with(DTItems.iridium, 90, DTItems.iron, 200, DTItems.conductionAlloy, 50));
         }};
         pressureDrill = new Drill("pressure-drill"){{
-            requirements(Category.production, with(DTItems.iron, 12), true);
+            requirements(Category.production, with(DTItems.iron, 12));
             tier = 2;
             drillTime = 500;
             size = 2;
@@ -2830,7 +2912,7 @@ public class DTBlocks {
                     placeSound = Sounds.drillImpact;
                 }});
             }};
-            requirements(Category.production, with(Items.copper, 12));
+            requirements(Category.production, BuildVisibility.hidden, with(Items.copper, 12));
         }};
         ((PortableBlockAbility)((PortableDrill)portableDrill).portableUnitType.abilities.get(0)).unitContent = portableDrill;
 
@@ -2841,7 +2923,7 @@ public class DTBlocks {
             solid = true;
             hasItems = true;
             itemCapacity = 50;
-            requirements(Category.production, with(Items.copper, 12));
+            requirements(Category.production, BuildVisibility.hidden, with(Items.copper, 12));
         }};
         //endregion
         //region effect
@@ -2851,7 +2933,7 @@ public class DTBlocks {
             consumeLiquid(Liquids.ozone, 3f / 60f);
             consumePower(1);
             hasLiquids = true;
-            requirements(Category.effect, ItemStack.with(Items.beryllium, 100, Items.graphite, 70, Items.silicon, 60, Items.oxide, 30));
+            requirements(Category.effect, ItemStack.with(Items.beryllium, 100, Items.graphite, 70, Items.silicon, 60, Items.oxide, 100));
         }};
         repairer = new ContinuousMendProjector("repairer"){{
             requirements(Category.effect, with(Items.lead, 30, DTItems.silver, 40, DTItems.iron, 20));

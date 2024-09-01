@@ -62,6 +62,7 @@ dependencies{
     implementation "${arcLibrary(':graphics-draw3d')}"
     implementation "${arcLibrary(':graphics-g3d')}"
     implementation "${arcLibrary(':graphics-extendedDraw')}"
+    implementation 'com.github.liplum:MultiCrafterLib:v1.8'
 
     // ii.
     annotationProcessor "com.github.GlennFolker.EntityAnno:downgrader:$entVersion"

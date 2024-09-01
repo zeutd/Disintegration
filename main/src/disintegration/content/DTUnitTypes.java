@@ -70,7 +70,7 @@ public class DTUnitTypes {
             separate, attract, blend, spaceStationDrone;
     public static @Annotations.EntityDef({Unitc.class, Payloadc.class}) UnitType spear, harbour;
     public static @Annotations.EntityDef({Unitc.class, ElevationMovec.class}) UnitType assist, strike, coverture, attack, devastate;
-    public static @Annotations.EntityDef({Unitc.class, Mechc.class}) UnitType verity, truth, solve, essence, celestial;
+    public static @Annotations.EntityDef({Unitc.class, Mechc.class}) UnitType verity, truth, solve, essence, axiom;
     public static @Annotations.EntityDef({Unitc.class, BuildingTetherc.class, Payloadc.class}) UnitType refabricatingDrone, repairDrone;
     public static @Annotations.EntityDef(value = {Unitc.class, InnerWorldc.class}, serialize = false) UnitType physics;
 
@@ -92,19 +92,16 @@ public class DTUnitTypes {
             maxTargets = 1000;
         }});
         */
-        //air-Hyper
-        //T1 lancet
-
+        //region blue-air
         lancet = EntityRegistry.content("lancet", UnitEntity.class, name -> new OmurloUnitType(name) {{
             speed = 3.7f;
             accel = 0.08f;
             drag = 0.04f;
-            armor = 3;
             flying = true;
-            health = 400;
+            health = 70;
             engineOffset = 4.5f;
             engineSize = 3.7f;
-            hitSize = 11;
+            hitSize = 9;
 
             ammoType = new PowerAmmoType(900);
 
@@ -127,7 +124,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         talwar = EntityRegistry.content("talwar", UnitEntity.class, name -> new OmurloUnitType(name) {{
             speed = 2.7f;
             accel = 0.08f;
@@ -137,7 +133,7 @@ public class DTUnitTypes {
             health = 300;
             engineOffset = 4.5f;
             engineSize = 3.7f;
-            hitSize = 9;
+            hitSize = 11;
 
             ammoType = new ItemAmmoType(Items.graphite);
 
@@ -160,7 +156,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         estoc = EntityRegistry.content("estoc", UnitEntity.class, name -> new OmurloUnitType(name) {{
             speed = 2f;
             accel = 0.08f;
@@ -170,9 +165,11 @@ public class DTUnitTypes {
             health = 600;
             engineOffset = 4.5f;
             engineSize = 4.7f;
-            hitSize = 15;
+            hitSize = 19;
             faceTarget = false;
             circleTarget = true;
+            armor = 5f;
+            health = 700;
 
             ammoType = new ItemAmmoType(Items.graphite);
 
@@ -187,7 +184,7 @@ public class DTUnitTypes {
                 inaccuracy = 15f;
                 ignoreRotation = true;
                 shootSound = Sounds.none;
-                bullet = new BombBulletType(120f, 45f) {{
+                bullet = new BombBulletType(50f, 45f) {{
                     width = 20f;
                     height = 24f;
                     hitEffect = Fx.flakExplosion;
@@ -207,9 +204,10 @@ public class DTUnitTypes {
             drag = 0.06f;
             flying = true;
             rotateSpeed = 1f;
-            health = 70;
+            health = 7200;
+            armor = 9f;
             lowAltitude = true;
-            hitSize = 15f;
+            hitSize = 40f;
             engineOffset = 23f;
             faceTarget = true;
             engineSize = 5f;
@@ -266,16 +264,16 @@ public class DTUnitTypes {
                         healEffect = DTFx.healBlue;
                     }});
         }});
-
         epee = EntityRegistry.content("epee", UnitEntity.class, name -> new OmurloUnitType(name) {{
             speed = 0.7f;
             accel = 0.03f;
             drag = 0.03f;
             flying = true;
             rotateSpeed = 1f;
-            health = 70;
+            health = 22000;
+            armor = 13f;
             lowAltitude = true;
-            hitSize = 15f;
+            hitSize = 60f;
             engineOffset = 40f;
             engineSize = 6f;
             faceTarget = false;
@@ -413,7 +411,8 @@ public class DTUnitTypes {
                     }}
             );
         }});
-
+        //endregion
+        //region red-air
         colibri = EntityRegistry.content("colibri", UnitEntity.class, name -> new OmurloUnitType(name) {{
             speed = 2.7f;
             accel = 0.08f;
@@ -423,7 +422,7 @@ public class DTUnitTypes {
             engineOffset = 0f;
             ammoType = new PowerAmmoType(100);
             targetFlags = new BlockFlag[]{BlockFlag.generator, null};
-            hitSize = 9;
+            hitSize = 4;
             circleTarget = true;
 
             weapons.add(new Weapon(){{
@@ -446,18 +445,17 @@ public class DTUnitTypes {
                 }
             });
         }});
-
         albatross = EntityRegistry.content("albatross", UnitEntity.class, name -> new OmurloUnitType(name) {{
             aiController = SuicideAI::new;
             speed = 2.7f;
             accel = 0.08f;
             drag = 0.04f;
             flying = true;
-            health = 70;
+            health = 140;
             engineOffset = 5.5f;
             ammoType = new PowerAmmoType(1);
             targetFlags = new BlockFlag[]{BlockFlag.generator, null};
-            hitSize = 9;
+            hitSize = 11;
 
             weapons.add(new Weapon(){{
                 reload = 30f;
@@ -480,7 +478,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         crane = EntityRegistry.content("crane", UnitEntity.class, name -> new OmurloUnitType(name) {{
             speed = 2f;
             accel = 0.08f;
@@ -490,7 +487,7 @@ public class DTUnitTypes {
             health = 600;
             engineOffset = 10f;
             engineSize = 3f;
-            hitSize = 15;
+            hitSize = 16;
             faceTarget = false;
             circleTarget = true;
 
@@ -525,7 +522,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         eagle = EntityRegistry.content("eagle", UnitEntity.class, name -> new OmurloUnitType(name) {{
             flying = true;
             drag = 0.06f;
@@ -534,9 +530,9 @@ public class DTUnitTypes {
             accel = 0.1f;
             health = 6000f;
             armor = 4f;
-            hitSize = 36f;
+            hitSize = 48f;
             engineOffset = 26f;
-            engineSize = 3f;
+            engineSize = 7f;
             ammoType = new PowerAmmoType(300);
             weapons.add(new Weapon() {{
                 mirror = false;
@@ -578,7 +574,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         phoenix = EntityRegistry.content("phoenix", UnitEntity.class, name -> new OmurloUnitType(name) {{
             lowAltitude = false;
             flying = true;
@@ -586,11 +581,11 @@ public class DTUnitTypes {
             speed = 1.1f;
             rotateSpeed = 3.2f;
             accel = 0.1f;
-            health = 6000f;
+            health = 20000f;
             armor = 4f;
-            hitSize = 36f;
-            engineOffset = 36f;
-            engineSize = 3f;
+            hitSize = 60f;
+            engineOffset = 37f;
+            engineSize = 7f;
             ammoType = new PowerAmmoType(900);
             weapons.add(new Weapon() {{
                 shootStatusDuration = 60f * 2f;
@@ -605,7 +600,7 @@ public class DTUnitTypes {
                 shootSound = Sounds.pulseBlast;
                 bullet = new LaserBulletType(){{
                     length = 360f;
-                    damage = 560f;
+                    damage = 280f;
                     width = 45f;
                     recoil = 1f;
                     lifetime = 65f;
@@ -628,6 +623,8 @@ public class DTUnitTypes {
                 }};
             }});
         }});
+        //endregion
+        //region orange-air
         converge = EntityRegistry.content("converge", UnitEntity.class, name -> new OmurloUnitType(name) {{
             ammoType = new PowerAmmoType(900);
             flying = true;
@@ -638,13 +635,13 @@ public class DTUnitTypes {
             drag = 0.06f;
             accel = 0.12f;
             engineSize = 1.8f;
-            engineOffset = 6f;
+            engineOffset = 8.1f;
             mineTier = 1;
             mineSpeed = 2.5f;
             defaultCommand = UnitCommand.mineCommand;
         }});
         cover = EntityRegistry.content("cover", UnitEntity.class, name -> new OmurloUnitType(name) {{
-            defaultCommand = UnitCommand.repairCommand;
+            defaultCommand = UnitCommand.rebuildCommand;
 
             flying = true;
             drag = 0.05f;
@@ -654,8 +651,8 @@ public class DTUnitTypes {
             range = 130f;
             health = 400;
             buildSpeed = 0.5f;
-            engineOffset = 6.5f;
-            hitSize = 9f;
+            engineOffset = 10f;
+            hitSize = 12f;
             lowAltitude = true;
 
             ammoType = new PowerAmmoType(900);
@@ -687,7 +684,7 @@ public class DTUnitTypes {
                     smokeEffect = Fx.hitLaser;
                     trailEffect = DTFx.trailYellow;
                     healEffect = DTFx.healYellow;
-                    trailSpacing = 10f;
+                    trailSpacing = 6f;
                     hitEffect = despawnEffect = DTFx.shootOrb;
                     hitSound = Sounds.none;
 
@@ -707,8 +704,8 @@ public class DTUnitTypes {
             range = 130f;
             health = 400;
             buildSpeed = 0.5f;
-            engineOffset = 6.5f;
-            hitSize = 9f;
+            engineOffset = 12f;
+            hitSize = 16f;
             lowAltitude = true;
 
             ammoType = new PowerAmmoType(900);
@@ -742,8 +739,9 @@ public class DTUnitTypes {
             range = 130f;
             health = 400;
             buildSpeed = 0.5f;
-            engineOffset = 6.5f;
-            hitSize = 9f;
+            engineOffset = 12f;
+            engineSize = 7f;
+            hitSize = 36f;
             lowAltitude = true;
 
             ammoType = new PowerAmmoType(900);
@@ -794,7 +792,7 @@ public class DTUnitTypes {
             }});
         }});
         harbour = EntityRegistry.content("harbour", PayloadUnit.class, name -> new OmurloUnitType(name) {{
-            defaultCommand = UnitCommand.rebuildCommand;
+            defaultCommand = UnitCommand.repairCommand;
 
             flying = true;
             drag = 0.05f;
@@ -804,8 +802,9 @@ public class DTUnitTypes {
             range = 130f;
             health = 400;
             buildSpeed = 0.5f;
-            engineOffset = -45f;
-            hitSize = 32f;
+            engineOffset = 48f;
+            engineSize = 7f;
+            hitSize = 64f;
             lowAltitude = true;
 
             ammoType = new PowerAmmoType(900);
@@ -828,6 +827,8 @@ public class DTUnitTypes {
                 }}
             );
         }});
+        //endregion
+        //region blue-ground
         verity = EntityRegistry.content("verity", MechUnit.class, name -> new OmurloUnitType(name) {{
             canBoost = true;
             boostMultiplier = 1.6f;
@@ -858,7 +859,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         truth = EntityRegistry.content("truth", MechUnit.class, name -> new OmurloUnitType(name) {{
             canBoost = true;
             boostMultiplier = 1.6f;
@@ -925,7 +925,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         essence = EntityRegistry.content("essence", MechUnit.class, name -> new OmurloUnitType(name) {
 
             {
@@ -986,8 +985,7 @@ public class DTUnitTypes {
                 }});
             }
         });
-
-        celestial = EntityRegistry.content("celestial", MechUnit.class, name -> new OmurloUnitType(name) {{
+        axiom = EntityRegistry.content("axiom", MechUnit.class, name -> new OmurloUnitType(name) {{
             speed = 0.3f;
             hitSize = 22f;
             rotateSpeed = 2.1f;
@@ -1001,7 +999,7 @@ public class DTUnitTypes {
             singleTarget = true;
             drownTimeMultiplier = 4f;
             weapons.add(
-                    new Weapon("disintegration-celestial-weapon") {{
+                    new Weapon("disintegration-axiom-weapon") {{
                         top = true;
                         y = 0f;
                         x = 20.5f;
@@ -1012,7 +1010,7 @@ public class DTUnitTypes {
                         ejectEffect = Fx.casing3;
                         shootSound = Sounds.shotgun;
                         shoot = new ShootSpread(5, 5);
-                        bullet = new BasicBulletType(7f, 30) {{
+                        bullet = new BasicBulletType(7f, 50) {{
                             width = 20f;
                             height = 15f;
                             lifetime = 25f;
@@ -1042,6 +1040,8 @@ public class DTUnitTypes {
                     }}
             );
         }});
+        //endregion
+        //region red-ground
         assist = EntityRegistry.content("assist", ElevationMoveUnit.class, name -> new OmurloUnitType(name){{
             hovering = true;
             shadowElevation = 0.1f;
@@ -1086,7 +1086,7 @@ public class DTUnitTypes {
                 reload = 40f;
                 rotate = true;
 
-                bullet = new BasicBulletType(4f, 40){{
+                bullet = new BasicBulletType(4f, 25){{
                     sprite = "missile-large";
                     smokeEffect = Fx.shootBigSmoke;
                     shootEffect = Fx.shootBigColor;
@@ -1102,7 +1102,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         strike = EntityRegistry.content("strike", ElevationMoveUnit.class, name -> new OmurloUnitType(name){{
             hovering = true;
             shadowElevation = 0.1f;
@@ -1198,7 +1197,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         coverture = EntityRegistry.content("coverture", ElevationMoveUnit.class, name -> new OmurloUnitType(name){{
             hovering = true;
             shadowElevation = 0.1f;
@@ -1268,7 +1266,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         attack = EntityRegistry.content("attack", ElevationMoveUnit.class, name -> new OmurloUnitType(name){{
             hovering = true;
             shadowElevation = 0.1f;
@@ -1335,7 +1332,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         devastate = EntityRegistry.content("devastate", ElevationMoveUnit.class, name -> new OmurloUnitType(name){{
             hovering = true;
             shadowElevation = 0.1f;
@@ -1385,7 +1381,7 @@ public class DTUnitTypes {
                 shootSound = Sounds.beam;
                 continuous = true;
 
-                bullet = new ContinuousLaserBulletType(300){{
+                bullet = new ContinuousLaserBulletType(100){{
                     length = 200f;
                     drawSize = 420f;
                     lifetime = 300f;
@@ -1396,8 +1392,8 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
-
+        //endregion
+        //region core
         separate = EntityRegistry.content("separate", UnitEntity.class, name -> new OmurloUnitType(name) {{
             ammoType = new PowerAmmoType(900);
             aiController = BuilderAI::new;
@@ -1436,7 +1432,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         attract = EntityRegistry.content("attract", UnitEntity.class, name -> new OmurloUnitType(name) {{
             ammoType = new PowerAmmoType(900);
             aiController = BuilderAI::new;
@@ -1476,7 +1471,6 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-
         float coreFleeRange = 500f;
         spaceStationDrone = EntityRegistry.content("space-station-drone", UnitEntity.class, name -> new UnitType(name) {{
             coreUnitDock = true;
@@ -1539,7 +1533,8 @@ public class DTUnitTypes {
                 }};
             }});
         }});
-        //special
+        //endregion
+        //region special
         refabricatingDrone = EntityRegistry.content("refabricating-drone", PayloadBuildingTetherUnit.class, name -> new OmurloUnitType(name) {{
             controller = u -> new AssemblerAI();
 
@@ -1658,5 +1653,6 @@ public class DTUnitTypes {
             worldWidth = 10;
             worldHeight = 10;
         }});
+        //endregion
     }
 }

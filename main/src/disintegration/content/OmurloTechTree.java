@@ -140,7 +140,7 @@ public class OmurloTechTree {
                     node(truth, () -> {
                         node(solve, () -> {
                             node(essence, () -> {
-                                node(celestial);
+                                node(axiom);
                             });
                         });
                     });

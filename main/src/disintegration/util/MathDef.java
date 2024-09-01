@@ -1,6 +1,7 @@
 package disintegration.util;
 
 import arc.math.Mathf;
+import arc.math.geom.Vec3;
 import arc.util.Time;
 
 public class MathDef {
@@ -26,6 +27,9 @@ public class MathDef {
         return Mathf.randomSeed(seed, 0, 1) == 0 ? -1 : 1;
     }
 
+    public static Vec3 specularReflection(Vec3 normal, Vec3 dir, Vec3 out, Vec3 tmp){
+        return out.set(dir).sub(tmp.set(normal).scl(normal.dot(dir) * 2));
+    }
     /*public static float smoothMin(float k, float a, float b){{
 
     }}

@@ -1,10 +1,17 @@
 package disintegration.content;
 
+import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.Mesh;
+import arc.graphics.g3d.Camera3D;
 import arc.graphics.gl.Shader;
 import arc.math.Mathf;
+import arc.math.geom.Mat3D;
 import arc.struct.ObjectMap;
+import arc.util.Log;
+import arc.util.Tmp;
+import disintegration.gen.entities.BlackHole;
+import disintegration.graphics.DTShaders;
 import disintegration.graphics.g3d.SphereMesh;
 import disintegration.type.SpaceStation;
 import disintegration.type.maps.planet.CaelpsePlanetGenerator;
@@ -25,7 +32,7 @@ import mindustry.world.meta.Env;
 public class DTPlanets {
     static Planet sun = Planets.sun;
 
-    public static Planet luna, omurlo, cosiuaz, caelpse, terminsi, twinCenter;
+    public static Planet luna, omurlo, cosiuaz, caelpse, terminsi, twinCenter, wormHole;
 
     public static final ObjectMap<Planet, Boolean> canSpaceStation = new ObjectMap<>();
 
@@ -228,5 +235,20 @@ public class DTPlanets {
                     new HexSkyMesh(this, 8, 0.7f, 0.03f, 6, Color.valueOf("62acff").a(0.4f), 3, 0.07f, 1.3f, 0.45f)
             );
         }};
+        /*wormHole = new Planet("wormHole", sun, 0){{
+            clipRadius = 1f;
+            accessible = true;
+        }
+            @Override
+            public void draw(PlanetParams params, Mat3D projection, Mat3D transform){
+                float[] a1 = new float[12];
+                float[] a2 = new float[12];
+                projection.extract4x3Matrix(a1);
+                transform.extract4x3Matrix(a2);
+                Tmp.v31.set(position).mul4x3(a1).mul4x3(a2);
+                Log.info(position);
+                DTShaders.blackHole.add(Tmp.v31.x / Core.graphics.getWidth(), Tmp.v31.z / Core.graphics.getHeight(), 1000, 100);
+            }
+        };*/
     }
 }

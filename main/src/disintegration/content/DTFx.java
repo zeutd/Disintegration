@@ -377,7 +377,7 @@ public class DTFx {
         Fill.circle(e.x, e.y, 3f);
     }),
             trailYellow = new Effect(10, e -> {
-                color(Pal.accent, e.fout());
+                color(Pal.accent);
                 stroke(e.fout());
                 lineAngle(e.x, e.y, e.rotation,10);
             })

@@ -6,6 +6,8 @@ import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.math.geom.Mat3D;
 import arc.math.geom.Vec3;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import arclibrary.graphics.Draw3d;
 import mindustry.Vars;
 import mindustry.graphics.Layer;
@@ -22,10 +24,13 @@ public class RotateSolarGenerator extends SolarGenerator {
 
     public RotateSolarGenerator(String name) {
         super(name);
+        update = true;
+        solid = true;
     }
 
     @Override
     public void load() {
+        super.load();
         baseRegion = Core.atlas.find(name + "-base");
         panelRegion = Core.atlas.find(name + "-panel");
     }
@@ -49,10 +54,6 @@ public class RotateSolarGenerator extends SolarGenerator {
                 }
             }
             rot = Mathf.lerp(rot, angle, 0.05f);
-            Draw.z(Layer.blockAdditive);
-            Draw.color(Pal.shadow);
-            //Draw.rect(panelRegion, x + Mathf.sin(rot * Mathf.degreesToRadians) * levitation - levitation, y - levitation, panelRegion.width * Mathf.cos(rot * Mathf.degreesToRadians) / 4f, panelRegion.height / 4f);
-            Draw3d.rect(mat, panelRegion, x - panelRegion.width / 8f - Mathf.sin(rot * Mathf.degreesToRadians) * levitation - levitation, y - panelRegion.height / 8f - levitation, panelRegion.width / 4f, panelRegion.height / 4f, 0);
             Draw.reset();
             Draw.z(Layer.blockOver);
             //Draw.rect(panelRegion, x + Mathf.sin(rot * Mathf.degreesToRadians) * (levitation - thickness), y, panelRegion.width * Mathf.cos(rot * Mathf.degreesToRadians) / 4f, panelRegion.height / 4f);
@@ -68,6 +69,20 @@ public class RotateSolarGenerator extends SolarGenerator {
             mat.rotate(Vec3.Y, rot);
             mat.translate(0, 0, -Mathf.cos(rot * Mathf.degreesToRadians) * levitation + levitation);
             Draw3d.rect(mat, panelRegion, x - panelRegion.width / 8f - 4 * Mathf.sin(rot * Mathf.degreesToRadians) * levitation, y - panelRegion.height / 8f, panelRegion.width / 4f, panelRegion.height / 4f, 0);
+            Draw.z(Layer.blockAdditive);
+            Draw.color(Pal.shadow);
+            //Draw.rect(panelRegion, x + Mathf.sin(rot * Mathf.degreesToRadians) * levitation - levitation, y - levitation, panelRegion.width * Mathf.cos(rot * Mathf.degreesToRadians) / 4f, panelRegion.height / 4f);
+            Draw3d.rect(mat, panelRegion, x - panelRegion.width / 8f - Mathf.sin(rot * Mathf.degreesToRadians) * levitation - levitation, y - panelRegion.height / 8f - levitation, panelRegion.width / 4f, panelRegion.height / 4f, 0);
+        }
+
+        @Override
+        public void read(Reads read, byte revisions){
+            rot = read.f();
+        }
+
+        @Override
+        public void write(Writes write){
+            write.f(rot);
         }
     }
 }

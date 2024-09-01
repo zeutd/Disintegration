@@ -3,6 +3,7 @@ package disintegration.content;
 import arc.struct.Seq;
 import arc.util.Log;
 import disintegration.util.DTUtil;
+import mindustry.content.Planets;
 import mindustry.ctype.UnlockableContent;
 import mindustry.game.Objectives;
 
@@ -12,7 +13,7 @@ import static mindustry.content.TechTree.nodeRoot;
 
 public class SpaceStationTechTree {
     public static void load() {
-        DTPlanets.omurlo.techTree = nodeRoot("space-station", spaceStationCore, () -> {
+        var r = nodeRoot("space-station", spaceStationCore, () -> {
             node(orbitalLaunchPad, () -> {
                 node(spaceLaunchPad, () -> {
                     node(interplanetaryLaunchPad);
@@ -36,7 +37,9 @@ public class SpaceStationTechTree {
                     });
                 });
             });
+            node(spaceSolarPanel);
         });
-        DTPlanets.omurlo.techTree.objectives = Seq.with(new Objectives.Research(spaceStationLaunchPad));
+        r.planet = Planets.serpulo;
+        r.objectives = Seq.with(new Objectives.Research(spaceStationLaunchPad));
     }
 }
