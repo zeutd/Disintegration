@@ -5,6 +5,7 @@ import mindustry.content.Items;
 import mindustry.content.Planets;
 
 import static disintegration.util.DTUtil.addTechNode;
+import static disintegration.util.DTUtil.addTechNodeProduce;
 
 public class VanillaTechTree {
     public static void load() {
@@ -15,8 +16,9 @@ public class VanillaTechTree {
         addTechNode(Planets.serpulo.techTree, DTBlocks.payloadConstructor, DTBlocks.payloadDeconstructor);
         addTechNode(Planets.serpulo.techTree, Blocks.graphitePress, DTBlocks.spaceStationPanelCompressor);
         addTechNode(Planets.serpulo.techTree, Blocks.graphitePress, DTBlocks.spaceStationPanelCompressorLarge);
-        addTechNode(Planets.serpulo.techTree, Items.titanium, DTItems.spaceStationPanel);
+        addTechNodeProduce(Planets.serpulo.techTree, Items.titanium, DTItems.spaceStationPanel);
         addTechNode(Planets.serpulo.techTree, Blocks.launchPad, DTBlocks.spaceStationLaunchPad);
+        addTechNode(Planets.serpulo.techTree, Blocks.lancer, DTBlocks.sabre);
 
         addTechNode(Planets.erekir.techTree, Blocks.carbideWallLarge, DTBlocks.nitrideWall);
         addTechNode(Planets.erekir.techTree, DTBlocks.nitrideWall, DTBlocks.nitrideWallLarge);
@@ -26,7 +28,8 @@ public class VanillaTechTree {
         addTechNode(Planets.erekir.techTree, DTBlocks.encourage, DTBlocks.blade);
         addTechNode(Planets.erekir.techTree, DTBlocks.blade, DTBlocks.fracture);
         addTechNode(Planets.erekir.techTree, DTBlocks.aegis, DTBlocks.dissolve);
-        addTechNode(Planets.erekir.techTree, Blocks.carbideCrucible, DTBlocks.nitrideSynthesizer);
-        addTechNode(Planets.erekir.techTree, Items.carbide, DTItems.nitride);
+        addTechNode(Planets.erekir.techTree, Blocks.carbideCrucible, Blocks.slagCentrifuge);
+        addTechNode(Planets.erekir.techTree, Blocks.slagCentrifuge, DTBlocks.nitrideSynthesizer);
+        addTechNodeProduce(Planets.erekir.techTree, Items.carbide, DTItems.nitride);
     }
 }

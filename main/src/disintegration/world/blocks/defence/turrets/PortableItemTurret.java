@@ -1,4 +1,4 @@
-package disintegration.world.blocks.production;
+package disintegration.world.blocks.defence.turrets;
 
 import arc.struct.EnumSet;
 import arc.util.Nullable;
@@ -9,20 +9,21 @@ import mindustry.gen.BlockUnitc;
 import mindustry.gen.Unit;
 import mindustry.type.UnitType;
 import mindustry.world.blocks.ControlBlock;
+import mindustry.world.blocks.defense.turrets.ItemTurret;
 import mindustry.world.blocks.production.Drill;
 import mindustry.world.meta.BlockFlag;
 
-public class PortableDrill extends Drill {
+public class PortableItemTurret extends ItemTurret {
     public UnitType portableUnitType;
 
     public Effect removalEffect;
 
-    public PortableDrill(String name) {
+    public PortableItemTurret(String name) {
         super(name);
-        flags = EnumSet.of(BlockFlag.drill);
+        flags = EnumSet.of(BlockFlag.turret);
     }
 
-    public class PortableDrillBuild extends DrillBuild implements ControlBlock {
+    public class PortableItemTurretBuild extends ItemTurretBuild implements ControlBlock {
         @Nullable
         public BlockUnitc unit;
         public @Nullable Unit portableUnit;

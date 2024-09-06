@@ -10,8 +10,7 @@ import static disintegration.content.DTItems.*;
 import static disintegration.content.DTUnitTypes.*;
 import static mindustry.content.Blocks.*;
 import static mindustry.content.Items.*;
-import static mindustry.content.TechTree.node;
-import static mindustry.content.TechTree.nodeRoot;
+import static mindustry.content.TechTree.*;
 
 public class OmurloTechTree {
 
@@ -22,7 +21,9 @@ public class OmurloTechTree {
                     node(ironRouter, () -> {
                         node(ironSorter, () -> {
                             node(invertedIronSorter);
-                            node(alternateOverflowGate);
+                            node(alternateOverflowGate, () -> {
+                                node(unloader);
+                            });
                         });
                         node(ironItemBridge, () -> {
                             node(iridiumConveyor, () -> {
@@ -84,19 +85,39 @@ public class OmurloTechTree {
                         node(algalPond, () -> {
                             node(blastCompoundMixer);
                         });
+                        node(quarry);
                     });
-                    node(ventTurbine, () -> {
-                        node(ironPowerNode, () -> {
-                            node(ironPowerNodeLarge);
+                });
+                node(ventTurbine, () -> {
+                    node(ironPowerNode, () -> {
+                        node(ironPowerNodeLarge, () -> {
+                            node(powerDriver);
                         });
-                        node(powerCapacitor, () -> {
+                    });
+                    node(powerCapacitor, () -> {
 
+                    });
+                    node(repairer);
+                    node(turbineGenerator, Seq.with(new Objectives.Research(boiler)), () -> {
+                        node(arcReactor, () -> {
+                            node(tokamakFusionReactor);
                         });
-                        node(repairer);
-                        node(turbineGenerator, Seq.with(new Objectives.Research(boiler)), () -> {
-                        });
-                        node(solarPanel, () -> {
-                            node(rotateSolarPanel);
+                    });
+                    node(solarPanel, () -> {
+                        node(rotateSolarPanel);
+                    });
+                });
+                node(gearPump, () -> {
+                    node(conduit, () -> {
+                        node(liquidJunction, () -> {
+                            node(liquidRouter, () -> {
+                                node(bridgeConduit, () -> {
+                                    node(magnetizedConduit);
+                                    node(liquidContainer, () -> {
+                                        node(liquidTank);
+                                    });
+                                });
+                            });
                         });
                     });
                 });
@@ -109,7 +130,9 @@ public class OmurloTechTree {
                         });
                         node(conductionAlloyWall, () -> {
                             node(conductionAlloyWallLarge, () -> {
-                                node(projectorWall);
+                                node(projectorWall, () -> {
+                                    node(circleForceProjector);
+                                });
                             });
                         });
                         node(iridiumWall, () -> {
@@ -127,9 +150,14 @@ public class OmurloTechTree {
                 });
                 node(twist, () -> {
                     node(awake, () -> {
-                        node(regeneration);
+                        node(regeneration, () -> {
+                            node(holy);
+                        });
                         node(focus, () -> {
-                            node(voltage);
+                            node(laserDefenceTower);
+                            node(voltage, () -> {
+                                node(franklinism);
+                            });
                             node(sparkover);
                         });
                     });
@@ -154,6 +182,33 @@ public class OmurloTechTree {
                         });
                     });
                 });
+                node(assist, () -> {
+                    node(strike, () -> {
+                        node(coverture, () -> {
+                            node(attack, () -> {
+                                node(devastate);
+                            });
+                        });
+                    });
+                });
+                node(colibri, () -> {
+                    node(albatross, () -> {
+                        node(crane, () -> {
+                            node(eagle, () -> {
+                                node(phoenix);
+                            });
+                        });
+                    });
+                });
+                node(converge, () -> {
+                    node(cover, () -> {
+                        node(protect, () -> {
+                            node(defend, () -> {
+                                node(harbour);
+                            });
+                        });
+                    });
+                });
                 node(additiveRefabricator, () -> {
                     node(multiplicativeRefabricator, () -> {
                         node(exponentialRefabricatingPlatform, () -> {
@@ -162,33 +217,34 @@ public class OmurloTechTree {
                     });
                 });
             });
-            node(iron, () -> {
-                node(coal, () -> {
-                    node(graphite);
-                    node(blastCompound);
-                    node(Items.sand, () -> {
-                        node(silicon);
-                        node(scrap, () -> {
-                            node(Liquids.slag);
+            nodeProduce(iron, () -> {
+                nodeProduce(coal, () -> {
+                    nodeProduce(graphite, () -> {});
+                    nodeProduce(blastCompound, () -> {});
+                    nodeProduce(Items.sand, () -> {
+                        nodeProduce(silicon, () -> {});
+                        nodeProduce(scrap, () -> {
+                            nodeProduce(Liquids.slag, () -> {});
                         });
                     });
                 });
-                node(lead, () -> {
-                    node(metaglass);
-                    node(steel);
-                    node(silver, () -> {
-                        node(conductionAlloy, () -> {
-                            node(iridium, () -> {
-                                node(magnetismAlloy);
-                                node(surgeAlloy);
+                nodeProduce(lead, () -> {
+                    nodeProduce(metaglass, () -> {});
+                    nodeProduce(steel, () -> {});
+                    nodeProduce(silver, () -> {
+                        nodeProduce(conductionAlloy, () -> {
+                            nodeProduce(iridium, () -> {
+                                nodeProduce(magnetismAlloy, () -> {});
+                                nodeProduce(surgeAlloy, () -> {});
                             });
                         });
                     });
                 });
-                node(Liquids.water, () -> {
-                    node(DTLiquids.algalWater);
+                nodeProduce(Liquids.water, () -> {
+                    nodeProduce(DTLiquids.algalWater, () -> {});
                 });
             });
+            node(DTSectorPresets.landingArea);
         });
     }
 }

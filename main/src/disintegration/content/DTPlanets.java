@@ -10,14 +10,17 @@ import arc.math.geom.Mat3D;
 import arc.struct.ObjectMap;
 import arc.util.Log;
 import arc.util.Tmp;
+import arclibrary.graphics.g3d.model.obj.OBJModel;
 import disintegration.gen.entities.BlackHole;
 import disintegration.graphics.DTShaders;
+import disintegration.graphics.g3d.OBJMesh;
 import disintegration.graphics.g3d.SphereMesh;
 import disintegration.type.SpaceStation;
 import disintegration.type.maps.planet.CaelpsePlanetGenerator;
 import disintegration.type.maps.planet.CosiuazPlanetGenerator;
 import disintegration.type.maps.planet.LunaPlanetGenerator;
 import disintegration.type.maps.planet.OmurloPlanetGenerator;
+import disintegration.util.DTUtil;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.content.Items;
@@ -49,6 +52,9 @@ public class DTPlanets {
         luna = new Planet("luna", Planets.serpulo, 0.7f, 2){{
             generator = new LunaPlanetGenerator();
             meshLoader = () -> new HexMesh(this, 5);
+            //OBJModel model = DTUtil.loadObj("aaaaaa.obj").first();
+            //model.texture = Core.atlas.texture();
+            //meshLoader = () -> new OBJMesh(this, model, Shaders.planet);
             alwaysUnlocked = true;
             landCloudColor = Color.valueOf("88aabb");
             atmosphereColor = Color.valueOf("122240");

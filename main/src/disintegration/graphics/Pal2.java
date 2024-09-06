@@ -9,6 +9,7 @@ public class Pal2 {
             heat2 = Color.valueOf("fffaac"),
             ethylene = Color.valueOf("f2f2ff"),
             lightningWhite = Color.valueOf("cddcff"),
-            attackRed = Color.valueOf("ff93a5")
+            attackRed = Color.valueOf("ff93a5"),
+            darkerOutline = Color.valueOf("21232e")
                     ;
 }

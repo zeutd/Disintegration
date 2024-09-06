@@ -9,12 +9,10 @@ import static mindustry.content.Items.*;
 public class DTItems {
     public static Item
             nitride,
-            iridium, iron, steel, silver, magnetismAlloy, spaceStationPanel, conductionAlloy;
+            iridium, iron, steel, silver, magnetismAlloy, spaceStationPanel, conductionAlloy, nickel, lithium, siliconCrystal;
     public static final Seq<Item>
             omurloItems = new Seq<>(),
-            omurloOnlyItems = new Seq<>(),
-            spaceStationItems = new Seq<>(),
-            moddedItems = new Seq<>();
+            twinItems = new Seq<>();
 
     public static void load() {
         nitride = new Item("nitride", Color.valueOf("9a9dbf")) {{
@@ -63,15 +61,23 @@ public class DTItems {
 
         }};
 
+        nickel = new Item("nickel", Color.valueOf("c7b784")){{
+            hardness = 1;
+            cost = 0.5f;
+        }};
+        lithium = new Item("lithium", Color.valueOf("d5d5d5")){{
+            cost = 1;
+            hardness = 1;
+            flammability = 1f;
+            explosiveness = 0.5f;
+        }};
+        siliconCrystal = new Item("silicon-crystal", Color.valueOf("dfdfe8")){{
+            hardness = 2;
+            cost = 1f;
+        }};
+
         omurloItems.addAll(
-                iridium, iron, silver, magnetismAlloy, conductionAlloy, sand, silicon, surgeAlloy, graphite, coal, metaglass, lead, blastCompound
+                iridium, iron, silver, magnetismAlloy, conductionAlloy, sand, silicon, surgeAlloy, graphite, coal, metaglass, lead, blastCompound, steel
         );
-        omurloOnlyItems.addAll(
-                iridium, iron, silver, magnetismAlloy, conductionAlloy
-        );
-        spaceStationItems.addAll(
-                spaceStationPanel
-        );
-        moddedItems.addAll(omurloOnlyItems).addAll(spaceStationItems);
     }
 }

@@ -1,5 +1,6 @@
 package disintegration.util;
 
+import arc.Core;
 import arc.files.Fi;
 import arc.struct.Seq;
 import arc.util.Log;
@@ -51,7 +52,9 @@ public class DTUtil {
 
     public static Seq<OBJModel> loadObj(String file) {
         Fi objFi = DTVars.modFile.child("models").child(file);
-        return ObjectModelFactory.create(objFi, DTShaders.objectShader);
+        Seq<OBJModel> obj = ObjectModelFactory.create(objFi, DTShaders.objectShader);
+        //obj.first().texture = Core.atlas.texture();
+        return obj;
     }
 
     public static void insertTechNode(TechNode tree, UnlockableContent parent, UnlockableContent content) {
@@ -77,10 +80,19 @@ public class DTUtil {
     public static void addTechNode(TechNode tree, UnlockableContent parent, UnlockableContent content) {
         tree.each(node -> {
             if (node.content == parent) {
-                TechNode newNode = new TechNode(node, content, content.researchRequirements());
-                return;
+                new TechNode(node, content, content.researchRequirements());
             }
         });
-        TechNode newNode = new TechNode(tree, content, content.researchRequirements());
+        //new TechNode(tree, content, content.researchRequirements());
+    }
+
+    public static void addTechNodeProduce(TechNode tree, UnlockableContent parent, UnlockableContent content) {
+        tree.each(node -> {
+            if (node.content == parent) {
+                TechNode newNode = new TechNode(node, content, content.researchRequirements());
+                newNode.objectives.add(new Objectives.Produce(content));
+            }
+        });
+        //new TechNode(tree, content, content.researchRequirements());
     }
 }

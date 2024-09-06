@@ -1,47 +1,20 @@
 package disintegration;
 
-import arc.Core;
 import arc.Events;
 import arc.graphics.Color;
-import arc.graphics.Pixmap;
-import arc.graphics.Texture;
-import arc.graphics.g2d.Draw;
-import arc.graphics.g2d.TextureRegion;
-import arc.graphics.g3d.Camera3D;
-import arc.math.Mathf;
-import arc.math.geom.Vec3;
-import arc.struct.Seq;
-import arc.util.Log;
-import arc.util.Structs;
-import arc.util.Tmp;
 import arclibrary.graphics.g3d.model.obj.OBJModel;
 import arclibrary.graphics.g3d.render.GenericRenderer3D;
 import disintegration.content.*;
 import disintegration.core.*;
 import disintegration.entities.DTGroups;
 import disintegration.gen.entities.EntityRegistry;
-import disintegration.graphics.DTShaders;
 import disintegration.ui.DTUI;
-import disintegration.util.DTUtil;
 import mindustry.Vars;
-import mindustry.content.Items;
 import mindustry.content.Planets;
 import mindustry.game.EventType;
-import mindustry.graphics.Layer;
 import mindustry.mod.Mod;
-import mindustry.type.Category;
-import mindustry.type.Item;
 import mindustry.type.ItemStack;
-import mindustry.type.LiquidStack;
-import mindustry.ui.dialogs.PlanetDialog;
-import mindustry.world.consumers.ConsumeItemDynamic;
 import mindustry.world.meta.Env;
-import multicraft.IOEntry;
-import multicraft.MultiCrafter;
-import multicraft.Recipe;
-
-import java.io.IOException;
-import java.util.Objects;
 
 import static arc.Core.app;
 import static disintegration.DTVars.modName;
@@ -150,8 +123,7 @@ public class DisintegrationJavaMod extends Mod{
             DTBlocks.liquidCellPacker.loadIcon();
             content.setCurrentMod(null);
         });*/
-        test = DTUtil.loadObj("aaaaaa.obj").first();
-        Events.run(EventType.Trigger.preDraw, DTVars.renderer3D.models::clear);
+        /*Events.run(EventType.Trigger.preDraw, DTVars.renderer3D.models::clear);
         Events.run(EventType.Trigger.drawOver, () -> {
             Draw.draw(Layer.max, () -> {
                 Camera3D cam = DTVars.renderer3D.cam;
@@ -165,7 +137,7 @@ public class DisintegrationJavaMod extends Mod{
                 DTVars.renderer3D.models.add(test);
                 DTVars.renderer3D.render();
             });
-        });
+        });*/
     }
     @Override
     public void loadContent() {
@@ -182,5 +154,9 @@ public class DisintegrationJavaMod extends Mod{
         OmurloTechTree.load();
         VanillaTechTree.load();
         SpaceStationTechTree.load();
+        DTPlanets.omurlo.techTree.each(c -> {
+            c.requiresUnlock = false;
+            c.requirements = ItemStack.with();
+        });
     }
 }
