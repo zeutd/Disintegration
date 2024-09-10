@@ -10,16 +10,6 @@ uniform int u_blackhole_count;
 
 varying vec2 v_texCoords;
 
-
-float atan2(in float y, in float x){
-    if (abs(x) > abs(y)){
-        return atan(y, x);
-    }
-    else {
-        return PI/2.0 - atan(x, y);
-    }
-}
-
 float cforce(in float dst, in float radius, in float force){
     return (abs(dst / radius) - 1.0)*(abs(dst / radius) - 1.0)*force;
 }
@@ -40,7 +30,7 @@ void main(){
                 color = vec4(0, 0, 0, 0);
             }
             else {
-                float dir = atan2(worldCoords.y - blackhole.y, worldCoords.x - blackhole.x);//+sqrt(dst / 10);
+                float dir = atan(worldCoords.x - blackhole.x, worldCoords.y - blackhole.y);//+sqrt(dst / 10);
                 displacement += vec2((cos(dir) * -dstc), (sin(dir) * -dstc)) / u_resolution;
             }
         }

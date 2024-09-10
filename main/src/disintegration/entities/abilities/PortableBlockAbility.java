@@ -27,9 +27,9 @@ public class PortableBlockAbility extends Ability {
 
     @Override
     public void update(Unit u) {
-        if ((u.isPlayer() && u.isShooting) || (u.isCommandable() && u.command().targetPos != null && u.within(u.command().targetPos, tilesize))) {
+        if ((u.isPlayer() && u.isShooting) || (u.isCommandable() && u.command().targetPos != null && u.within(u.command().targetPos, tilesize / 2f))) {
             Tile tile = Vars.world.tile(u.tileX(), u.tileY());
-            if (tile != null && tile.block() == Blocks.air && Build.validPlace(unitContent, u.team, u.tileX(), u.tileY(), 0)) {
+            if (tile != null && tile.block() == Blocks.air && Build.validPlace(unitContent, u.team, u.tileX(), u.tileY(), 0, false)) {
                 u.remove();
                 tile.setBlock(unitContent, u.team);
                 placeEffect.at(u.tileX() * tilesize, u.tileY() * tilesize, 0f);

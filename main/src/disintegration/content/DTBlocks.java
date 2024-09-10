@@ -19,6 +19,7 @@ import disintegration.entities.DTGroups;
 import disintegration.entities.abilities.PortableBlockAbility;
 import disintegration.entities.bullet.*;
 import disintegration.gen.entities.EntityRegistry;
+import disintegration.graphics.DTShaders;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.campaign.InterplanetaryLaunchPad;
 import disintegration.world.blocks.campaign.OrbitalLaunchPad;
@@ -27,6 +28,7 @@ import disintegration.world.blocks.campaign.SpaceStationLaunchPad;
 import disintegration.world.blocks.debug.BlackHoleBlock;
 import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
+import disintegration.world.blocks.debug.ShaderTestBlock;
 import disintegration.world.blocks.defence.ContinuousMendProjector;
 import disintegration.world.blocks.defence.LaserTower;
 import disintegration.world.blocks.defence.RepairDroneStation;
@@ -114,7 +116,7 @@ public class DTBlocks {
             ethyleneVent,
             greenIceWall, obsidianWall,
         //ore
-            oreIridium, oreIron, oreSilver,
+            oreIridium, oreIron, oreSilver, oreNickel, oreSiliconCrystal, oreLithium,
     //defence
             iridiumWall, iridiumWallLarge,
             steelWall, steelWallLarge,
@@ -182,6 +184,7 @@ public class DTBlocks {
     public static Seq<Block> spaceStationBuilders = new Seq<>();
     public static Seq<Block> spaceStationBreakers = new Seq<>();
     public static void load() {
+        //region override
         Blocks.ice.mapColor.add(0.1f, 0.1f, 0.2f);
         Blocks.snow.mapColor.add(0.1f, 0.1f, 0.2f);
 
@@ -204,6 +207,7 @@ public class DTBlocks {
         ((GenericCrafter) Blocks.slagCentrifuge).outputLiquid = new LiquidStack(Liquids.gallium, 5f / 60f);
 
         Blocks.unloader.requirements(Category.effect, with(Items.lead, 25, Items.silicon, 30));
+        //endregion
         //region environment
         greenIce = new Floor("green-ice"){{
             dragMultiplier = 0.35f;
@@ -263,20 +267,39 @@ public class DTBlocks {
 
         oreIridium = new OreBlock("ore-iridium", DTItems.iridium){{
             oreDefault = true;
-            oreThreshold = 0.828f;
-            oreScale = 10f;
+            oreThreshold = 0.882f;
+            oreScale = 25.380953f;
         }};
 
         oreIron = new OreBlock("ore-iron", DTItems.iron){{
             oreDefault = true;
-            oreThreshold = 0.828f;
+            oreThreshold = 0.818f;
             oreScale = 23.952381f;
         }};
 
         oreSilver = new OreBlock("ore-silver", DTItems.silver){{
             oreDefault = true;
-            oreThreshold = 0.864f;
+            oreThreshold = 0.854f;
             oreScale = 24.904762f;
+        }};
+
+        oreNickel = new OreBlock("ore-nickel", DTItems.nickel){{
+            oreDefault = true;
+            oreThreshold = 0.818f;
+            oreScale = 23.952381f;
+        }};
+
+        oreLithium = new OreBlock("ore-lithium", DTItems.lithium){{
+            wallOre = true;
+            oreDefault = true;
+            oreThreshold = 0.846f;
+            oreScale = 24.428572f;
+        }};
+
+        oreSiliconCrystal = new OreBlock("ore-silicon-crystal", DTItems.siliconCrystal){{
+            oreDefault = true;
+            oreThreshold = 0.828f;
+            oreScale = 23.952381f;
         }};
 
         ethyleneVent = new SteamVent("ethylene-vent"){{
@@ -1177,6 +1200,10 @@ public class DTBlocks {
             hasPower = true;
             consumePower(2f);
             size = 3;
+        }};
+        new PayloadTeleporter("payload-teleporter"){{
+            size = 7;
+            requirements(Category.units, with());
         }};
         payloadDuct = new PayloadDuct("payload-duct"){{
             requirements(Category.units, with(Items.graphite, 50));
@@ -2929,7 +2956,24 @@ public class DTBlocks {
         }};
 
         portableTurret = new PortableItemTurret("portable-turret"){{
-            portableUnitType = EntityRegistry.content("portable-drill-unit", LegsUnit.class, name -> new UnitType(name){{
+            hasItems = true;
+            health = 260;
+            removalEffect = Fx.mineHuge;
+            ammo(DTItems.nickel, new BasicBulletType(4f, 10){{
+                sprite = "missile-large";
+                smokeEffect = Fx.shootBigSmoke;
+                shootEffect = Fx.shootBigColor;
+                width = 5f;
+                height = 7f;
+                lifetime = 40f;
+                hitSize = 4f;
+                hitColor = backColor = trailColor = Color.valueOf("fe7d71");
+                frontColor = Color.white;
+                trailWidth = 1.7f;
+                trailLength = 5;
+                despawnEffect = hitEffect = Fx.hitBulletColor;
+            }});
+            portableUnitType = EntityRegistry.content("portable-turret-unit", LegsUnit.class, name -> new UnitType(name){{
                 speed = 0.5f;
                 legStraightness = 0f;
                 legLength = 8f;
@@ -2943,17 +2987,20 @@ public class DTBlocks {
                 legForwardScl = 1.1f;
                 legGroupSize = 2;
                 rippleScale = 0f;
-                rotateSpeed = 0;
                 legCount = 4;
                 drawCell = false;
                 drawBody = false;
-                hidden = true;
+                outlineColor = Pal2.darkerOutline;
                 abilities.add(new PortableBlockAbility(){{
                     placeEffect = Fx.mineImpactWave;
                     placeSound = Sounds.drillImpact;
                 }});
             }});
+            drawer = new DrawTurret("dark-");
+            outlineColor = Pal2.darkerOutline;
+            requirements(Category.turret, BuildVisibility.sandboxOnly, with(DTItems.nickel, 30));
         }};
+        ((PortableBlockAbility)((PortableItemTurret)portableTurret).portableUnitType.abilities.get(0)).unitContent = portableTurret;
         //endregion
         //region drill
         quarry = new Quarry("quarry"){{
@@ -3008,11 +3055,10 @@ public class DTBlocks {
         }};
         portableDrill = new PortableDrill("portable-drill"){{
             hasItems = true;
-            hasLiquids = true;
-            liquidBoostIntensity = 2.56f;
-            consumeLiquid(Liquids.water, 0.02f).boost();
+            health = 260;
             removalEffect = Fx.mineHuge;
             portableUnitType = EntityRegistry.content("portable-drill-unit", LegsUnit.class, name -> new UnitType(name){{
+                outlineColor = Pal2.darkerOutline;
                 speed = 0.5f;
                 legStraightness = 0f;
                 legLength = 8f;
@@ -3026,27 +3072,25 @@ public class DTBlocks {
                 legForwardScl = 1.1f;
                 legGroupSize = 2;
                 rippleScale = 0f;
-                rotateSpeed = 0;
                 legCount = 4;
                 drawCell = false;
                 drawBody = false;
-                hidden = true;
                 abilities.add(new PortableBlockAbility(){{
                     placeEffect = Fx.mineImpactWave;
                     placeSound = Sounds.drillImpact;
                 }});
+                selectionSize = 20;
             }});
-            requirements(Category.production, BuildVisibility.hidden, with(Items.copper, 12));
+            requirements(Category.production, BuildVisibility.sandboxOnly, with(DTItems.nickel, 12));
         }};
         ((PortableBlockAbility)((PortableDrill)portableDrill).portableUnitType.abilities.get(0)).unitContent = portableDrill;
 
         unitProducer = new UnitFactory("unit-producer"){{
             requirements(Category.units, with(DTItems.iron, 60, Items.lead, 70));
             researchCostMultiplier = 0.15f;
-            configurable = false;
             plans = Seq.with(
-                    new UnitPlan(((PortableDrill)portableDrill).portableUnitType, 60f * 10f, with(Items.silicon, 15)),
-                    new UnitPlan(((PortableItemTurret)portableTurret).portableUnitType, 60f * 10f, with(Items.silicon, 15))
+                    new UnitPlan(((PortableDrill)portableDrill).portableUnitType, 60f * 10f, with(DTItems.nickel, 12)),
+                    new UnitPlan(((PortableItemTurret)portableTurret).portableUnitType, 60f * 10f, with(DTItems.nickel, 30))
             );
             size = 2;
             regionSuffix = "-darker";
@@ -3187,12 +3231,12 @@ public class DTBlocks {
             runs = b -> Vars.state.rules.teams.get(b.team).cheat = Vars.state.rules.teams.get(b.team).cheat;
             buildCostMultiplier = 0.01f;
         }};
-        /*
-        shaderTestBlock = new ShaderTestBlock("shader-test-block"){{
+
+        /*shaderTestBlock = new ShaderTestBlock("shader-test-block"){{
             requirements(Category.effect, with(), true);
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
-            shader = DTShaders.arc;
+            shader = DTShaders.portal;
         }};*/
         dpsBlock = new DPSBlock("dps-block"){{
             requirements(Category.effect, with(), true);

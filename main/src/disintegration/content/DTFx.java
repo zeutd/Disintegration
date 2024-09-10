@@ -16,7 +16,9 @@ import arc.struct.Seq;
 import arc.util.Interval;
 import arc.util.Tmp;
 import disintegration.graphics.Pal2;
+import disintegration.util.DrawDef;
 import mindustry.content.Fx;
+import mindustry.ctype.UnlockableContent;
 import mindustry.entities.Effect;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
@@ -418,45 +420,69 @@ public class DTFx {
             Fill.circle(p.x, p.y, Lines.getStroke() / 2f);
         }
     }),
-            tokamakFusionReactorExplosion = new Effect(30, 500f, b -> {
-                float intensity = 8f;
-                float baseLifetime = 25f + intensity * 15f;
-                b.lifetime = 50f + intensity * 64f;
+    tokamakFusionReactorExplosion = new Effect(30, 500f, b -> {
+        float intensity = 8f;
+        float baseLifetime = 25f + intensity * 15f;
+        b.lifetime = 50f + intensity * 64f;
 
-                color(Pal2.lightningWhite);
-                alpha(0.8f);
-                for(int i = 0; i < 5; i++){
-                    rand.setSeed(b.id*2 + i);
-                    float lenScl = rand.random(0.25f, 1f);
-                    int fi = i;
-                    b.scaled(b.lifetime * lenScl, e -> {
-                        randLenVectors(e.id + fi - 1, e.fin(Interp.pow10Out), (int)(2.8f * intensity), 25f * intensity, (x, y, in, out) -> {
-                            float fout = e.fout(Interp.pow5Out) * rand.random(0.5f, 1f);
-                            float rad = fout * ((2f + intensity) * 2.35f);
+        color(Pal2.lightningWhite);
+        alpha(0.8f);
+        for(int i = 0; i < 5; i++){
+            rand.setSeed(b.id * 2L + i);
+            float lenScl = rand.random(0.25f, 1f);
+            int fi = i;
+            b.scaled(b.lifetime * lenScl, e -> {
+                randLenVectors(e.id + fi - 1, e.fin(Interp.pow10Out), (int)(2.8f * intensity), 25f * intensity, (x, y, in, out) -> {
+                    float fout = e.fout(Interp.pow5Out) * rand.random(0.5f, 1f);
+                    float rad = fout * ((2f + intensity) * 2.35f);
 
-                            Fill.circle(e.x + x, e.y + y, rad);
-                            Drawf.light(e.x + x, e.y + y, rad * 2.6f, Pal.lighterOrange, 0.7f);
-                        });
-                    });
-                }
-
-                b.scaled(baseLifetime, e -> {
-                    Draw.color();
-                    e.scaled(5 + intensity * 2f, i -> {
-                        stroke((3.1f + intensity/5f) * i.fout());
-                        Lines.circle(e.x, e.y, (3f + i.fin() * 14f) * intensity);
-                        Drawf.light(e.x, e.y, i.fin() * 14f * 2f * intensity, Color.white, 0.9f * e.fout());
-                    });
-
-                    color(Color.white, Pal2.lightningWhite, e.fin());
-                    stroke((2f * e.fout()));
-
-                    Draw.z(Layer.effect + 0.001f);
-                    randLenVectors(e.id + 1, e.finpow() + 0.001f, (int)(8 * intensity), 30f * intensity, (x, y, in, out) -> {
-                        lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), 1f + out * 4 * (4f + intensity));
-                        Drawf.light(e.x + x, e.y + y, (out * 4 * (3f + intensity)) * 3.5f, Draw.getColor(), 0.8f);
-                    });
+                    Fill.circle(e.x + x, e.y + y, rad);
+                    Drawf.light(e.x + x, e.y + y, rad * 2.6f, Pal.lighterOrange, 0.7f);
                 });
-            })
+            });
+        }
+
+        b.scaled(baseLifetime, e -> {
+            Draw.color();
+            e.scaled(5 + intensity * 2f, i -> {
+                stroke((3.1f + intensity/5f) * i.fout());
+                Lines.circle(e.x, e.y, (3f + i.fin() * 14f) * intensity);
+                Drawf.light(e.x, e.y, i.fin() * 14f * 2f * intensity, Color.white, 0.9f * e.fout());
+            });
+
+            color(Color.white, Pal2.lightningWhite, e.fin());
+            stroke((2f * e.fout()));
+
+            Draw.z(Layer.effect + 0.001f);
+            randLenVectors(e.id + 1, e.finpow() + 0.001f, (int)(8 * intensity), 30f * intensity, (x, y, in, out) -> {
+                lineAngle(e.x + x, e.y + y, Mathf.angle(x, y), 1f + out * 4 * (4f + intensity));
+                Drawf.light(e.x + x, e.y + y, (out * 4 * (3f + intensity)) * 3.5f, Draw.getColor(), 0.8f);
+            });
+        });
+    }),
+    portalEffect = new Effect(40, e -> {
+        Draw.color(Color.valueOf("abf6fe"));
+        rand.setSeed(e.id);
+        Tmp.v31.setFromSpherical(rand.random(0, Mathf.PI2), rand.range(1f) + Mathf.PI).scl(0.1f * e.finpow());
+        Tmp.v32.set(Tmp.v31).add(Tmp.v33.set(Tmp.v31).nor().scl(0.01f * e.foutpowdown()));
+        Tmp.v31.add(0, 0, 0.1f);
+        Tmp.v32.add(0, 0, 0.1f);
+        DrawDef.line3d(Tmp.v31.x + e.x, Tmp.v31.y + e.y, Tmp.v31.z, Tmp.v32.x + e.x, Tmp.v32.y + e.y, Tmp.v32.z);
+        //DrawDef.line3d(e.x, e.y, 0, e.x, e.y, 0.1f);
+    }),
+    teleportEffect = new Effect(30, e -> {
+        if(!(e.data instanceof UnlockableContent data)) return;
+        /*Draw.color(Color.valueOf("abf6fe"));
+        float a = 1.5f;
+        float b = 1 / a;
+        float aspect = ((Mathf.sin(e.fin() * 10)+1)/(2))*(b-a)+a;
+        float w = (data.fullIcon.width * aspect * e.foutpowdown()) / 4f;
+        float h = (data.fullIcon.height / aspect * e.foutpowdown()) / 4f;
+        Draw.rect(data.fullIcon, e.x, e.y, w, h, 0);*/
+        Tmp.c1.set(Color.valueOf("abf6fe")).lerp(Color.clear, e.fin());
+        DrawDef.tube(e.x, e.y, data.fullIcon.width / 4f, 0.1f, Tmp.c1, Color.clear);
+        Draw.color(Tmp.c1);
+        Fill.circle(e.x, e.y, data.fullIcon.width / 4f);
+    }).layer(Layer.bullet - 1)
             ;
 }

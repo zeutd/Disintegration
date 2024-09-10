@@ -5,12 +5,14 @@ import arc.Events;
 import arc.files.Fi;
 import arc.graphics.Blending;
 import arc.graphics.Color;
+import arc.graphics.Texture;
 import arc.graphics.g2d.Draw;
 import arc.graphics.gl.FrameBuffer;
 import arc.graphics.gl.GLFrameBuffer;
 import arc.graphics.gl.Shader;
 import arc.math.geom.Vec2;
 import arc.struct.FloatSeq;
+import arc.util.Time;
 import arc.util.Tmp;
 import arclibrary.graphics.g3d.model.obj.ObjectShader;
 import disintegration.DTVars;
@@ -20,17 +22,21 @@ import mindustry.game.EventType;
 import mindustry.graphics.Shaders;
 import mindustry.graphics.g3d.ShaderSphereMesh;
 
+import static mindustry.Vars.renderer;
 import static mindustry.Vars.state;
 
 public class DTShaders {
     public static BlackHoleShader blackHole;
     public static ObjectShader objectShader;
     public static ArcShader arc;
+    public static PortalShader portal;
 
     public static void init() {
         blackHole = new BlackHoleShader();
         objectShader = new ObjectShader(Core.files.internal("shaders/screenspace.vert"), Core.files.internal("shaders/screenspace.frag"));
         arc = new ArcShader();
+        portal = new PortalShader();
+        //((ShaderTestBlock)DTBlocks.shaderTestBlock).shader = Shaders.screenspace;
     }
 
     public static class ArcShader extends Shader {
@@ -46,6 +52,18 @@ public class DTShaders {
             setUniformf("u_center", center);
             setUniformf("u_resolution", Core.camera.width, Core.camera.height);
             setUniformf("u_campos", Core.camera.position.x - Core.camera.width/2f, Core.camera.position.y - Core.camera.height/2f);
+        }
+    }
+
+    public static class PortalShader extends Shader{
+
+        public PortalShader(){
+            super(Core.files.internal("shaders/screenspace.vert"), getDTShaderFi("portal.frag"));
+        }
+
+        @Override
+        public void apply(){
+            setUniformf("u_time", Time.time);
         }
     }
 

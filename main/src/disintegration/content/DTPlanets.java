@@ -201,7 +201,6 @@ public class DTPlanets {
                 clearSectorOnLose = true;
                 itemWhitelist.addAll(DTItems.omurloItems);
                 updateLighting = false;
-
                 ruleSetter = r -> {
                     r.waveTeam = Team.blue;
                     r.placeRangeCheck = false;

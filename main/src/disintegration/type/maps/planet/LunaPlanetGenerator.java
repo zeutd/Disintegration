@@ -27,7 +27,7 @@ public class LunaPlanetGenerator extends PlanetGenerator {
         baseSeed = 5;
     }
 
-    public float rimWidth = 0.25f, rimSteepness = 1f, floorHeight = -0.2f;
+    public float rimWidth = 0.5f, rimSteepness = 2f, floorHeight = -0.3f;
 
     float scl = 2f;
 

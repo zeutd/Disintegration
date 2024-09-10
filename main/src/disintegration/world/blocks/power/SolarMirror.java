@@ -103,7 +103,7 @@ public class SolarMirror extends Block {
             rot = target.angle();
             Draw.rect(supportRegion, x, y, rot + 90);
             Draw.z(Layer.blockOver);
-            for (float i = thickness; i > 0; i -= spacing) {
+            for (float i = thickness; i >= 0; i -= spacing) {
                 mat.idt();
                 mat.translate(0, 0, levitation - i);
                 mat.rotate(Tmp.v31.set(Tmp.v1, 0), -Mathf.radDeg * Mathf.atan2(-10, Mathf.dst(Tmp.v1.x, Tmp.v1.y)));
