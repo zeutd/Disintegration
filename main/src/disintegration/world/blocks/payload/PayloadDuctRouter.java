@@ -7,19 +7,20 @@ import arc.math.Mathf;
 import disintegration.util.DrawDef;
 import mindustry.graphics.Layer;
 import mindustry.world.blocks.payloads.PayloadConveyor;
+import mindustry.world.blocks.payloads.PayloadRouter;
 
-public class PayloadDuct extends PayloadConveyor {
-    public TextureRegion tileRegion;
-    public PayloadDuct(String name) {
+public class PayloadDuctRouter extends PayloadRouter {
+    public TextureRegion arrowRegion;
+    public PayloadDuctRouter(String name) {
         super(name);
     }
     @Override
     public void load(){
         super.load();
-        tileRegion = Core.atlas.find(name + "-tiles");
+        arrowRegion = Core.atlas.find(name + "-arrow");
     }
 
-    public class PayloadDuctBuild extends PayloadConveyorBuild {
+    public class PayloadDuctRouterBuild extends PayloadRouterBuild {
         @Override
         public void draw(){
             if (this.block.variants != 0 && this.block.variantRegions != null) {
@@ -29,21 +30,13 @@ public class PayloadDuct extends PayloadConveyor {
             }
 
             drawTeamTop();
-
-            int a = 0;
-            for(int i = 0; i < 4; i++){
-                if(!blends(i)){
-                    a += 1 << i;
-                }
-            }
             Draw.z(Layer.blockAdditive);
-            TextureRegion[] tiles = DrawDef.splitRegionTile(tileRegion, 8, 2, 64);
             if(item != null){
                 item.draw();
             }
             Draw.z(Layer.blockOver);
-            Draw.rect(tiles[15 - a], x, y);
-            Draw.rect(topRegion, x, y, drawrot());
+            Draw.rect(topRegion, x, y);
+            Draw.rect(arrowRegion, x, y, smoothRot);
         }
     }
 }

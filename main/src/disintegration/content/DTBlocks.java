@@ -148,7 +148,8 @@ public class DTBlocks {
     //payload
             payloadAccelerator, payloadDecelerator, magnetizedPayloadRail, magnetizedPayloadRailShort, payloadRedirector, payloadRedirectorPoint, payloadCross, payloadCrossPoint, payloadSeparator, payloadForkLeft, payloadForkRight, payloadForkPoint,
             payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
-            payloadDuct,
+            payloadTeleporter,
+            payloadDuct, payloadDuctRouter, payloadDuctJunction,
     //power
             neoplasmGenerator, excitationReactor, ventTurbine, turbineGenerator, spaceSolarPanel, rotateSolarPanel, solarMirror, tokamakFusionReactor,
             ironPowerNode, ironPowerNodeLarge, powerCapacitor, arcReactor, powerDriver,
@@ -1201,15 +1202,29 @@ public class DTBlocks {
             consumePower(2f);
             size = 3;
         }};
-        new PayloadTeleporter("payload-teleporter"){{
+        payloadTeleporter = new PayloadTeleporter("payload-teleporter"){{
             size = 7;
             requirements(Category.units, with());
         }};
         payloadDuct = new PayloadDuct("payload-duct"){{
-            requirements(Category.units, with(Items.graphite, 50));
+            requirements(Category.units, with(Items.graphite, 20, DTItems.nickel, 30));
             size = 2;
             interp = Interp.linear;
             moveTime = 10f;
+        }};
+        payloadDuctRouter = new PayloadDuctRouter("payload-duct-router"){{
+            requirements(Category.units, with(Items.graphite, 30, DTItems.nickel, 40));
+            size = 2;
+            interp = Interp.linear;
+            moveTime = 10f;
+        }};
+
+        payloadDuctJunction = new PayloadDuctJunction("payload-duct-junction"){{
+            requirements(Category.units, with(Items.graphite, 30, DTItems.nickel, 40));
+            size = 2;
+            interp = Interp.linear;
+            moveTime = 10f;
+            rotate = false;
         }};
         //endregion
         //region power
@@ -3093,7 +3108,7 @@ public class DTBlocks {
                     new UnitPlan(((PortableItemTurret)portableTurret).portableUnitType, 60f * 10f, with(DTItems.nickel, 30))
             );
             size = 2;
-            regionSuffix = "-darker";
+            regionSuffix = "darker";
             consumePower(1.2f);
         }};
 
