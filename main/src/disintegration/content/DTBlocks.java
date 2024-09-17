@@ -1209,12 +1209,14 @@ public class DTBlocks {
         payloadDuct = new PayloadDuct("payload-duct"){{
             requirements(Category.units, with(Items.graphite, 20, DTItems.nickel, 30));
             size = 2;
+            payloadLimit = 2f;
             interp = Interp.linear;
             moveTime = 10f;
         }};
         payloadDuctRouter = new PayloadDuctRouter("payload-duct-router"){{
             requirements(Category.units, with(Items.graphite, 30, DTItems.nickel, 40));
             size = 2;
+            payloadLimit = 2f;
             interp = Interp.linear;
             moveTime = 10f;
         }};
@@ -1222,6 +1224,7 @@ public class DTBlocks {
         payloadDuctJunction = new PayloadDuctJunction("payload-duct-junction"){{
             requirements(Category.units, with(Items.graphite, 30, DTItems.nickel, 40));
             size = 2;
+            payloadLimit = 2f;
             interp = Interp.linear;
             moveTime = 10f;
             rotate = false;
