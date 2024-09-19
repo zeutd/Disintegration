@@ -45,11 +45,7 @@ public class DTUI implements ApplicationListener {
                     }).expandX();
                     t.row();
                     t.button(Icon.trash, () -> ui.showConfirm("@confirm", "@disintegration.clearspacestation.confirm", () -> {
-                        spaceStations.remove((SpaceStation) p);
-                        spaceStationPlanets.remove(p.parent);
-                        p.accessible = false;
-                        p.visible = false;
-                        p.sectors.clear();
+                        SpaceStation.remove(p);
                         ui.planet.show();
                     })).visible(() -> p instanceof SpaceStation).expandX();
                 })).width(0);

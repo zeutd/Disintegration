@@ -2,12 +2,16 @@ package disintegration;
 
 import arc.Events;
 import arc.graphics.Color;
+import arc.math.geom.Vec2;
+import arc.util.Log;
 import arclibrary.graphics.g3d.model.obj.OBJModel;
 import arclibrary.graphics.g3d.render.GenericRenderer3D;
 import disintegration.content.*;
 import disintegration.core.*;
 import disintegration.entities.DTGroups;
 import disintegration.gen.entities.EntityRegistry;
+import disintegration.graphics.LaserLightning;
+import disintegration.graphics.Pal2;
 import disintegration.ui.DTUI;
 import mindustry.Vars;
 import mindustry.content.Planets;
@@ -27,7 +31,6 @@ public class DisintegrationJavaMod extends Mod{
     public DisintegrationJavaMod(){
         DTVars.init();
         DTGroups.init();
-        app.addListener(DTVars.saves = new DTSaves());
         app.addListener(DTVars.spaceStationIO = new SpaceStationIO());
         app.addListener(DTVars.exportHandler = new ExportHandler());
         app.addListener(DTVars.exportIO = new ExportIO());
@@ -64,9 +67,10 @@ public class DisintegrationJavaMod extends Mod{
             p.reloadMesh();
             p.clipRadius *= 2f;
         });
-        /*Vars.content.planets().each(p -> {
+        Vars.content.planets().each(p -> {
             p.orbitTime /= 20000;
-        });*/
+            p.rotateTime /= 20000;
+        });
         DTPlanets.luna.orbitRadius *= 0.5f;
         try {
             DTVars.spaceStationIO.read();
@@ -74,6 +78,13 @@ public class DisintegrationJavaMod extends Mod{
         } catch (Throwable ignored) {
 
         }
+        var data = new LaserLightning.LaserLightningData(new Vec2(0, 0), new Vec2(32, 64), Pal2.lightningWhite, 1, 0.1f, 0.3f, 1, 20);
+        Events.run(EventType.Trigger.drawOver, () -> {
+            //LaserLightning.draw(new Vec2(0, 0), new Vec2(64, 32), Pal2.lightningWhite, 1, 0.1f, 0.1f, 1f, 5f);
+            LaserLightning.datas.add(data);
+            LaserLightning.draw();
+            data.update();
+        });
         /*Events.run(EventType.ClientLoadEvent.class, () -> {
             content.setCurrentMod(mods.getMod(modName));
             DTBlocks.liquidCellPacker = new multicraft.MultiCrafter("liquid-cell-packer"){{
@@ -123,21 +134,9 @@ public class DisintegrationJavaMod extends Mod{
             DTBlocks.liquidCellPacker.loadIcon();
             content.setCurrentMod(null);
         });*/
-        /*Events.run(EventType.Trigger.preDraw, DTVars.renderer3D.models::clear);
-        Events.run(EventType.Trigger.drawOver, () -> {
-            Draw.draw(Layer.max, () -> {
-                Camera3D cam = DTVars.renderer3D.cam;
-                cam.far = 0.01f;
-                cam.near = 0.005f;
-                cam.fov = 42f;
-                cam.resize(Core.graphics.getWidth(), Core.graphics.getHeight());
-                cam.position.set(Core.camera.position.x, Core.camera.height / 2f / Mathf.tan(cam.fov / 2f * Mathf.degRad, 1f, 1f), -Core.camera.position.y);
-                cam.update();
-
-                DTVars.renderer3D.models.add(test);
-                DTVars.renderer3D.render();
-            });
-        });*/
+        Vars.content.planets().each(p -> p.solarSystem == Planets.sun, p -> {
+            p.hiddenItems.remove(DTItems.spaceStationPanel);
+        });
     }
     @Override
     public void loadContent() {

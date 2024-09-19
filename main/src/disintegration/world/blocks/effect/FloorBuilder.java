@@ -24,11 +24,8 @@ public class FloorBuilder extends Block {
 
     @Nullable
     public ItemStack returnItem;
-    @Nullable
-    public Seq<Floor> whiteList;
-
-    @Nullable
-    public Seq<Floor> blackList;
+    public Seq<Floor> whiteList = new Seq<>();
+    public Seq<Floor> blackList = new Seq<>();
 
     public FloorBuilder(String name) {
         super(name);
@@ -53,8 +50,8 @@ public class FloorBuilder extends Block {
                             tileY() - (float) range / 2 + Geometry.d4y(rotation) * (float) floorOffset / 2),
                     range, range).each(t -> {
                 if (t != null &&
-                        whiteList != null ? whiteList.contains(t.floor()) :
-                        blackList != null ? !blackList.contains(t.floor()) : true
+                        whiteList.size > 0 ? whiteList.contains(t.floor()) :
+                        blackList.size > 0 ? !blackList.contains(t.floor()) : true
                 ) {
                     t.setFloor(floor);
                     Fx.coreBuildBlock.at(t.worldx(), t.worldy(), 0, floor);

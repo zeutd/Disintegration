@@ -141,6 +141,7 @@ nb-configuration.xml
 
 /local.properties
 .gradle/
+/main/gradle/
 gradle-app.setting
 /build/
 /android/build/

@@ -28,7 +28,6 @@ public class DTVars {
     public static DTUI DTUI;
     public static SpaceStationIO spaceStationIO;
     public static ExportIO exportIO;
-    public static DTSaves saves;
     public static ExportHandler exportHandler;
 
     public static Fi modFile;

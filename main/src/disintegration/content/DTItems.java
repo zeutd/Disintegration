@@ -8,13 +8,19 @@ import static mindustry.content.Items.*;
 
 public class DTItems {
     public static Item
+            spaceStationPanel,
             nitride,
-            iridium, iron, steel, silver, magnetismAlloy, spaceStationPanel, conductionAlloy, nickel, lithium, siliconCrystal;
+            iridium, iron, steel, silver, magnetismAlloy, conductionAlloy,
+            nickel, lithium, siliconCrystal, obsidian, tantalum, tantalumTungstenAlloy;
     public static final Seq<Item>
             omurloItems = new Seq<>(),
             twinItems = new Seq<>();
 
     public static void load() {
+        spaceStationPanel = new Item("space-station-panel", Color.valueOf("F5F6FF")) {{
+            hardness = 2;
+            cost = 1;
+        }};
         nitride = new Item("nitride", Color.valueOf("9a9dbf")) {{
             hardness = 2;
             cost = 2;
@@ -44,10 +50,6 @@ public class DTItems {
             hardness = 3;
             cost = 2;
         }};
-        spaceStationPanel = new Item("space-station-panel", Color.valueOf("F5F6FF")) {{
-            hardness = 2;
-            cost = 1;
-        }};
 
         magnetismAlloy = new Item("magnetism-alloy", Color.valueOf("DED4D4")) {{
             hardness = 2;
@@ -74,6 +76,21 @@ public class DTItems {
         siliconCrystal = new Item("silicon-crystal", Color.valueOf("dfdfe8")){{
             hardness = 2;
             cost = 1f;
+        }};
+
+        tantalum = new Item("tantalum", Color.valueOf("B6B6D4")){{
+            hardness = 3;
+            cost = 2f;
+        }};
+
+        obsidian = new Item("obsidian", Color.valueOf("4E4E79")){{
+            hardness = 2;
+            cost = 1f;
+        }};
+
+        tantalumTungstenAlloy = new Item("tantalum-tungsten-alloy", Color.valueOf("9696C3")){{
+            hardness = 4;
+            cost = 3f;
         }};
 
         omurloItems.addAll(

@@ -126,6 +126,7 @@ public class DTBlocks {
             projectorWall,
             circleForceProjector,
             laserDefenceTower,
+            nickelWall, nickelWallLarge,
     //transport
             ironConveyor, alternateOverflowGate, ironSorter, invertedIronSorter, ironRouter, ironJunction, ironItemBridge,
             iridiumConveyor,
@@ -170,6 +171,7 @@ public class DTBlocks {
             torch, holy, franklinism,
             condense, blaze,
             portableTurret,
+            wander,
     //drills
             quarry, pressureDrill, stiffDrill, rockExtractor,
             portableDrill,
@@ -426,6 +428,18 @@ public class DTBlocks {
             armor = 15f;
             shard = DTBullets.nitrideLaser;
             requirements(Category.defense, with(DTItems.nitride, 24));
+        }};
+        nickelWall = new Wall("nickel-wall"){{
+            size = 1;
+            scaledHealth = 450;
+            armor = 8f;
+            requirements(Category.defense, with(DTItems.nickel, 8));
+        }};
+        nickelWallLarge = new Wall("nickel-wall-large"){{
+            size = 2;
+            scaledHealth = 450;
+            armor = 8f;
+            requirements(Category.defense, with(DTItems.nickel, 24));
         }};
         //endregion
         //region transport
@@ -2373,6 +2387,7 @@ public class DTBlocks {
                 }});
             }};
         }};
+
         twist = new PowerTurret("twist"){{
             requirements(Category.turret, with(DTItems.iron, 20, Items.lead, 30));
             scaledHealth = 300;
@@ -2405,7 +2420,6 @@ public class DTBlocks {
             }};
             limitRange(5);
         }};
-
         awake = new PowerTurret("awake"){{
             scaledHealth = 260;
             size = 1;
@@ -2790,7 +2804,6 @@ public class DTBlocks {
                         damage = 60f;
                         length = r;
                         knockback = 1f;
-                        pierceCap = 2;
                         buildingDamageMultiplier = 0.3f;
                         flareColor = Color.valueOf("ffcc79");
                         colors = new Color[]{Color.valueOf("ffa977").a(0.55f), Color.valueOf("ffbc67").a(0.7f), Color.valueOf("ffcc79").a(0.8f), Color.valueOf("ffecaa"), Color.white};
@@ -3019,6 +3032,37 @@ public class DTBlocks {
             requirements(Category.turret, BuildVisibility.sandboxOnly, with(DTItems.nickel, 30));
         }};
         ((PortableBlockAbility)((PortableItemTurret)portableTurret).portableUnitType.abilities.get(0)).unitContent = portableTurret;
+        wander = new ItemTurret("wander"){{
+            hasItems = true;
+            scaledHealth = 260;
+            ammo(
+                    DTItems.nickel, new BasicBulletType(7.5f, 85){{
+                        width = 12f;
+                        hitSize = 7f;
+                        height = 20f;
+                        shootEffect = Fx.shootBig;
+                        smokeEffect = Fx.shootBigSmoke;
+                        ammoMultiplier = 1;
+                        pierceCap = 2;
+                        pierce = true;
+                        pierceBuilding = true;
+                        hitColor = backColor = trailColor = Color.valueOf("fe7d71");
+                        frontColor = Color.white;
+                        trailWidth = 2.1f;
+                        trailLength = 10;
+                        hitEffect = despawnEffect = Fx.hitBulletColor;
+                        buildingDamageMultiplier = 0.3f;
+                    }}
+            );
+            drawer = new DrawTurret("dark-");
+            outlineColor = Pal2.darkerOutline;
+            ammoPerShot = 2;
+            reload = 40f;
+            range = 190;
+            shootCone = 3f;
+            researchCostMultiplier = 0.5f;
+            requirements(Category.turret, with(DTItems.nickel, 50, Items.graphite, 60));
+        }};
         //endregion
         //region drill
         quarry = new Quarry("quarry"){{
@@ -3097,21 +3141,20 @@ public class DTBlocks {
                     placeEffect = Fx.mineImpactWave;
                     placeSound = Sounds.drillImpact;
                 }});
-                selectionSize = 20;
             }});
             requirements(Category.production, BuildVisibility.sandboxOnly, with(DTItems.nickel, 12));
         }};
         ((PortableBlockAbility)((PortableDrill)portableDrill).portableUnitType.abilities.get(0)).unitContent = portableDrill;
 
         unitProducer = new UnitFactory("unit-producer"){{
-            requirements(Category.units, with(DTItems.iron, 60, Items.lead, 70));
+            requirements(Category.units, with(DTItems.nickel, 60, Items.graphite, 70));
             researchCostMultiplier = 0.15f;
             plans = Seq.with(
                     new UnitPlan(((PortableDrill)portableDrill).portableUnitType, 60f * 10f, with(DTItems.nickel, 12)),
                     new UnitPlan(((PortableItemTurret)portableTurret).portableUnitType, 60f * 10f, with(DTItems.nickel, 30))
             );
             size = 2;
-            regionSuffix = "darker";
+            regionSuffix = "-darker";
             consumePower(1.2f);
         }};
 
@@ -3122,7 +3165,7 @@ public class DTBlocks {
             solid = true;
             hasItems = true;
             itemCapacity = 50;
-            requirements(Category.production, BuildVisibility.hidden, with(Items.copper, 12));
+            requirements(Category.production, with(DTItems.nickel, 30));
         }};
         //endregion
         //region effect
@@ -3173,7 +3216,7 @@ public class DTBlocks {
                 rotateDraw = false;
                 floor = spaceStationFloor.asFloor();
                 buildCostMultiplier = 0.05f;
-                whiteList = Seq.with(Blocks.empty.asFloor());
+                whiteList.add(Blocks.empty.asFloor());
             }};
             spaceStationBuilders.add(builder);
         }
@@ -3187,7 +3230,7 @@ public class DTBlocks {
                 floor = Blocks.empty.asFloor();
                 buildCostMultiplier = 0.05f;
                 returnItem = new ItemStack(DTItems.spaceStationPanel, DTVars.spaceStationBaseRequirement);
-                whiteList = Seq.with(spaceStationFloor.asFloor());
+                whiteList.add(spaceStationFloor.asFloor());
             }};
             spaceStationBreakers.add(breaker);
         }
@@ -3217,7 +3260,7 @@ public class DTBlocks {
         }};
 
         spaceLaunchPad = new SpaceLaunchPad("space-launch-pad"){{
-            requirements(Category.effect, BuildVisibility.campaignOnly, with(DTItems.spaceStationPanel, 500));
+            requirements(Category.effect, BuildVisibility.campaignOnly, with(DTItems.spaceStationPanel, 300));
             size = 3;
             itemCapacity = 100;
             launchTime = 60f * 20;

@@ -9,6 +9,7 @@ import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
 import arc.scene.ui.layout.Table;
 import arc.struct.EnumSet;
+import arc.util.Log;
 import disintegration.content.DTFx;
 import disintegration.content.DTItems;
 import disintegration.content.DTPlanets;
@@ -143,6 +144,7 @@ public class SpaceStationLaunchPad extends Block {
 
         @Override
         public void updateTile() {
+            Log.info(spaceStationPlanets);
             if (!state.isCampaign() || selectedPlanet == null) return;
             canLaunch = !spaceStationPlanets.contains(selectedPlanet);
 
@@ -155,18 +157,9 @@ public class SpaceStationLaunchPad extends Block {
                     DTFx.spaceStationLaunchPayload.at(this);
                     items.clear();
                     Effect.shake(3f, 3f, this);
-                    spaceStationPlanets.add(selectedPlanet);
-                    Planet s = Vars.content.getByName(ContentType.planet, selectedPlanet.name + "-space-station");
-                    if (s != null) {
-                        s.accessible = true;
-                        s.visible = true;
-                        spaceStations.add((SpaceStation) s);
-                        return;
-                    }
-                    String whiteSpace = Objects.equals(Core.bundle.get("spacestationwhitespace"), "true") ? " " : "";
-                    SpaceStation spaceStation = new SpaceStation(selectedPlanet.name + "-space-station", selectedPlanet);
-                    spaceStations.add(spaceStation);
-                    spaceStation.localizedName = selectedPlanet.localizedName + whiteSpace + Core.bundle.get("spacestation");
+                    content.setCurrentMod(mods.getMod(modName));
+                    SpaceStation.create(selectedPlanet);
+                    content.setCurrentMod(null);
                 }
             }
         }

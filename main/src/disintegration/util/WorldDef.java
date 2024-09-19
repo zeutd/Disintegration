@@ -19,7 +19,7 @@ public class WorldDef {
         for (int ix = 0; ix < width; ix++) {
             for (int iy = 0; iy < height; iy++) {
                 Tile other = world.tile(ix + dx + 1, iy + dy + 1);
-                tilesGet.add(other);
+                if(other != null) tilesGet.add(other);
             }
         }
         return tilesGet;

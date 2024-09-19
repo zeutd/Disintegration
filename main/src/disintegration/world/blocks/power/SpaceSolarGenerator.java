@@ -12,6 +12,7 @@ import arc.util.Tmp;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import disintegration.util.WorldDef;
+import mindustry.Vars;
 import mindustry.entities.units.BuildPlan;
 import mindustry.game.Team;
 import mindustry.graphics.Drawf;
@@ -21,8 +22,7 @@ import mindustry.world.blocks.environment.Floor;
 import mindustry.world.blocks.power.SolarGenerator;
 import mindustry.world.meta.BlockFlag;
 
-import static mindustry.Vars.indexer;
-import static mindustry.Vars.tilesize;
+import static mindustry.Vars.*;
 
 public class SpaceSolarGenerator extends SolarGenerator {
     public TextureRegion topRegion;
@@ -34,7 +34,7 @@ public class SpaceSolarGenerator extends SolarGenerator {
 
     public Rect spaceRect;
 
-    public float detectTime = 60 * 5f;
+    public int lastChange = -2;
 
     public SpaceSolarGenerator(String name) {
         super(name);
@@ -128,7 +128,8 @@ public class SpaceSolarGenerator extends SolarGenerator {
         @Override
         public void updateTile() {
             super.updateTile();
-            if (timer.get(detectTime)) {
+            if (lastChange != Vars.world.tileChanges) {
+                lastChange = world.tileChanges;
                 Rect rect = getRectTile(Tmp.r1, tileX(), tileY(), rotation);
                 rect.getPosition(Tmp.v1);
                 e = 1;

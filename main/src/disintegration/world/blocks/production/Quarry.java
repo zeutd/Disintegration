@@ -21,6 +21,7 @@ import arc.util.io.Writes;
 import disintegration.content.DTFx;
 import disintegration.util.DTUtil;
 import disintegration.util.WorldDef;
+import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.content.Fx;
 import mindustry.core.World;
@@ -51,9 +52,10 @@ import static mindustry.Vars.tilesize;
 public class Quarry extends Block {
     public TextureRegion sideRegion1;
     public TextureRegion sideRegion2;
-    public TextureRegion locator;
+    public TextureRegion locatorRegion;
     public TextureRegion armRegion;
-    public TextureRegion drill;
+    public TextureRegion drillRegion;
+    public TextureRegion frameRegion;
     public float mineTime;
     public float liquidBoostIntensity;
     public int areaSize;
@@ -102,9 +104,10 @@ public class Quarry extends Block {
         super.load();
         sideRegion1 = atlas.find(name + "-side1");
         sideRegion2 = atlas.find(name + "-side2");
-        locator = atlas.find(name + "-locator");
+        locatorRegion = atlas.find(name + "-locator");
         armRegion = atlas.find(name + "-arm");
-        drill = atlas.find(name + "-drill");
+        drillRegion = atlas.find(name + "-drill");
+        frameRegion = atlas.find(name + "-frame");
     }
 
     public Rect getRect(Rect rect, float x, float y, int rotation) {
@@ -227,6 +230,7 @@ public class Quarry extends Block {
 
     public class QuarryBuild extends Building {
         private FrameBuffer shadow = null;
+        public int lastChange = -2;
         public float progress;
         public float deployProgress;
         //float mx = 0, mxS = 0, mxP = 0, mxM = 0, mxR = 0, my = 0, myS = 0, myP = 0, myM = 0, myR = 0, mN = -2 * fulls, mL = -2 * fulls;
@@ -261,13 +265,15 @@ public class Quarry extends Block {
 
             Vec2 MiningPos = new Vec2(World.conv(mx - fulls), World.conv(my - fulls));
 
-            tiles = WorldDef.getAreaTile(MiningPos, areaSize, areaSize);
+            if(lastChange != Vars.world.tileChanges) {
+                tiles = WorldDef.getAreaTile(MiningPos, areaSize, areaSize);
 
-            itemsArray = getDropArray(tiles);
+                itemsArray = getDropArray(tiles);
 
-            empty = itemsArray.isEmpty();
+                empty = itemsArray.isEmpty();
 
-            itemList = DTUtil.listItem(itemsArray);
+                itemList = DTUtil.listItem(itemsArray);
+            }
 
             fullColor = Tmp.c1.set(areaColor).lerp(boostColor, boostWarmup);
             float speed = 0;
@@ -333,45 +339,46 @@ public class Quarry extends Block {
 
         public void drawDrill(float x, float y, float mx, float my, float layer) {
             Draw.z(layer - 1f);
-
-            for (Point2 p : Geometry.d8edge) {
-                Draw.rect(locator,
-                        x + deployProgress1 * (mx - x + fulls * p.x),
-                        y + deployProgress1 * (my - y + fulls * p.y)
-                );
-            }
-            if (deployProgress > 1) Draw.rect(drill, drillX + mx, drillY + my);
-            else Draw.rect(drill, x + deployProgress1 * (mx - x), y + deployProgress1 * (my - y));
-            //Draw arm
-            Draw.z(layer - 1.1f);
-            Lines.stroke(3.5f);
-            if (deployProgress > 2) {
-                for (int i = 0; i < Geometry.d8edge.length; i++) {
-                    Point2 p1 = Geometry.d8edge(i);
-                    Point2 p2 = Geometry.d8edge(i + 1);
-                    Lines.line(armRegion,
-                            mx + fulls * p1.x,
-                            my + fulls * p1.y,
-                            mx + fulls * p2.x,
-                            my + fulls * p2.y,
-                            false
+            Lines.stroke(armRegion.height / 4f);
+            if(deployProgress < 2) {
+                for (Point2 p : Geometry.d8edge) {
+                    Draw.rect(locatorRegion,
+                            x + deployProgress1 * (mx - x + fulls * p.x),
+                            y + deployProgress1 * (my - y + fulls * p.y)
                     );
                 }
-            } else if (deployProgress > 1) {
-                for (Point2 p : Geometry.d8edge) {
-                    for (int d : Mathf.zeroOne) {
+                //Draw arm
+                Draw.z(layer - 1.1f);
+                if (deployProgress > 2) {
+                    for (int i = 0; i < Geometry.d8edge.length; i++) {
+                        Point2 p1 = Geometry.d8edge(i);
+                        Point2 p2 = Geometry.d8edge(i + 1);
                         Lines.line(armRegion,
-                                mx + fulls * p.x,
-                                my + fulls * p.y,
-                                deployProgress2 * -(-d + 1) * fulls * p.x + mx + fulls * p.x,
-                                deployProgress2 * -d * fulls * p.y + my + fulls * p.y,
+                                mx + fulls * p1.x,
+                                my + fulls * p1.y,
+                                mx + fulls * p2.x,
+                                my + fulls * p2.y,
                                 false
                         );
                     }
+                } else if (deployProgress > 1) {
+                    for (Point2 p : Geometry.d8edge) {
+                        for (int d : Mathf.zeroOne) {
+                            Lines.line(armRegion,
+                                    mx + fulls * p.x,
+                                    my + fulls * p.y,
+                                    deployProgress2 * -(-d + 1) * fulls * p.x + mx + fulls * p.x,
+                                    deployProgress2 * -d * fulls * p.y + my + fulls * p.y,
+                                    false
+                            );
+                        }
+                    }
                 }
+                //draw across arm
+                Draw.z(layer - 1.2f);
+            } else {
+                Draw.rect(frameRegion, mx, my);
             }
-            //draw across arm
-            Draw.z(layer - 1.2f);
             if (deployProgress > 3) {
                 /*Lines.line(armRegion,
                         drillX * 0 + mx + fulls * 1,
@@ -407,6 +414,8 @@ public class Quarry extends Block {
                     }
                 }
             }
+            if (deployProgress > 1) Draw.rect(drillRegion, drillX + mx, drillY + my);
+            else Draw.rect(drillRegion, x + deployProgress1 * (mx - x), y + deployProgress1 * (my - y));
         }
 
         @Override

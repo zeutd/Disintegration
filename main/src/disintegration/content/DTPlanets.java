@@ -102,7 +102,7 @@ public class DTPlanets {
             allowWaveSimulation = true;
             allowSectorInvasion = false;
             allowLaunchSchematics = true;
-            hiddenItems.addAll(Items.serpuloItems).removeAll(Items.erekirItems);
+            itemWhitelist.addAll(DTItems.twinItems);
 
             updateLighting = false;
 
@@ -145,7 +145,7 @@ public class DTPlanets {
             allowWaveSimulation = true;
             allowSectorInvasion = false;
             allowLaunchSchematics = true;
-            hiddenItems.addAll(Items.serpuloItems).removeAll(Items.erekirItems);
+            itemWhitelist.addAll(DTItems.twinItems);
 
             updateLighting = false;
 

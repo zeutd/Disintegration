@@ -24,29 +24,7 @@ public class SpaceStationIO implements ApplicationListener {
     public void read() throws IOException {
         content.setCurrentMod(mods.getMod(modName));
         for (String s : DTVars.spaceStationFi.readString().split("/")) {
-            Planet parent = Vars.content.planet(s);
-            if (parent != null) {
-                String whiteSpace = Objects.equals(Core.bundle.get("whitespacebetween"), "true") ? " " : "";
-                SpaceStation spaceStation = new SpaceStation(parent.name + "-space-station", parent);
-                spaceStation.localizedName = parent.localizedName + whiteSpace + Core.bundle.get("spacestation");
-                DTVars.spaceStations.add(spaceStation);
-                DTVars.spaceStationPlanets.add(parent);
-                Sector sector = spaceStation.getSector(PlanetGrid.Ptile.empty);
-                try {
-                    Fi f = control.saves.getSectorFile(sector);
-                    if (f.exists()) {
-                        Saves.SaveSlot slot = control.saves.new SaveSlot(f);
-                        slot.meta = SaveIO.getMeta(f);
-                        sector.save = slot;
-                        slot.setAutosave(true);
-                    }
-                } catch (Exception e) {
-                    Log.err(e);
-                }
-                sector.loadInfo();
-                sector.info.wasCaptured = true;
-                sector.info.spawnPosition = 0;
-            }
+            SpaceStation.create(content.planet(s));
         }
         content.setCurrentMod(null);
     }
