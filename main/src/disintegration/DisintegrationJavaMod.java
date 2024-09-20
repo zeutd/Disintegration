@@ -9,6 +9,7 @@ import arclibrary.graphics.g3d.render.GenericRenderer3D;
 import disintegration.content.*;
 import disintegration.core.*;
 import disintegration.entities.DTGroups;
+import disintegration.entities.bullet.ContinuousLaserLightningBulletType;
 import disintegration.gen.entities.EntityRegistry;
 import disintegration.graphics.LaserLightning;
 import disintegration.graphics.Pal2;
@@ -22,8 +23,7 @@ import mindustry.world.meta.Env;
 
 import static arc.Core.app;
 import static disintegration.DTVars.modName;
-import static mindustry.Vars.content;
-import static mindustry.Vars.mods;
+import static mindustry.Vars.*;
 import static mindustry.type.ItemStack.with;
 
 public class DisintegrationJavaMod extends Mod{
@@ -78,12 +78,14 @@ public class DisintegrationJavaMod extends Mod{
         } catch (Throwable ignored) {
 
         }
-        var data = new LaserLightning.LaserLightningData(new Vec2(0, 0), new Vec2(32, 64), Pal2.lightningWhite, 1, 0.1f, 0.3f, 1, 20);
+        var data = new LaserLightning.LaserLightningData(new Vec2(32, 64), new Vec2(64, 128), Pal2.lightningWhite, 1, 0.1f, 0.3f, 1, 20);
         Events.run(EventType.Trigger.drawOver, () -> {
             //LaserLightning.draw(new Vec2(0, 0), new Vec2(64, 32), Pal2.lightningWhite, 1, 0.1f, 0.1f, 1f, 5f);
+            //data.end.set(player.mouseX, player.mouseY);
             LaserLightning.datas.add(data);
             LaserLightning.draw();
-            data.update();
+            //if(!state.isPaused()) data.update();
+            if(!state.isPaused()) ContinuousLaserLightningBulletType.data.update();
         });
         /*Events.run(EventType.ClientLoadEvent.class, () -> {
             content.setCurrentMod(mods.getMod(modName));

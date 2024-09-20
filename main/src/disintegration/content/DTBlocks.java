@@ -19,7 +19,6 @@ import disintegration.entities.DTGroups;
 import disintegration.entities.abilities.PortableBlockAbility;
 import disintegration.entities.bullet.*;
 import disintegration.gen.entities.EntityRegistry;
-import disintegration.graphics.DTShaders;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.campaign.InterplanetaryLaunchPad;
 import disintegration.world.blocks.campaign.OrbitalLaunchPad;
@@ -28,7 +27,6 @@ import disintegration.world.blocks.campaign.SpaceStationLaunchPad;
 import disintegration.world.blocks.debug.BlackHoleBlock;
 import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
-import disintegration.world.blocks.debug.ShaderTestBlock;
 import disintegration.world.blocks.defence.ContinuousMendProjector;
 import disintegration.world.blocks.defence.LaserTower;
 import disintegration.world.blocks.defence.RepairDroneStation;
@@ -99,8 +97,6 @@ import mindustry.world.meta.Attribute;
 import mindustry.world.meta.BlockGroup;
 import mindustry.world.meta.BuildVisibility;
 import mindustry.world.meta.Env;
-import multicraft.IOEntry;
-import multicraft.Recipe;
 
 import static arc.graphics.g2d.Draw.color;
 import static arc.graphics.g2d.Lines.stroke;
@@ -2826,7 +2822,7 @@ public class DTBlocks {
 
             shootWarmupSpeed = 0.07f;
 
-            shootType = new ContinuousLaserBulletType(){{
+            shootType = new ContinuousLaserLightningBulletType(70){{
                 colors = new Color[]{Color.valueOf("62ae7f"), Color.valueOf("77e083"), Color.valueOf("acf4ba"), Color.white};
                 intervalBullets = 1;
                 bulletInterval = 3f;
@@ -2838,6 +2834,7 @@ public class DTBlocks {
                     weaveScale = 10f;
                     despawnEffect = Fx.heal;
                 }};
+                width = 0;
             }};
         }};
         franklinism = new PowerTurret("franklinism"){{

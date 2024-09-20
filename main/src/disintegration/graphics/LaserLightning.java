@@ -1,9 +1,11 @@
 package disintegration.graphics;
 
+import arc.Core;
 import arc.graphics.Color;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
+import arc.graphics.gl.FrameBuffer;
 import arc.math.Mathf;
 import arc.math.Rand;
 import arc.math.geom.Vec2;
@@ -12,19 +14,26 @@ import arc.util.Log;
 import arc.util.Time;
 import arc.util.Tmp;
 import mindustry.graphics.Layer;
+import mindustry.graphics.Pal;
+
+import static arc.Core.camera;
+import static arc.Core.graphics;
 
 public class LaserLightning {
-    private static int lastId = 0;
     private static final Rand random = new Rand();
     public static final Seq<LaserLightningData> datas = new Seq<>();
+    public static final FrameBuffer buffer = new FrameBuffer();
     public static class LaserLightningData{
         public Vec2 start, end;
         public Color color;
         public long seed;
-        public int id;
+        public float time;
         public float interval, interval2, speed, mag;
         public Seq<Vec2> points = new Seq<>();
         public Seq<Vec2> targets = new Seq<>();
+        public LaserLightningData(){
+
+        }
         public LaserLightningData(Vec2 start, Vec2 end, Color color, long seed, float interval, float interval2, float speed, float mag){
             this.start = start;
             this.end = end;
@@ -34,28 +43,33 @@ public class LaserLightning {
             this.interval2 = interval2;
             this.speed = speed;
             this.mag = mag;
-            this.id = lastId++;
-            float len = start.dst(end);
             for(float is = 0; is <= 1 / interval; is += 1){
-                points.add(new Vec2((is + 0.5f) * len * interval, 0));
-                targets.add(new Vec2((is + 0.5f) * len * interval, 0));
+                points.add(new Vec2());
+                targets.add(new Vec2());
             }
         }
 
         public void draw(){
             float len = start.dst(end);
             Draw.draw(Layer.effect, () -> {
+                Tmp.v6.set(Core.camera.position);
+                Core.camera.position.set(0, 0);
+                Core.camera.update();
+                Draw.proj(camera);
+                buffer.resize(graphics.getWidth(), graphics.getHeight());
+                buffer.begin(Color.clear);
                 Lines.stroke(1, color);
-                Draw.trans(Tmp.m1.idt().rotate(start.angleTo(end)).translate(start));
+                Tmp.m1.idt().rotate(start.angleTo(end));
+                Draw.trans(Tmp.m1);
                 //Lines.line(0, 0, len, 0);
-                Tmp.v5.set(start);
+                Tmp.v5.set(0, 0);
                 random.setSeed(seed);
                 for (int is = 0; is <= 1 / interval; is += 1){
                     float i = is * interval;
                     Tmp.bz2.set(Tmp.v2.set(i * len, 0), points.get(is), Tmp.v3.set((i + interval) * len, 0));
                     for (float j = 0; j <= 1; j += interval2){
                         Tmp.bz2.valueAt(Tmp.v4, j);
-                        Tmp.v1.trns(Time.time * random.range(30f), 1f);
+                        Tmp.v1.trns(time * random.range(80f), 1f);
                         Tmp.v4.add(Tmp.v1);
                         Lines.line(Tmp.v5.x, Tmp.v5.y, Tmp.v4.x, Tmp.v4.y, false);
                         Fill.circle(Tmp.v4.x, Tmp.v4.y, Lines.getStroke() / 2f);
@@ -63,17 +77,23 @@ public class LaserLightning {
                     }
                 }
                 Draw.trans(Tmp.m1.idt());
+                buffer.end();
+                Core.camera.position.set(Tmp.v6);
+                Core.camera.update();
+                Draw.proj(camera);
+                Draw.rect(Draw.wrap(buffer.getTexture()), start.x, start.y, Core.camera.width, -Core.camera.height);
             });
         }
         public void update(){
+            time += Time.delta;
             float len = start.dst(end);
             for(int is = 0; is <= 1 / interval; is += 1){
                 Vec2 point = points.get(is);
                 Vec2 target = targets.get(is);
                 point.approachDelta(target, speed);
                 if(point.within(target, 0.1f)){
-                    random.setSeed((long) Time.time + seed + is * 100L);
-                    point.set(random.random(is * len * interval, (is + 0.5f) * len * interval), random.range(mag));
+                    random.setSeed((long)time + seed + is * 100L);
+                    point.set(random.random(is * len * interval, (is + 0.5f) * len * interval), 0);
                     target.set(random.random(is * len * interval, (is + 0.5f) * len * interval), random.range(mag));
                 }
             }
