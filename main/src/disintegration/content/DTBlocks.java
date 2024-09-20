@@ -165,7 +165,7 @@ public class DTBlocks {
             shard, aerolite, regeneration, sparkover, focus, axe, ambush,
             voltage,
             torch, holy, franklinism,
-            condense, blaze,
+            condense, blaze, amperage,
             portableTurret,
             wander,
     //drills
@@ -2822,7 +2822,7 @@ public class DTBlocks {
 
             shootWarmupSpeed = 0.07f;
 
-            shootType = new ContinuousLaserLightningBulletType(70){{
+            shootType = new ContinuousLaserBulletType(70){{
                 colors = new Color[]{Color.valueOf("62ae7f"), Color.valueOf("77e083"), Color.valueOf("acf4ba"), Color.white};
                 intervalBullets = 1;
                 bulletInterval = 3f;
@@ -2834,7 +2834,6 @@ public class DTBlocks {
                     weaveScale = 10f;
                     despawnEffect = Fx.heal;
                 }};
-                width = 0;
             }};
         }};
         franklinism = new PowerTurret("franklinism"){{
@@ -2948,7 +2947,7 @@ public class DTBlocks {
 
             drawer = new DrawTurret("framed-");
 
-            shootType = new ContinuousLaserBulletType(80){{
+            shootType = new ContinuousLaserBulletType(90){{
                 length = 250f;
                 width = 12f;
                 hitEffect = Fx.hitMeltdown;
@@ -2981,6 +2980,24 @@ public class DTBlocks {
             scaledHealth = 200;
             coolant = consumeCoolant(0.5f);
             consumePower(17f);
+        }};
+        amperage = new ContinuousTurret("amperage"){{
+            shootSound = Sounds.none;
+            loopSoundVolume = 1f;
+            loopSound = Sounds.laserbeam;
+            requirements(Category.turret, with(DTItems.iron, 200, DTItems.magnetismAlloy, 200, DTItems.iridium, 150, DTItems.conductionAlloy, 90));
+            size = 5;
+            range = 250;
+            aimChangeSpeed = 0.9f;
+            rotateSpeed = 1f;
+            consumePower(17f);
+            drawer = new DrawTurret("framed-");
+            shootType = new ContinuousLaserLightningBulletType(100){{
+                width = 0.1f;
+                mag = 30;
+                pierceCap = 2;
+                colors = new Color[]{Color.valueOf("68aeac"), Color.valueOf("8ce0d9"), Color.valueOf("a2e7f4"), Color.white};
+            }};
         }};
 
         portableTurret = new PortableItemTurret("portable-turret"){{

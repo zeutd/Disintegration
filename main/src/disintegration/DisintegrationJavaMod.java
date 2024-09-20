@@ -78,13 +78,8 @@ public class DisintegrationJavaMod extends Mod{
         } catch (Throwable ignored) {
 
         }
-        var data = new LaserLightning.LaserLightningData(new Vec2(32, 64), new Vec2(64, 128), Pal2.lightningWhite, 1, 0.1f, 0.3f, 1, 20);
         Events.run(EventType.Trigger.drawOver, () -> {
-            //LaserLightning.draw(new Vec2(0, 0), new Vec2(64, 32), Pal2.lightningWhite, 1, 0.1f, 0.1f, 1f, 5f);
-            //data.end.set(player.mouseX, player.mouseY);
-            LaserLightning.datas.add(data);
             LaserLightning.draw();
-            //if(!state.isPaused()) data.update();
             if(!state.isPaused()) ContinuousLaserLightningBulletType.data.update();
         });
         /*Events.run(EventType.ClientLoadEvent.class, () -> {
