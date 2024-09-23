@@ -48,7 +48,8 @@ public class LaserLightning {
             random.setSeed(seed);
             for (int is = 0; is < 1 / interval; is += 1){
                 float i = is * interval;
-                Tmp.bz2.set(Tmp.v2.trns(time * random.range(0.1f), 4f).add(i * len, 0), points.get(is), Tmp.v3.trns(time * random.range(80f), 4f).add((i + interval) * len, 0));
+                float r = random.range(0.1f);
+                Tmp.bz2.set(Tmp.v2.trns(time * r, 4f).add(i * len, 0), points.get(is), Tmp.v3.trns(time * r, 4f).add((i + interval) * len, 0));
                 for (float j = 0; j <= 1; j += interval2){
                     Tmp.bz2.valueAt(Tmp.v4, j);
                     Tmp.v1.trns(time * random.range(80f), 1f);
@@ -72,9 +73,19 @@ public class LaserLightning {
                     point.set(random.random(is * len * interval, (is + 0.5f) * len * interval), 0);
                     target.set(random.random(is * len * interval, (is + 0.5f) * len * interval), random.range(mag));
                 }
-                if(point.dst(target) > len * interval){
+                if(point.dst(target) > mag + 0.1f){
                     point.set(target);
                 }
+            }
+        }
+        public void init(){
+            float len = start.dst(end);
+            for(int is = 0; is <= 1 / interval; is += 1){
+                Vec2 point = points.get(is);
+                Vec2 target = targets.get(is);
+                random.setSeed(seed + is * 100L);
+                point.set(random.random(is * len * interval, (is + 0.5f) * len * interval), 0);
+                target.set(random.random(is * len * interval, (is + 0.5f) * len * interval), random.range(mag));
             }
         }
     }

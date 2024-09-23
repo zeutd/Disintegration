@@ -130,7 +130,7 @@ public class DTBlocks {
     //liquid
             magnetizedConduit, gearPump,
     //storage
-            corePedestal, corePillar, spaceStationCore,
+            corePedestal, corePillar, coreAltar, spaceStationCore,
     //heat
             heatConduit, heatConduitRouter,
             burningHeater, thermalHeater,
@@ -169,7 +169,7 @@ public class DTBlocks {
             portableTurret,
             wander,
     //drills
-            quarry, pressureDrill, stiffDrill, rockExtractor,
+            quarry, pressureDrill, stiffDrill, cuttingDrill, rockExtractor,
             portableDrill,
     //effect
             blastMine,
@@ -484,7 +484,7 @@ public class DTBlocks {
             bufferCapacity = 14;
         }};
         iridiumConveyor = new Conveyor("iridium-conveyor"){{
-            requirements(Category.distribution, with(DTItems.iron, 1));
+            requirements(Category.distribution, with(DTItems.iridium, 1));
             health = 65;
             speed = 0.09f;
             displayedSpeed = 13f;
@@ -512,8 +512,8 @@ public class DTBlocks {
 
             isFirstTier = true;
             unitType = DTUnitTypes.separate;
-            health = 1300;
-            itemCapacity = 4000;
+            health = 2000;
+            itemCapacity = 8000;
             size = 3;
 
             generateIcons = false;
@@ -526,12 +526,27 @@ public class DTBlocks {
 
             unitType = DTUnitTypes.attract;
             health = 3000;
-            itemCapacity = 8000;
+            itemCapacity = 10000;
             size = 4;
 
             generateIcons = false;
 
             unitCapModifier = 12;
+
+            researchCostMultiplier = 0.07f;
+        }};
+
+        coreAltar = new CoreBlock("core-altar"){{
+            requirements(Category.effect, with(DTItems.iron, 3000, DTItems.silver, 2000, DTItems.iridium, 1000));
+
+            unitType = DTUnitTypes.blend;
+            health = 5000;
+            itemCapacity = 16000;
+            size = 5;
+
+            generateIcons = false;
+
+            unitCapModifier = 15;
 
             researchCostMultiplier = 0.07f;
         }};
@@ -674,8 +689,8 @@ public class DTBlocks {
             hasLiquids = true;
             outputsLiquid = true;
             envEnabled = Env.any;
-            //ambientSound = DTSounds.boiler;
-            //ambientSoundVolume = 0.01f;
+            loopSound = DTSounds.boiler;
+            loopSoundVolume = 0.5f;
             drawer = new DrawMulti(
                     new DrawRegion("-bottom"),
                     new DrawLiquidTile(Liquids.water),
@@ -695,7 +710,6 @@ public class DTBlocks {
 
             consumeLiquid(Liquids.water, 12f / 60f);
         }};
-
         solarBoiler = new SolarCrafter("solar-boiler"){{
             requirements(Category.crafting, with(DTItems.iron, 65, Items.silicon, 40, Items.graphite, 60));
             outputLiquid = new LiquidStack(DTLiquids.steam, 108f / 60f);
@@ -714,7 +728,6 @@ public class DTBlocks {
 
             consumeLiquid(Liquids.water, 108f / 60f);
         }};
-
         airCompressor = new GenericCrafter("air-compressor"){{
             requirements(Category.crafting, with(DTItems.silver, 60, DTItems.iron, 180, Items.silicon, 150));
             size = 2;
@@ -740,7 +753,6 @@ public class DTBlocks {
 
             researchCost = with(Items.silicon, 2000, Items.oxide, 900, Items.beryllium, 2400);
         }};
-
         electrolyser = new GenericCrafter("electrolyser"){{
             requirements(Category.crafting, with(Items.silicon, 50, Items.graphite, 40, DTItems.iron, 130, DTItems.silver, 80));
             size = 3;
@@ -776,7 +788,6 @@ public class DTBlocks {
             outputLiquids = LiquidStack.with(DTLiquids.oxygen, 4f / 60, Liquids.hydrogen, 8f / 60);
             liquidOutputDirections = new int[]{4, 2};
         }};
-
         siliconRefiner = new GenericCrafter("silicon-refiner"){{
             requirements(Category.crafting, with(DTItems.iron, 60));
             craftEffect = Fx.smeltsmoke;
@@ -799,7 +810,6 @@ public class DTBlocks {
             consumeItems(with(Items.coal, 2, Items.sand, 3));
             consumePower(0.50f);
         }};
-
         graphiteCompressor = new GenericCrafter("graphite-compressor"){{
             requirements(Category.crafting, with(DTItems.iron, 50));
 
@@ -808,10 +818,9 @@ public class DTBlocks {
             craftTime = 240f;
             size = 2;
             hasItems = true;
-
+            researchCostMultiplier = 0.75f;
             consumeItem(Items.coal, 5);
         }};
-
         steelSmelter = new GenericCrafter("steel-smelter"){{
             requirements(Category.crafting, with(DTItems.iron, 60, Items.graphite, 30, Items.silicon, 30, Items.metaglass, 20));
             craftEffect = Fx.smeltsmoke;
@@ -826,7 +835,6 @@ public class DTBlocks {
             consumeItems(with(DTItems.iron, 1, Items.coal, 1));
             consumePower(0.60f);
         }};
-
         steelBlastFurnace = new HeatCrafter("steel-blast-furnace"){{
             requirements(Category.crafting, with(DTItems.steel, 100, Items.graphite, 190, Items.silicon, 50, DTItems.iron, 90, DTItems.silver, 20));
             craftEffect = new MultiEffect(Fx.producesmoke, new RadialEffect(DTFx.blastFurnaceSmoke, 4, 90f, 5f)) ;
@@ -843,7 +851,6 @@ public class DTBlocks {
 
             consumeItems(with(DTItems.iron, 8, Items.coal, 4));
         }};
-
         conductionAlloySmelter = new CatalyzeCrafter("conduction-alloy-smelter"){{
             requirements(Category.crafting, with(Items.silicon, 80, Items.lead, 90, DTItems.silver, 90, DTItems.iron, 70));
             craftEffect = Fx.smeltsmoke;
@@ -884,7 +891,6 @@ public class DTBlocks {
             size = 3;
             outputItem = new ItemStack(DTItems.magnetismAlloy, 2);
         }};
-
         surgeFurnace = new GenericCrafter("surge-furnace"){{
             requirements(Category.crafting, with(Items.silicon, 100, Items.lead, 120, DTItems.iridium, 90));
             craftEffect = Fx.smeltsmoke;
@@ -922,7 +928,6 @@ public class DTBlocks {
                     new DrawLiquidOutputs()
             );
         }};
-
         blastCompoundMixer = new GenericCrafter("blast-compound-mixer"){{
             requirements(Category.crafting, with(Items.lead, 30, DTItems.silver, 20, Items.metaglass, 40));
             hasItems = true;
@@ -941,7 +946,6 @@ public class DTBlocks {
             consumeLiquid(DTLiquids.algalWater, 0.2f);
             consumePower(0.40f);
         }};
-
         centrifuge = new Separator("centrifuge"){{
             requirements(Category.crafting, with(Items.surgeAlloy, 40, Items.lead, 140, Items.silicon, 70));
             results = with(
@@ -959,7 +963,6 @@ public class DTBlocks {
 
             drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawLiquidTile(), new DrawBlurSpin("-spinner", 12), new DrawDefault());
         }};
-
         spaceStationPanelCompressor = new GenericCrafter("space-station-panel-compressor"){{
             requirements(Category.crafting, with(Items.copper, 70, Items.metaglass, 50, Items.titanium, 70));
 
@@ -972,7 +975,6 @@ public class DTBlocks {
             consumeItems(with(Items.titanium, 2, Items.copper, 1));
             consumePower(0.5f);
         }};
-
         spaceStationPanelCompressorLarge = new GenericCrafter("space-station-panel-compressor-large"){{
             requirements(Category.crafting, with(Items.copper, 70, Items.metaglass, 50, Items.titanium, 70));
 
@@ -1437,8 +1439,7 @@ public class DTBlocks {
         }};
         powerDriver = new PowerDriver("power-driver"){{
             size = 3;
-            requirements(Category.power, ItemStack.with());
-
+            requirements(Category.power, ItemStack.with(Items.silicon, 100, DTItems.magnetismAlloy, 200, Items.surgeAlloy, 120));
         }};
         //endregion
         //region units
@@ -1451,7 +1452,6 @@ public class DTBlocks {
             requirements(Category.units, ItemStack.with(Items.tungsten, 200, Items.silicon, 300, Items.graphite, 500));
             researchCostMultiplier = 0.85f;
         }};
-
         assemblerExpandInterfaceModule = new UnitAssemblerInterfaceModule("assembler-expand-interface-module"){{
             requirements(Category.units, with(Items.oxide, 200, Items.tungsten, 400, Items.silicon,200, Items.graphite, 200));
             regionSuffix = "-dark";
@@ -1473,7 +1473,6 @@ public class DTBlocks {
             size = 3;
             consumePower(1.2f);
         }};
-
         additiveRefabricator = new Reconstructor("additive-refabricator"){{
             requirements(Category.units, with(DTItems.iron, 200, Items.lead, 120, Items.silicon, 90));
             researchCostMultiplier = 0.65f;
@@ -1491,7 +1490,6 @@ public class DTBlocks {
                     new UnitType[]{DTUnitTypes.converge, DTUnitTypes.cover}
             );
         }};
-
         multiplicativeRefabricator = new Reconstructor("multiplicative-refabricator"){{
             requirements(Category.units, with(Items.lead, 650, Items.silicon, 450, DTItems.silver, 350, DTItems.iridium, 650));
             researchCostMultiplier = 0.75f;
@@ -1509,7 +1507,6 @@ public class DTBlocks {
                     new UnitType[]{DTUnitTypes.cover, DTUnitTypes.protect}
             );
         }};
-
         exponentialRefabricatingPlatform = new ReconstructPlatform("exponential-refabricating-platform"){{
             requirements(Category.units, with(Items.lead, 2000, Items.silicon, 1000, DTItems.silver, 2000, DTItems.iridium, 750, DTItems.magnetismAlloy, 450, DTItems.conductionAlloy, 600));
             researchCostMultiplier = 0.75f;
@@ -1536,7 +1533,6 @@ public class DTBlocks {
                     new UnitType[]{DTUnitTypes.protect, DTUnitTypes.defend}
             );
         }};
-
         tetrativeRefabricatingPlatform = new ReconstructPlatform("tetrative-refabricating-platform"){{
             requirements(Category.units, with(Items.lead, 4000, Items.silicon, 3000, DTItems.iridium, 1000, DTItems.conductionAlloy, 600, DTItems.magnetismAlloy, 600, Items.surgeAlloy, 800));
             researchCostMultiplier = 0.75f;
@@ -2443,7 +2439,7 @@ public class DTBlocks {
             requirements(Category.turret, with(DTItems.iron, 60, Items.graphite, 50, Items.silicon, 70));
         }};
         shard = new PowerTurret("shard"){{
-            requirements(Category.turret, with(DTItems.iron, 60, Items.lead, 70));
+            requirements(Category.turret, with(DTItems.iron, 50, Items.lead, 60));
             range = 145f;
             researchCostMultiplier = 0.1f;
             shoot.firstShotDelay = 40f;
@@ -2585,7 +2581,8 @@ public class DTBlocks {
         focus = new ContinuousTurret("focus"){{
             consumePower(3);
             loopSound = Sounds.tractorbeam;
-            requirements(Category.turret, with(DTItems.iron,50, Items.graphite, 100, Items.lead, 160));
+            researchCostMultiplier = 0.75f;
+            requirements(Category.turret, with(DTItems.iron,50, Items.graphite, 60, Items.lead, 70));
             shootType = new PointLaserBulletType(){{
                 damage = 100f / 12f;
                 beamEffectInterval = 7;
@@ -2698,6 +2695,7 @@ public class DTBlocks {
                         fragVelocityMin = 0.1f;
                     }}
             );
+            ammoPerShot = 13;
             targetAir = false;
             reload = 80f;
             size = 2;
@@ -2709,6 +2707,7 @@ public class DTBlocks {
             shootSound = Sounds.bang;
             coolant = consumeCoolant(0.3f);
             limitRange(0f);
+            drawer = new DrawTurret("framed-");
         }};
         voltage = new PowerTurret("voltage"){{
             scaledHealth = 260;
@@ -2814,7 +2813,7 @@ public class DTBlocks {
             drawer = new DrawTurret("framed-");
             range = 200;
             targetInterval = 5f;
-
+            consumePower(12f);
 
             loopSound = Sounds.laserbeam;
             shootSound = Sounds.none;
@@ -2840,7 +2839,7 @@ public class DTBlocks {
             requirements(Category.turret, with(DTItems.iron, 500, Items.lead, 400, Items.silicon, 200, DTItems.iridium, 300));
             size = 4;
             shootType = new LargeLightningBulletType(){{
-                damage = 50;
+                damage = 70;
                 collidesAir = false;
                 ammoMultiplier = 1f;
 
@@ -2882,13 +2881,14 @@ public class DTBlocks {
             recoil = 1f;
             scaledHealth = 260;
             shootSound = Sounds.release;
+            drawer = new DrawTurret("framed-");
             consumePower(5f);
         }};
         condense = new ContinuousTurret("condense"){{
             shootSound = Sounds.none;
             loopSoundVolume = 1f;
             loopSound = Sounds.laserbeam;
-            requirements(Category.turret, with(DTItems.iron, 200, DTItems.magnetismAlloy, 200, DTItems.iridium, 150, DTItems.conductionAlloy, 90));
+            requirements(Category.turret, with(DTItems.iron, 1000, DTItems.magnetismAlloy, 700, DTItems.iridium, 800, DTItems.conductionAlloy, 300));
             size = 5;
             range = 250;
             aimChangeSpeed = 0.9f;
@@ -2984,18 +2984,19 @@ public class DTBlocks {
         amperage = new ContinuousTurret("amperage"){{
             shootSound = Sounds.none;
             loopSoundVolume = 1f;
-            loopSound = Sounds.laserbeam;
+            loopSound = DTSounds.electricity;
             requirements(Category.turret, with(DTItems.iron, 200, DTItems.magnetismAlloy, 200, DTItems.iridium, 150, DTItems.conductionAlloy, 90));
             size = 5;
             range = 250;
             aimChangeSpeed = 0.9f;
-            rotateSpeed = 1f;
+            rotateSpeed = 1.2f;
             consumePower(17f);
             drawer = new DrawTurret("framed-");
             shootType = new ContinuousLaserLightningBulletType(100){{
                 width = 0.1f;
                 mag = 30;
                 pierceCap = 2;
+
                 colors = new Color[]{Color.valueOf("68aeac"), Color.valueOf("8ce0d9"), Color.valueOf("a2e7f4"), Color.white};
             }};
         }};
@@ -3047,6 +3048,7 @@ public class DTBlocks {
         }};
         ((PortableBlockAbility)((PortableItemTurret)portableTurret).portableUnitType.abilities.get(0)).unitContent = portableTurret;
         wander = new ItemTurret("wander"){{
+            size = 2;
             hasItems = true;
             scaledHealth = 260;
             ammo(
@@ -3110,12 +3112,25 @@ public class DTBlocks {
         }};
         stiffDrill = new Drill("stiff-drill"){{
             requirements(Category.production, with(DTItems.iron, 50, Items.graphite, 10));
-            tier = 3;
+            tier = 4;
             drillTime = 280;
             size = 3;
 
             envEnabled ^= Env.space;
 
+            consumeLiquid(Liquids.water, 0.05f).boost();
+        }};
+        cuttingDrill = new Drill("cutting-drill"){{
+            requirements(Category.production, with(DTItems.iron, 150, Items.graphite, 30, DTItems.iridium, 50, DTItems.steel, 90));
+            tier = 5;
+            drillTime = 200;
+            rotateSpeed  = 0.4f;
+            size = 4;
+            hasPower = true;
+            updateEffect = Fx.pulverizeMedium;
+            drillEffect = Fx.mineBig;
+            envEnabled ^= Env.space;
+            consumePower(1.10f);
             consumeLiquid(Liquids.water, 0.05f).boost();
         }};
         rockExtractor = new GenericCrafter("rock-extractor"){{

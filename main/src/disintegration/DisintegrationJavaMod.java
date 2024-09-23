@@ -138,9 +138,10 @@ public class DisintegrationJavaMod extends Mod{
     @Override
     public void loadContent() {
         EntityRegistry.register();
+        DTSounds.load();
         DTItems.load();
-        DTLiquids.load();
         DTStatusEffects.load();
+        DTLiquids.load();
         DTBullets.load();
         DTUnitTypes.load();
         DTBlocks.load();
@@ -150,7 +151,7 @@ public class DisintegrationJavaMod extends Mod{
         OmurloTechTree.load();
         VanillaTechTree.load();
         SpaceStationTechTree.load();
-        DTPlanets.omurlo.techTree.each(c -> {
+        if(DTVars.debugMode)DTPlanets.omurlo.techTree.each(c -> {
             c.requiresUnlock = false;
             c.requirements = ItemStack.with();
         });

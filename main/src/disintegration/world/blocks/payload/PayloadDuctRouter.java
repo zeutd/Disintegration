@@ -4,7 +4,9 @@ import arc.Core;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.TextureRegion;
 import arc.math.Mathf;
+import arc.util.Eachable;
 import disintegration.util.DrawDef;
+import mindustry.entities.units.BuildPlan;
 import mindustry.graphics.Layer;
 import mindustry.world.blocks.payloads.PayloadConveyor;
 import mindustry.world.blocks.payloads.PayloadRouter;
@@ -18,6 +20,13 @@ public class PayloadDuctRouter extends PayloadRouter {
     public void load(){
         super.load();
         arrowRegion = Core.atlas.find(name + "-arrow");
+    }
+
+    @Override
+    public void drawPlanRegion(BuildPlan plan, Eachable<BuildPlan> list){
+        drawDefaultPlanRegion(plan, list);
+
+        Draw.rect(arrowRegion, plan.drawx(), plan.drawy());
     }
 
     public class PayloadDuctRouterBuild extends PayloadRouterBuild {

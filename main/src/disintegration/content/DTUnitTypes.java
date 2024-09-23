@@ -1471,6 +1471,45 @@ public class DTUnitTypes {
                 }};
             }});
         }});
+        blend = EntityRegistry.content("blend", UnitEntity.class, name -> new OmurloUnitType(name) {{
+            ammoType = new PowerAmmoType(900);
+            aiController = BuilderAI::new;
+            isEnemy = false;
+
+            lowAltitude = true;
+            flying = true;
+            mineSpeed = 7f;
+            mineTier = 1;
+            buildSpeed = 0.9f;
+            drag = 0.05f;
+            speed = 5f;
+            rotateSpeed = 15f;
+            accel = 0.1f;
+            itemCapacity = 30;
+            health = 150f;
+            engineOffset = 6f;
+            hitSize = 8f;
+            alwaysUnlocked = true;
+            weapons.add(new Weapon("disintegration-laser-bolt-mount2") {{
+                reload = 17f;
+                x = -3.5f;
+                y = 1f;
+                shootY = 2.5f;
+                top = false;
+                shootSound = Sounds.lasershoot;
+                bullet = new LaserBoltBulletType(4.5f, 20) {{
+                    collidesTeam = true;
+                    healPercent = 3;
+                    lifetime = 60f;
+                    shootEffect = DTFx.hitLaserYellow;
+                    smokeEffect = Fx.shootSmallSmoke;
+                    despawnEffect = DTFx.hitLaserYellow;
+                    hitEffect = DTFx.hitLaserYellow;
+                    buildingDamageMultiplier = 0.01f;
+                    healColor = Pal.bulletYellow;
+                }};
+            }});
+        }});
         float coreFleeRange = 500f;
         spaceStationDrone = EntityRegistry.content("space-station-drone", UnitEntity.class, name -> new UnitType(name) {{
             coreUnitDock = true;

@@ -30,4 +30,9 @@ public class ContinuousLaserLightningBulletType extends ContinuousLaserBulletTyp
         data.end.trns(b.rotation(), realLength).add(data.start);
         data.draw();
     }
+
+    @Override
+    public void init(Bullet b){
+        data.init();
+    }
 }
