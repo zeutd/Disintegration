@@ -22,13 +22,7 @@ public class PayloadDuct extends PayloadConveyor {
     public class PayloadDuctBuild extends PayloadConveyorBuild {
         @Override
         public void draw(){
-            if (this.block.variants != 0 && this.block.variantRegions != null) {
-                Draw.rect(block.variantRegions[Mathf.randomSeed(tile.pos(), 0, Math.max(0, block.variantRegions.length - 1))], x, y, drawrot());
-            } else {
-                Draw.rect(block.region, x, y, drawrot());
-            }
-
-            drawTeamTop();
+            Draw.rect(block.region, x, y);
 
             int a = 0;
             for(int i = 0; i < 4; i++){

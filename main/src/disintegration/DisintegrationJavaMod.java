@@ -16,9 +16,11 @@ import disintegration.graphics.Pal2;
 import disintegration.ui.DTUI;
 import mindustry.Vars;
 import mindustry.content.Planets;
+import mindustry.content.TechTree;
 import mindustry.game.EventType;
 import mindustry.mod.Mod;
 import mindustry.type.ItemStack;
+import mindustry.ui.dialogs.PlanetDialog;
 import mindustry.world.meta.Env;
 
 import static arc.Core.app;
@@ -42,6 +44,7 @@ public class DisintegrationJavaMod extends Mod{
 
     @Override
     public void init(){
+        PlanetDialog.debugSelect = DTVars.debugMode;
         app.addListener(DTVars.renderer = new DTRenderer());
         app.addListener(DTVars.DTUI = new DTUI());
         DTVars.renderer3D = new GenericRenderer3D();
@@ -151,9 +154,11 @@ public class DisintegrationJavaMod extends Mod{
         OmurloTechTree.load();
         VanillaTechTree.load();
         SpaceStationTechTree.load();
-        if(DTVars.debugMode)DTPlanets.omurlo.techTree.each(c -> {
-            c.requiresUnlock = false;
-            c.requirements = ItemStack.with();
+        if(DTVars.debugMode) content.planets().each(p -> {
+            if(p.techTree != null) p.techTree.each(c -> {
+                c.requiresUnlock = false;
+                c.requirements = ItemStack.with();
+            });
         });
     }
 }

@@ -71,6 +71,8 @@ public class Quarry extends Block {
     public float drillMargin = 20f;
     public float elevation = 8f;
 
+    public int tier;
+
     protected float fulls = areaSize * tilesize / 2f;
 
     public Quarry(String name) {
@@ -129,7 +131,7 @@ public class Quarry extends Block {
 
         Seq<Tile> tiles = WorldDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
-        Seq<Item> items = getDropArray(tiles);
+        Seq<Item> items = getDropList(tiles);
 
         Seq<Item> itemList = DTUtil.listItem(items);
 
@@ -151,7 +153,7 @@ public class Quarry extends Block {
 
         Seq<Tile> tiles = WorldDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
 
-        Seq<Item> items = getDropArray(tiles);
+        Seq<Item> items = getDropList(tiles);
         Seq<Item> itemList = DTUtil.listItem(items);
         return !itemList.isEmpty();
     }
@@ -199,10 +201,10 @@ public class Quarry extends Block {
         return tile.overlay().itemDrop;
     }
 
-    public Seq<Item> getDropArray(Seq<Tile> tiles) {
+    public Seq<Item> getDropList(Seq<Tile> tiles) {
         Seq<Item> items = new Seq<>();
         tiles.each(tile -> {
-            if (tile != null && tile.block() == Blocks.air) items.add(getDrop(tile));
+            if (tile != null && tile.block() == Blocks.air && getDrop(tile) != null && getDrop(tile).hardness <= tier) items.add(getDrop(tile));
             else items.add((Item) null);
         });
         return items;
@@ -268,7 +270,7 @@ public class Quarry extends Block {
             if(lastChange != Vars.world.tileChanges) {
                 tiles = WorldDef.getAreaTile(MiningPos, areaSize, areaSize);
 
-                itemsArray = getDropArray(tiles);
+                itemsArray = getDropList(tiles);
 
                 empty = itemsArray.isEmpty();
 
@@ -437,6 +439,7 @@ public class Quarry extends Block {
                 Draw.flush();
                 shadow.end();
                 Draw.color(Pal.shadow);
+                Draw.z(Layer.blockOver);
                 Draw.rect(Draw.wrap(shadow.getTexture()), Core.camera.position, Core.camera.width, -Core.camera.height);
                 Draw.flush();
                 Draw.color();

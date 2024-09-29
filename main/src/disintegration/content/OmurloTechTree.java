@@ -37,6 +37,7 @@ public class OmurloTechTree {
                                             });
                                         });
                                     });
+                                    node(payloadTeleporter);
                                     node(payloadAccelerator, () -> {
                                         node(payloadDecelerator);
                                         node(magnetizedPayloadRail, () -> {
@@ -54,7 +55,9 @@ public class OmurloTechTree {
                     });
                 });
             });
-            node(corePillar);
+            node(corePillar, () -> {
+                node(coreAltar);
+            });
             node(pressureDrill, () -> {
                 node(graphiteCompressor, () -> {
                     node(rockExtractor, () -> {
@@ -85,6 +88,7 @@ public class OmurloTechTree {
                         node(algalPond, () -> {
                             node(blastCompoundMixer);
                         });
+                        node(cuttingDrill);
                         node(quarry);
                     });
                 });
@@ -136,7 +140,11 @@ public class OmurloTechTree {
                             });
                         });
                         node(iridiumWall, () -> {
-                            node(iridiumWallLarge);
+                            node(iridiumWallLarge, () -> {
+                                node(surgeWall, () -> {
+                                    node(surgeWallLarge);
+                                });
+                            });
                         });
                     });
                 });
@@ -156,7 +164,9 @@ public class OmurloTechTree {
                         node(focus, () -> {
                             node(laserDefenceTower);
                             node(voltage, () -> {
-                                node(franklinism);
+                                node(franklinism, () -> {
+                                    node(amperage);
+                                });
                             });
                             node(sparkover);
                         });

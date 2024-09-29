@@ -240,7 +240,7 @@ public class CosiuazPlanetGenerator extends PlanetGenerator {
                     if (block == Blocks.carbonWall && noise(x + 78, y, 4, 0.7f, 33f, 1f) > 0.52f) {
                         block = Blocks.graphiticWall;
                     } else if (block != Blocks.carbonWall && noise(x + 782, y, 4, 0.8f, 38f, 1f) > 0.665f) {
-                        ore = Blocks.wallOreBeryllium;
+                        ore = DTBlocks.wallOreLithium;
                     }
 
                 }
@@ -252,7 +252,7 @@ public class CosiuazPlanetGenerator extends PlanetGenerator {
 
                 //TODO design ore generation so it doesn't overlap
                 if (noise(x + 999, y + 600 - x, 4, 0.63f, 45f, 1f) < 0.27f && floor == Blocks.crystallineStone) {
-                    ore = Blocks.oreCrystalThorium;
+                    ore = DTBlocks.oreTantalum;
                 }
 
             }

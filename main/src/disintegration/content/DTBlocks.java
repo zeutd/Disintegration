@@ -112,7 +112,8 @@ public class DTBlocks {
             ethyleneVent,
             greenIceWall, obsidianWall,
         //ore
-            oreIridium, oreIron, oreSilver, oreNickel, oreSiliconCrystal, oreLithium,
+            oreIridium, oreIron, oreSilver,
+            oreNickel, oreSiliconCrystal, wallOreLithium, oreTantalum,
     //defence
             iridiumWall, iridiumWallLarge,
             steelWall, steelWallLarge,
@@ -127,6 +128,8 @@ public class DTBlocks {
             ironConveyor, alternateOverflowGate, ironSorter, invertedIronSorter, ironRouter, ironJunction, ironItemBridge,
             iridiumConveyor,
             portableDrillUnloader,
+
+            pipe,
     //liquid
             magnetizedConduit, gearPump,
     //storage
@@ -142,11 +145,12 @@ public class DTBlocks {
             algalPond, blastCompoundMixer,
             centrifuge, spaceStationPanelCompressor, spaceStationPanelCompressorLarge,
             liquidCellPacker, liquidCellUnpacker,
+            pyrolysisFurnace,
     //payload
             payloadAccelerator, payloadDecelerator, magnetizedPayloadRail, magnetizedPayloadRailShort, payloadRedirector, payloadRedirectorPoint, payloadCross, payloadCrossPoint, payloadSeparator, payloadForkLeft, payloadForkRight, payloadForkPoint,
             payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
             payloadTeleporter,
-            payloadDuct, payloadDuctRouter, payloadDuctJunction,
+            payloadDuct, payloadDuctRouter, payloadDuctJunction, payloadDuctLoader, payloadDuctUnloader, payloadPropulsor,
     //power
             neoplasmGenerator, excitationReactor, ventTurbine, turbineGenerator, spaceSolarPanel, rotateSolarPanel, solarMirror, tokamakFusionReactor,
             ironPowerNode, ironPowerNodeLarge, powerCapacitor, arcReactor, powerDriver,
@@ -170,7 +174,7 @@ public class DTBlocks {
             wander,
     //drills
             quarry, pressureDrill, stiffDrill, cuttingDrill, rockExtractor,
-            portableDrill,
+            portableDrill, plasmaBeamDrill,
     //effect
             blastMine,
             repairDroneStation,
@@ -191,12 +195,13 @@ public class DTBlocks {
         Blocks.smite.requirements(Category.turret, with(DTItems.nitride, 160, Items.oxide, 200, Items.surgeAlloy, 300, Items.silicon, 800, Items.carbide, 500, Items.phaseFabric, 300));
         Blocks.lustre.requirements(Category.turret, with(DTItems.nitride, 90, Items.silicon, 250, Items.graphite, 100, Items.oxide, 50, Items.carbide, 90));
 
-        Blocks.liquidContainer.requirements(Category.liquid, with(Items.lead, 10, Items.metaglass, 15));
-        Blocks.liquidTank.requirements(Category.liquid, with(Items.lead, 30, Items.metaglass, 40, Items.graphite, 50));
+        Blocks.liquidContainer.requirements(Category.liquid, with(Items.lead, 50, Items.metaglass, 25));
+        Blocks.liquidTank.requirements(Category.liquid, with(Items.lead, 60, Items.metaglass, 40, Items.graphite, 50));
 
         Blocks.payloadConveyor.requirements(Category.units, with(Items.graphite, 10, Items.lead, 10));
         Blocks.payloadRouter.requirements(Category.units, with(Items.graphite, 15, Items.lead, 10));
 
+        Blocks.kiln.requirements(Category.crafting, with(Items.graphite, 30, Items.lead, 60));
         Blocks.melter.requirements(Category.crafting, with(Items.lead, 35, Items.graphite, 45));
 
         Blocks.sporePress.envEnabled |= Env.spores;
@@ -254,7 +259,9 @@ public class DTBlocks {
             wall = Blocks.iceWall;
         }};
 
-        obsidianFloor = new Floor("obsidian-floor"){};
+        obsidianFloor = new Floor("obsidian-floor"){{
+            itemDrop = DTItems.obsidian;
+        }};
         greenIceWall = new StaticWall("green-ice-wall"){{
             greenIce.asFloor().wall = this;
             albedo = 0.6f;
@@ -262,6 +269,7 @@ public class DTBlocks {
 
         obsidianWall = new StaticWall("obsidian-wall"){{
             obsidianFloor.asFloor().wall = this;
+            itemDrop = DTItems.obsidian;
         }};
 
         oreIridium = new OreBlock("ore-iridium", DTItems.iridium){{
@@ -282,24 +290,15 @@ public class DTBlocks {
             oreScale = 24.904762f;
         }};
 
-        oreNickel = new OreBlock("ore-nickel", DTItems.nickel){{
-            oreDefault = true;
-            oreThreshold = 0.818f;
-            oreScale = 23.952381f;
-        }};
+        oreNickel = new OreBlock("ore-nickel", DTItems.nickel);
 
-        oreLithium = new OreBlock("ore-lithium", DTItems.lithium){{
+        wallOreLithium = new OreBlock("ore-lithium", DTItems.lithium){{
             wallOre = true;
-            oreDefault = true;
-            oreThreshold = 0.846f;
-            oreScale = 24.428572f;
         }};
 
-        oreSiliconCrystal = new OreBlock("ore-silicon-crystal", DTItems.siliconCrystal){{
-            oreDefault = true;
-            oreThreshold = 0.828f;
-            oreScale = 23.952381f;
-        }};
+        oreSiliconCrystal = new OreBlock("ore-silicon-crystal", DTItems.siliconCrystal);
+
+        oreTantalum = new OreBlock("ore-tantalum", DTItems.tantalum);
 
         ethyleneVent = new SteamVent("ethylene-vent"){{
             parent = blendGroup = Blocks.ice;
@@ -446,7 +445,6 @@ public class DTBlocks {
             displayedSpeed = 7f;
             buildCostMultiplier = 2f;
         }};
-
         alternateOverflowGate = new MultiOverflowGate("alternate-overflow-gate"){{
             requirements(Category.distribution, with(DTItems.iron, 3));
             health = 60;
@@ -466,7 +464,6 @@ public class DTBlocks {
             speed = 5f;
             buildCostMultiplier = 4f;
         }};
-
         ironJunction = new Junction("iron-junction"){{
             requirements(Category.distribution, with(DTItems.iron, 2));
             speed = 20;
@@ -474,7 +471,6 @@ public class DTBlocks {
             health = 30;
             buildCostMultiplier = 6f;
         }};
-
         ironItemBridge = new BufferedItemBridge("iron-bridge-conveyor"){{
             requirements(Category.distribution, with(DTItems.iron, 12));
             fadeIn = moveArrows = false;
@@ -491,6 +487,12 @@ public class DTBlocks {
             buildCostMultiplier = 2f;
         }};
 
+        pipe = new Duct("pipe"){{
+            requirements(Category.distribution, with(DTItems.nickel, 1));
+            health = 90;
+            speed = 7f;
+            researchCost = with(DTItems.nickel, 5);
+        }};
         //endregion
         //region liquid
         magnetizedConduit = new Conduit("magnetized-conduit"){{
@@ -987,6 +989,24 @@ public class DTBlocks {
             consumeItems(with(Items.titanium, 5, Items.copper, 3));
             consumePower(0.5f);
         }};
+        pyrolysisFurnace = new GenericCrafter("pyrolysis-furnace"){{
+            requirements(Category.crafting, with(DTItems.nickel, 70, Items.graphite, 80));
+            craftEffect = Fx.none;
+            outputItem = new ItemStack(Items.silicon, 2);
+            craftTime = 30f;
+            size = 3;
+            hasPower = true;
+            hasLiquids = false;
+            itemCapacity = 30;
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawArcSmelt(), new DrawDefault());
+            fogRadius = 3;
+            researchCost = with(DTItems.nickel, 200, Items.graphite, 50);
+            ambientSound = Sounds.smelter;
+            ambientSoundVolume = 0.12f;
+
+            consumeItems(with(DTItems.siliconCrystal, 2));
+            consumePower(6f);
+        }};
         //endregion
         //region payload
         /*payloadPropulsionTower = new PayloadMassDriver("payload-propulsion-tower"){{
@@ -998,7 +1018,6 @@ public class DTBlocks {
             maxPayloadSize = 3.5f;
             consumePower(6f);
         }};*/
-
         payloadAccelerator = new VelocityPayloadConveyor("payload-accelerator"){{
             conductivePower = true;
             consumePower(1f);
@@ -1016,7 +1035,6 @@ public class DTBlocks {
             );
             requirements(Category.units, with(Items.silicon, 10, DTItems.silver, 10, DTItems.magnetismAlloy, 5));
         }};
-
         payloadDecelerator = new PayloadDecelerator("payload-decelerator"){{
             size = 3;
             rotate = true;
@@ -1032,7 +1050,6 @@ public class DTBlocks {
             );
             requirements(Category.units, with(Items.silicon, 10, DTItems.silver, 10, DTItems.magnetismAlloy, 5));
         }};
-
         payloadRedirector = new PayloadRedirector("payload-redirector"){{
             size = 1;
             rotate = true;
@@ -1047,7 +1064,6 @@ public class DTBlocks {
             );
             requirements(Category.units, with(Items.silicon, 10, DTItems.silver, 10, DTItems.magnetismAlloy, 5));
         }};
-
         payloadCross = new PayloadCross("payload-cross"){{
             size = 1;
             rotate = false;
@@ -1056,7 +1072,6 @@ public class DTBlocks {
             replaceable = false;
             requirements(Category.units, with(Items.silicon, 10, DTItems.silver, 10, DTItems.magnetismAlloy, 5));
         }};
-
         payloadForkLeft = new PayloadFork("payload-fork-left"){{
             size = 1;
             rotate = true;
@@ -1074,7 +1089,6 @@ public class DTBlocks {
             sortOutputIndex = 1;
             requirements(Category.units, with(Items.silicon, 10, DTItems.silver, 10, DTItems.magnetismAlloy, 5));
         }};
-
         payloadForkRight = new PayloadFork("payload-fork-right"){{
             size = 1;
             rotate = true;
@@ -1092,7 +1106,6 @@ public class DTBlocks {
             sortOutputIndex = 1;
             requirements(Category.units, with(Items.silicon, 10, DTItems.silver, 10, DTItems.magnetismAlloy, 5));
         }};
-
         payloadSeparator = new PayloadFork("payload-separator"){{
             size = 1;
             rotate = true;
@@ -1111,7 +1124,6 @@ public class DTBlocks {
             sortOutputIndex = 0;
             requirements(Category.units, with(Items.silicon, 10, DTItems.silver, 10, DTItems.magnetismAlloy, 5));
         }};
-
         payloadRedirectorPoint = new PayloadRedirectorPoint("payload-redirector-point"){{
             size = 1;
             rotate = true;
@@ -1130,7 +1142,6 @@ public class DTBlocks {
             outputsPayload = true;
             requirements(Category.units, BuildVisibility.hidden, with());
         }};
-
         payloadCrossPoint = new PayloadCrossPoint("payload-cross-point"){{
             size = 1;
             rotate = true;
@@ -1160,7 +1171,6 @@ public class DTBlocks {
             );
             requirements(Category.units, with(Items.silicon, 10, DTItems.silver, 10, DTItems.magnetismAlloy, 5));
         }};
-
         magnetizedPayloadRailShort = new VelocityPayloadConveyor("magnetized-payload-rail-short"){{
             size = 1;
             rotate = true;
@@ -1176,7 +1186,6 @@ public class DTBlocks {
             );
             requirements(Category.units, with(Items.silicon, 10, DTItems.silver, 10, DTItems.magnetismAlloy, 5));
         }};
-
         payloadDeconstructor = new PayloadDeconstructor("payload-deconstructor"){{
             requirements(Category.units, with(Items.lead, 250, Items.silicon, 200, Items.graphite, 250));
             itemCapacity = 250;
@@ -1184,14 +1193,12 @@ public class DTBlocks {
             size = 5;
             deconstructSpeed = 2f;
         }};
-
         payloadConstructor = new Constructor("payload-constructor"){{
             requirements(Category.units, with(Items.silicon, 50, Items.lead, 70, Items.graphite, 50));
             hasPower = true;
             consumePower(2f);
             size = 3;
         }};
-
         largePayloadConstructor = new Constructor("large-payload-constructor"){{
             requirements(Category.units, with(Items.silicon, 100, Items.lead, 150, Items.graphite, 50, DTItems.conductionAlloy, 40));
             hasPower = true;
@@ -1200,14 +1207,12 @@ public class DTBlocks {
             minBlockSize = 1;
             size = 5;
         }};
-
         payloadLoader = new PayloadLoader("payload-loader"){{
             requirements(Category.units, with(Items.graphite, 50, Items.silicon, 50, Items.lead, 100));
             hasPower = true;
             consumePower(2f);
             size = 3;
         }};
-
         payloadUnloader = new PayloadUnloader("payload-unloader"){{
             requirements(Category.units, with(Items.graphite, 50, Items.silicon, 50, Items.lead, 100));
             hasPower = true;
@@ -1216,8 +1221,10 @@ public class DTBlocks {
         }};
         payloadTeleporter = new PayloadTeleporter("payload-teleporter"){{
             size = 7;
+            reload = 230f;
             requirements(Category.units, with());
         }};
+
         payloadDuct = new PayloadDuct("payload-duct"){{
             requirements(Category.units, with(Items.graphite, 20, DTItems.nickel, 30));
             size = 2;
@@ -1232,7 +1239,6 @@ public class DTBlocks {
             interp = Interp.linear;
             moveTime = 10f;
         }};
-
         payloadDuctJunction = new PayloadDuctJunction("payload-duct-junction"){{
             requirements(Category.units, with(Items.graphite, 30, DTItems.nickel, 40));
             size = 2;
@@ -1240,6 +1246,31 @@ public class DTBlocks {
             interp = Interp.linear;
             moveTime = 10f;
             rotate = false;
+        }};
+        payloadDuctLoader = new PayloadDuctLoader("payload-duct-loader"){{
+            requirements(Category.units, with(Items.graphite, 50, Items.silicon, 50, DTItems.nickel, 100));
+            hasPower = true;
+            consumePower(2f);
+            size = 2;
+            payloadSpeed = 9.6f;
+            regionSuffix = "-darker";
+        }};
+        payloadDuctUnloader = new PayloadDuctUnloader("payload-duct-unloader"){{
+            requirements(Category.units, with(Items.graphite, 50, Items.silicon, 50, DTItems.nickel, 100));
+            hasPower = true;
+            consumePower(2f);
+            size = 2;
+            payloadSpeed = 1.5f;
+            regionSuffix = "-darker";
+        }};
+        payloadPropulsor = new PayloadPropulsor("payload-propulsor"){{
+            requirements(Category.units, with(Items.silicon, 200, Items.graphite, 200, DTItems.nickel, 300));
+            size = 4;
+            reload = 100f;
+            chargeTime = 90f;
+            range = 200f;
+            maxPayloadSize = 2.2f;
+            consumePower(6f);
         }};
         //endregion
         //region power
@@ -3176,7 +3207,7 @@ public class DTBlocks {
         ((PortableBlockAbility)((PortableDrill)portableDrill).portableUnitType.abilities.get(0)).unitContent = portableDrill;
 
         unitProducer = new UnitFactory("unit-producer"){{
-            requirements(Category.units, with(DTItems.nickel, 60, Items.graphite, 70));
+            requirements(Category.units, with(DTItems.nickel, 30, Items.graphite, 20));
             researchCostMultiplier = 0.15f;
             plans = Seq.with(
                     new UnitPlan(((PortableDrill)portableDrill).portableUnitType, 60f * 10f, with(DTItems.nickel, 12)),
@@ -3195,6 +3226,20 @@ public class DTBlocks {
             hasItems = true;
             itemCapacity = 50;
             requirements(Category.production, with(DTItems.nickel, 30));
+        }};
+
+        plasmaBeamDrill = new MonoBeamDrill("plasma-beam-drill"){{
+            requirements(Category.production, with(DTItems.nickel, 40));
+            consumePower(0.15f);
+
+            drillTime = 160f;
+            tier = 3;
+            size = 3;
+            range = 6;
+            fogRadius = 3;
+            researchCost = with(DTItems.nickel, 10);
+
+            //consumeLiquid(Liquids.nitrogen, 0.25f / 60f).boost();
         }};
         //endregion
         //region effect

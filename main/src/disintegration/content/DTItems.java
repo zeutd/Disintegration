@@ -11,7 +11,9 @@ public class DTItems {
             spaceStationPanel,
             nitride,
             iridium, iron, steel, silver, magnetismAlloy, conductionAlloy,
-            nickel, lithium, siliconCrystal, obsidian, tantalum, tantalumTungstenAlloy;
+            nickel, lithium, siliconCrystal, obsidian, tantalum, tantalumTungstenAlloy,
+            aluminum
+    ;
     public static final Seq<Item>
             omurloItems = new Seq<>(),
             twinItems = new Seq<>();
@@ -66,6 +68,11 @@ public class DTItems {
         nickel = new Item("nickel", Color.valueOf("c7b784")){{
             hardness = 1;
             cost = 0.5f;
+        }};
+
+        aluminum = new Item("aluminum", Color.valueOf("D2D2D2")){{
+            hardness = 2;
+            cost = 1f;
         }};
         lithium = new Item("lithium", Color.valueOf("d5d5d5")){{
             cost = 1;

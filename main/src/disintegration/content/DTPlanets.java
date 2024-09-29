@@ -49,7 +49,7 @@ public class DTPlanets {
     }
     public static void load(){
         Planets.serpulo.hiddenItems.add(DTItems.nitride);
-        luna = new Planet("luna", Planets.serpulo, 0.7f, 2){{
+        luna = new Planet("luna", Planets.serpulo, 0.4f, 2){{
             generator = new LunaPlanetGenerator();
             meshLoader = () -> new HexMesh(this, 5);
             //OBJModel model = DTUtil.loadObj("aaaaaa.obj").first();
@@ -176,6 +176,7 @@ public class DTPlanets {
         cosiuaz.orbitRadius += 0.5f;
         caelpse.orbitRadius += 0.5f;
         omurlo = new Planet("omurlo", sun, 1f, 3){{
+                defaultCore = DTBlocks.corePedestal;
                 generator = new OmurloPlanetGenerator();
                 /*Prov<OBJModel> modelLoader = () -> {
                     OBJModel model = DTUtil.loadObj("aaaaaa.obj").first();

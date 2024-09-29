@@ -15,6 +15,7 @@ import mindustry.content.Blocks;
 import mindustry.game.Schematics;
 import mindustry.maps.generators.PlanetGenerator;
 import mindustry.world.Block;
+import mindustry.world.Tile;
 import mindustry.world.TileGen;
 import mindustry.world.blocks.environment.Floor;
 
@@ -24,7 +25,7 @@ import static mindustry.Vars.world;
 
 public class LunaPlanetGenerator extends PlanetGenerator {
     {
-        baseSeed = 5;
+        baseSeed = 10;
     }
 
     public float rimWidth = 0.5f, rimSteepness = 2f, floorHeight = -0.3f;
@@ -122,8 +123,10 @@ public class LunaPlanetGenerator extends PlanetGenerator {
                 block = floor.asFloor().wall;
             }
         });
+        distort(5, 200);
+        cells(6);
         float poles = Math.abs(sector.tile.v.y);
-        Seq<Block> ores = Seq.with(Blocks.oreCopper, Blocks.oreLead, Blocks.oreCoal, Blocks.oreTitanium, Blocks.oreThorium, Blocks.oreScrap);
+        Seq<Block> ores = Seq.with(Blocks.oreCopper, Blocks.oreLead, Blocks.oreCoal, Blocks.oreTitanium, Blocks.oreThorium);
         FloatSeq frequencies = new FloatSeq();
         for (int i = 0; i < ores.size; i++) {
             frequencies.add(rand.random(-0.1f, 0.01f) - i * 0.01f + poles * 0.04f);
@@ -135,18 +138,23 @@ public class LunaPlanetGenerator extends PlanetGenerator {
             for (int i = ores.size - 1; i >= 0; i--) {
                 Block entry = ores.get(i);
                 float freq = frequencies.get(i);
-                if (Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7, (40 + i * 2))) > 0.22f + i * 0.01 &&
-                        Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1, (30 + i * 4))) > 0.37f + freq) {
+                if (Math.abs(0.5f - noise(offsetX, offsetY + i * 999, 2, 0.7, (40 + i * 2))) > 0.4f + i * 0.01 &&
+                        Math.abs(0.5f - noise(offsetX, offsetY - i * 999, 1, 1, (30 + i * 4))) > 0.5f + freq) {
                     ore = entry;
                     break;
                 }
             }
-
-            if (ore == Blocks.oreScrap && rand.chance(0.33)) {
-                floor = Blocks.metalFloorDamaged;
-            }
         });
-
+        int clearRadius = 10;
+        for(int x = -clearRadius; x < clearRadius; x++){
+            for(int y = -clearRadius; y < clearRadius; y++){
+                if(x * x + y * y < clearRadius * clearRadius){
+                    Tile tile = tiles.get(x + spawnX, y + spawnY);
+                    if(tile != null) tile.setBlock(Blocks.air);
+                }
+            }
+        }
+        inverseFloodFill(tiles.get(spawnX, spawnY));
         Schematics.placeLaunchLoadout(spawnX, spawnY);
     }
 }

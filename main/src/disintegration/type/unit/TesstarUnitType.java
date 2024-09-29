@@ -2,8 +2,8 @@ package disintegration.type.unit;
 
 import mindustry.type.UnitType;
 
-public class TesserUnitType extends UnitType {
-    public TesserUnitType(String name) {
+public class TesstarUnitType extends UnitType {
+    public TesstarUnitType(String name) {
         super(name);
     }
 }

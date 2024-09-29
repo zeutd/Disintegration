@@ -18,11 +18,12 @@ import arc.util.noise.Noise;
 import arc.util.noise.Ridged;
 import arc.util.noise.Simplex;
 import disintegration.content.DTBlocks;
+import disintegration.content.DTLoadouts;
+import disintegration.type.maps.DTWaves;
 import mindustry.ai.Astar;
 import mindustry.ai.BaseRegistry.BasePart;
 import mindustry.content.Blocks;
 import mindustry.game.Schematics;
-import mindustry.game.Waves;
 import mindustry.graphics.g3d.PlanetGrid.Ptile;
 import mindustry.maps.generators.PlanetGenerator;
 import mindustry.type.Sector;
@@ -34,7 +35,13 @@ import mindustry.world.blocks.environment.SteamVent;
 
 import static mindustry.Vars.*;
 
+@SuppressWarnings("all")
 public class OmurloPlanetGenerator extends PlanetGenerator {
+
+    {
+        defaultLoadout = DTLoadouts.basicPedestal;
+        baseSeed = 5;
+    }
     //alternate, less direct generation (wip)
     public static boolean alt = false;
 
@@ -208,7 +215,6 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
             void joinFloor(int x1, int y1, int x2, int y2) {
                 float nscl = rand.random(100f, 140f) * 6f;
                 int rad = rand.random(7, 11);
-                int avoid = 0;
                 var path = pathfind(x1, y1, x2, y2, tile -> (70f) + noise(tile.x, tile.y, 2, 0.4f, 1f / nscl) * 500, Astar.manhattan);
                 path.each(t -> {
                     /*don't place liquid paths near the core
@@ -224,7 +230,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
                                 other.setBlock(Blocks.air);
                                 if (Mathf.within(x, y, rad - 1)) {
                                     Floor floor = other.floor();
-                                    other.setFloor((Floor) (floor == Blocks.ice ? floor : (floor.isLiquid ? Blocks.ice : Blocks.snow)));
+                                    other.setFloor((Floor) (floor == Blocks.ice ? floor : (floor.isLiquid ? Blocks.ice : floor)));
                                 }
                             }
                         }
@@ -354,13 +360,14 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
             float value = Ridged.noise3d(2, v.x, v.y, v.z, 1, 1f / 60f) + rr - rawHeight(v) * 0f;
             float rrscl = rr * 44 - 2;
 
-            if (value > 0.17f && !Mathf.within(x, y, fspawn.x, fspawn.y, 12 + rrscl)) {
-                boolean deep = value > 0.17f + 0.07f && !Mathf.within(x, y, fspawn.x, fspawn.y, 15 + rrscl);
+            if (value > 0.15f && !Mathf.within(x, y, fspawn.x, fspawn.y, 12 + rrscl)) {
+                boolean deep = value > 0.15f + 0.07f && !Mathf.within(x, y, fspawn.x, fspawn.y, 15 + rrscl);
+                boolean deeper = value > 0.15f + 0.07f + 0.04f;
                 //boolean spore = floor != Blocks.sand && floor != Blocks.salt;
                 //do not place rivers on ice, they're frozen
                 //ignore pre-existing liquids
                 if (!(floor.asFloor().isLiquid)) {
-                    floor = (deep ? Blocks.water : DTBlocks.iceWater);
+                    floor = (deeper ? Blocks.deepwater : deep ? Blocks.water : DTBlocks.iceWater);
                 }
             }
         });
@@ -457,28 +464,6 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
             }
         }
 
-        /*if(naval){
-            //int deepRadius = 2;
-
-            //
-            pass((x, y) -> {
-                if(floor.asFloor().isLiquid && !floor.asFloor().isDeep() && !floor.asFloor().shallow){
-
-                    /*for(int cx = -deepRadius; cx <= deepRadius; cx++){
-                        for(int cy = -deepRadius; cy <= deepRadius; cy++){
-                            /*if((cx) * (cx) + (cy) * (cy) <= deepRadius * deepRadius){
-                                //int wx = cx + x, wy = cy + y;
-
-                                //Tile tile = tiles.get(wx, wy);
-                            }
-                        }
-                    }
-
-                    floor = floor == Blocks.water ? Blocks.deepwater : Blocks.water;
-                }
-            });
-        }*/
-
         Seq<Block> ores = Seq.with(DTBlocks.oreIron, Blocks.oreLead, DTBlocks.oreSilver);
         float poles = Math.abs(sector.tile.v.y);
         float nmag = 0.5f;
@@ -523,7 +508,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
 
         inverseFloodFill(tiles.getn(spawn.x, spawn.y));
 
-        tech();
+        //tech();
 
         pass((x, y) -> {
             //random moss
@@ -534,15 +519,12 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
             }*/
 
             //tar
-            if (floor == Blocks.darksand) {
-                if (Math.abs(0.5f - noise(x - 40, y, 2, 0.7, 80)) > 0.25f &&
-                        Math.abs(0.5f - noise(x, y + sector.id * 10, 1, 1, 60)) > 0.41f && !(roomseq.contains(r -> Mathf.within(x, y, r.x, r.y, 30)))) {
-                    floor = Blocks.tar;
-                }
-            }
 
             //hotrock tweaks
             if (floor == Blocks.hotrock) {
+                if (Tmp.v1.set(width / 2, height / 2).dst(x, y) > width / 2 / constraint){
+                    block = Blocks.iceWall;
+                }
                 if (Math.abs(0.5f - noise(x - 90, y, 4, 0.8, 80)) > 0.05) {
                     floor = Blocks.ice;
                 } else if (Math.abs(0.5f - noise(x - 90, y, 4, 0.8, 160)) > 0.02) {
@@ -558,15 +540,6 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
                     }
                     if (all) {
                         floor = Blocks.magmarock;
-                    }
-                }
-            } else if (genLakes && floor.asFloor().hasSurface()) {
-                float noise = noise(x + 782, y, 5, 0.75f, 260f, 1f);
-                if (noise > 0.67f && !roomseq.contains(e -> Mathf.within(x, y, e.x, e.y, 14))) {
-                    if (noise > 0.9f) {
-                        floor = DTBlocks.iceWater;
-                    } else {
-                        floor = (floor == Blocks.sand ? floor : Blocks.ice);
                     }
                 }
             }
@@ -684,7 +657,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
                 tile.setOverlay(Blocks.air);
             }
         }
-
+        inverseFloodFill(tiles.getn(spawn.x, spawn.y));
         Schematics.placeLaunchLoadout(spawn.x, spawn.y);
 
         for (Room espawn : enemies) {
@@ -708,8 +681,7 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
         state.rules.env = sector.planet.defaultEnv;
         state.rules.enemyCoreBuildRadius = 600f;
 
-        //spawn air only when spawn is blocked
-        state.rules.spawns = Waves.generate(difficulty, new Rand(sector.id), state.rules.attackMode, state.rules.attackMode && spawner.countGroundSpawns() == 0, false);
+        state.rules.spawns = DTWaves.generateOmurlo(difficulty, new Rand(sector.id + baseSeed));
     }
 
     /*@Override

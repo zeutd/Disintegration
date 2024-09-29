@@ -74,7 +74,10 @@ public class PayloadTeleporter extends PayloadBlock {
             for (float i = thickness; i >= 0; i -= spacing) {
                 DrawDef.rect3d(teleporterRegion, x, y, 0, height - i + Mathf.absin(10f, 0.01f));
             }
-
+            Draw.color(Pal.shadow);
+            Draw.z(Layer.blockOver);
+            Draw.rect(teleporterRegion, x - (height + Mathf.absin(10f, 0.01f)) * 320, y - (height + Mathf.absin(10f, 0.01f)) * 320);
+            Draw.reset();
             Draw.z(Layer.blockOver);
 
             drawPayload();
