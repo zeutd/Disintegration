@@ -1,6 +1,7 @@
 package disintegration.core;
 
 import arc.ApplicationListener;
+import disintegration.graphics.DTCacheLayer;
 import disintegration.graphics.DTShaders;
 import disintegration.graphics.g3d.SpaceStationRenderer;
 import mindustry.Vars;
@@ -10,7 +11,7 @@ public class DTRenderer implements ApplicationListener {
     public final SpaceStationRenderer spaceStation = new SpaceStationRenderer();
 
     public DTRenderer(){
-        DTShaders.init();
+
     }
     @Override
     public void update() {

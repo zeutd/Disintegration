@@ -93,6 +93,7 @@ public class DTItems {
         obsidian = new Item("obsidian", Color.valueOf("4E4E79")){{
             hardness = 2;
             cost = 1f;
+            lowPriority = true;
         }};
 
         tantalumTungstenAlloy = new Item("tantalum-tungsten-alloy", Color.valueOf("9696C3")){{

@@ -2,6 +2,7 @@ package disintegration.util;
 
 import arc.Core;
 import arc.files.Fi;
+import arc.graphics.Texture;
 import arc.struct.Seq;
 import arc.util.Log;
 import arclibrary.graphics.g3d.model.obj.OBJModel;

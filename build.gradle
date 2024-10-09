@@ -1,3 +1,36 @@
+buildscript {
+    ext{
+        //the build number that this mod is made for
+        //mindustryVersion = 'v146'
+        //jabelVersion = "93fde537c7"
+        sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
+        gamePath = "D:/mdt/V7/Mindustry.exe"
+        modPath = "${System.getenv("USERPROFILE")}/AppData/Roaming/Mindustry/mods"
+        isWindows = System.getProperty("os.name").toLowerCase().contains("windows")
+
+        arc = {String module ->
+            return "com.github.Anuken.Arc$module:$arcVersion"
+        }
+        arcLibrary = {String module ->
+            return "com.github.Zelaux.ArcLibrary$module:$arcLibraryVersion"
+        }
+        mindustry = {String module ->
+            return "com.github.Anuken.Mindustry$module:$mindustryVersion"
+        }
+    }
+    repositories{
+        mavenCentral()
+        maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
+        maven{ url  'https://raw.githubusercontent.com/Zelaux/Repo/master/repository' }
+        maven{ url 'https://www.jitpack.io' }
+        maven{url 'https://oss.sonatype.org/content/repositories/snapshots/'}
+        maven{url 'https://oss.sonatype.org/content/repositories/releases/'}
+        maven{url 'https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository'}
+    }
+    dependencies{
+        classpath "${arc(':arc-core')}"
+    }
+}
 plugins{
     id 'java'
     id 'com.github.GlennFolker.EntityAnno' version "$entVersion"
@@ -71,6 +104,24 @@ dependencies{
     compileOnly "com.github.GlennFolker.EntityAnno:entity:$entVersion"
     // iv.
     kapt "com.github.GlennFolker.EntityAnno:entity:$entVersion"
+}
+
+project(":tools"){
+    apply plugin: "java"
+
+    repositories{
+        mavenCentral()
+        maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
+        maven{ url  'https://raw.githubusercontent.com/Zelaux/Repo/master/repository' }
+        maven{ url 'https://www.jitpack.io' }
+        maven{url 'https://oss.sonatype.org/content/repositories/snapshots/'}
+        maven{url 'https://oss.sonatype.org/content/repositories/releases/'}
+        maven{url 'https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository'}
+    }
+
+    dependencies {
+        implementation "${arc(':arc-core')}"
+    }
 }
 
 entityAnno{

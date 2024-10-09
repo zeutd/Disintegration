@@ -2,6 +2,7 @@ package disintegration.util;
 
 import arc.Core;
 import arc.graphics.Color;
+import arc.graphics.Texture;
 import arc.graphics.g2d.Draw;
 import arc.graphics.g2d.Fill;
 import arc.graphics.g2d.Lines;
@@ -11,6 +12,7 @@ import arc.math.Mathf;
 import arc.math.geom.Mat3D;
 import arc.util.Time;
 import arclibrary.graphics.Draw3d;
+import disintegration.DTVars;
 import mindustry.graphics.Drawf;
 
 import static arc.Core.camera;
@@ -135,5 +137,9 @@ public class DrawDef {
         for (int i = 0; i < spikes; i++) {
             Drawf.tri(x, y, (radius - offset) / 6f, lengths[i] * 1.5f * radius - offset / 8f, rotations[i]);
         }
+    }
+
+    public static Texture loadTex(String name){
+        return new Texture(DTVars.modFile.child("sprites").child(name + ".png"));
     }
 }

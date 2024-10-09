@@ -19,6 +19,7 @@ import disintegration.entities.DTGroups;
 import disintegration.entities.abilities.PortableBlockAbility;
 import disintegration.entities.bullet.*;
 import disintegration.gen.entities.EntityRegistry;
+import disintegration.graphics.DTCacheLayer;
 import disintegration.graphics.Pal2;
 import disintegration.world.blocks.campaign.InterplanetaryLaunchPad;
 import disintegration.world.blocks.campaign.OrbitalLaunchPad;
@@ -46,6 +47,7 @@ import disintegration.world.blocks.laser.LaserReflector;
 import disintegration.world.blocks.payload.*;
 import disintegration.world.blocks.power.*;
 import disintegration.world.blocks.production.*;
+import disintegration.world.blocks.storage.StorageExtender;
 import disintegration.world.blocks.units.ReconstructPlatform;
 import disintegration.world.blocks.units.UnitAssemblerConstructModule;
 import disintegration.world.blocks.units.UnitAssemblerInterfaceModule;
@@ -54,6 +56,7 @@ import mindustry.Vars;
 import mindustry.content.*;
 import mindustry.entities.Damage;
 import mindustry.entities.Effect;
+import mindustry.entities.abilities.MoveEffectAbility;
 import mindustry.entities.bullet.*;
 import mindustry.entities.effect.*;
 import mindustry.entities.part.*;
@@ -111,9 +114,10 @@ public class DTBlocks {
             obsidianFloor,
             ethyleneVent,
             greenIceWall, obsidianWall,
+            moltenLithium, lithiumStone, lithiumStoneWall,
         //ore
             oreIridium, oreIron, oreSilver,
-            oreNickel, oreSiliconCrystal, wallOreLithium, oreTantalum,
+            oreNickel, oreSiliconCrystal, oreTantalum,
     //defence
             iridiumWall, iridiumWallLarge,
             steelWall, steelWallLarge,
@@ -131,9 +135,9 @@ public class DTBlocks {
 
             pipe,
     //liquid
-            magnetizedConduit, gearPump,
+            magnetizedConduit, gearPump, centrifugalPump, thermalPump,
     //storage
-            corePedestal, corePillar, coreAltar, spaceStationCore,
+            corePedestal, corePillar, coreAltar, spaceStationCore, coreExtender,
     //heat
             heatConduit, heatConduitRouter,
             burningHeater, thermalHeater,
@@ -152,8 +156,9 @@ public class DTBlocks {
             payloadTeleporter,
             payloadDuct, payloadDuctRouter, payloadDuctJunction, payloadDuctLoader, payloadDuctUnloader, payloadPropulsor,
     //power
-            neoplasmGenerator, excitationReactor, ventTurbine, turbineGenerator, spaceSolarPanel, rotateSolarPanel, solarMirror, tokamakFusionReactor,
+            neoplasmGenerator, excitationReactor, ventTurbine, turbineGenerator, spaceSolarPanel, rotateSolarPanel, heliostat, tokamakFusionReactor,
             ironPowerNode, ironPowerNodeLarge, powerCapacitor, arcReactor, powerDriver,
+            burningGenerator,
     //units
             asemblerConstructModule, assemblerExpandInterfaceModule,
             unitFabricator, unitProducer,
@@ -171,7 +176,7 @@ public class DTBlocks {
             torch, holy, franklinism,
             condense, blaze, amperage,
             portableTurret,
-            wander,
+            wander, retribution,
     //drills
             quarry, pressureDrill, stiffDrill, cuttingDrill, rockExtractor,
             portableDrill, plasmaBeamDrill,
@@ -233,7 +238,23 @@ public class DTBlocks {
             placeableOn = false;
             solid = true;
         }};
+        moltenLithium = new Floor("pooled-molten-lithium"){{
+            drownTime = 230f;
+            status = StatusEffects.melting;
+            statusDuration = 240f;
+            speedMultiplier = 0.19f;
+            variants = 0;
+            liquidDrop = DTLiquids.moltenLithium;
+            isLiquid = true;
+            cacheLayer = DTCacheLayer.moltenLithium;
+            attributes.set(Attribute.heat, 0.85f);
 
+            emitLight = true;
+            lightRadius = 40f;
+            lightColor = DTLiquids.moltenLithium.color.cpy().a(0.38f);
+        }};
+
+        lithiumStone = new Floor("lithium-stone");
         spaceStationFloor = new ConnectFloor("space-station-floor"){{
             variants = 0;
             blendGroup = Blocks.empty;
@@ -271,6 +292,10 @@ public class DTBlocks {
             obsidianFloor.asFloor().wall = this;
             itemDrop = DTItems.obsidian;
         }};
+        lithiumStoneWall = new StaticWall("lithium-stone-wall"){{
+            lithiumStone.asFloor().wall = this;
+            moltenLithium.asFloor().wall = this;
+        }};
 
         oreIridium = new OreBlock("ore-iridium", DTItems.iridium){{
             oreDefault = true;
@@ -291,10 +316,6 @@ public class DTBlocks {
         }};
 
         oreNickel = new OreBlock("ore-nickel", DTItems.nickel);
-
-        wallOreLithium = new OreBlock("ore-lithium", DTItems.lithium){{
-            wallOre = true;
-        }};
 
         oreSiliconCrystal = new OreBlock("ore-silicon-crystal", DTItems.siliconCrystal);
 
@@ -506,6 +527,35 @@ public class DTBlocks {
             requirements(Category.liquid, with(DTItems.iron, 15, Items.metaglass, 10));
             pumpAmount = 10f/60f;
         }};
+        centrifugalPump = new Pump("centrifugal-pump"){{
+            requirements(Category.liquid, with(DTItems.iron, 20, Items.metaglass, 50, Items.silicon, 30, DTItems.silver, 15));
+            pumpAmount = 0.2f;
+            consumePower(0.3f);
+            liquidCapacity = 30f;
+            hasPower = true;
+            drawer = new DrawMulti(
+                    new DrawRegion("-bottom"),
+                    new DrawLiquidTile(){{
+                        padding = 3f;
+                    }},
+                    new DrawBlurSpin("-rotor", 12),
+                    new DrawDefault()
+            );
+            size = 2;
+        }};
+        thermalPump = new Pump("thermal-pump"){{
+            requirements(Category.liquid, with(DTItems.nickel, 50, Items.tungsten, 60));
+            drawer = new DrawMulti(
+                    new DrawRegion("-bottom"),
+                    new DrawLiquidTile(){{
+                        padding = 3f;
+                    }},
+                    new DrawDefault()
+            );
+            pumpAmount = 80f / 60f / 4f;
+            liquidCapacity = 160f;
+            size = 2;
+        }};
         //endregion
         //region storage
         corePedestal = new CoreBlock("core-pedestal"){{
@@ -565,6 +615,12 @@ public class DTBlocks {
             size = 3;
 
             unitCapModifier = 25;
+        }};
+        coreExtender = new StorageExtender("core-extender"){{
+            requirements(Category.effect, with(DTItems.silver, 250, DTItems.steel, 225));
+            size = 3;
+            itemCapacity = 1000;
+            scaledHealth = 55;
         }};
         //endregion
         //region heat
@@ -1222,7 +1278,8 @@ public class DTBlocks {
         payloadTeleporter = new PayloadTeleporter("payload-teleporter"){{
             size = 7;
             reload = 230f;
-            requirements(Category.units, with());
+            consumePower(1f);
+            requirements(Category.units, with(DTItems.magnetismAlloy, 300, DTItems.conductionAlloy, 400, DTItems.silver, 200, DTItems.steel, 350));
         }};
 
         payloadDuct = new PayloadDuct("payload-duct"){{
@@ -1407,7 +1464,7 @@ public class DTBlocks {
             size = 3;
             powerProduction = 1.4f;
         }};
-        solarMirror = new SolarMirror("solar-mirror"){{
+        heliostat = new Heliostat("heliostat"){{
             requirements(Category.power, with(DTItems.iron, 150, Items.metaglass, 120, DTItems.silver, 90));
             size = 3;
         }};
@@ -1471,6 +1528,13 @@ public class DTBlocks {
         powerDriver = new PowerDriver("power-driver"){{
             size = 3;
             requirements(Category.power, ItemStack.with(Items.silicon, 100, DTItems.magnetismAlloy, 200, Items.surgeAlloy, 120));
+        }};
+        burningGenerator = new ConsumeGenerator("burning-generator"){{
+            size = 2;
+            requirements(Category.power, ItemStack.with(DTItems.nickel, 5, DTItems.lithium, 5));
+            researchCost = with(DTItems.nickel, 5);
+            consumeLiquid(DTLiquids.moltenLithium, 0.2f);
+            consumeLiquid(Liquids.ozone, 0.1f);
         }};
         //endregion
         //region units
@@ -3110,6 +3174,120 @@ public class DTBlocks {
             researchCostMultiplier = 0.5f;
             requirements(Category.turret, with(DTItems.nickel, 50, Items.graphite, 60));
         }};
+        retribution = new ItemTurret("retribution"){{
+            requirements(Category.turret, with(Items.silicon, 650, Items.graphite, 400, Items.tungsten, 700));
+            shoot = new ShootBarrel(){{
+                shots = 2;
+                barrels = new float[] {
+                        0, 0, 30f,
+                        0, 0, -30f
+                };
+            }};
+            ammo(
+                    Items.tungsten, new BasicBulletType(0f, 1){{
+                        shootEffect = Fx.shootBig;
+                        smokeEffect = Fx.shootSmokeMissile;
+                        ammoMultiplier = 1f;
+
+                        spawnUnit = new MissileUnitType("retribution-missile"){{
+                            speed = 4.6f;
+                            maxRange = 6f;
+                            lifetime = 60f * 3f;
+                            outlineColor = Pal.darkOutline;
+                            engineColor = trailColor = Pal.redLight;
+                            engineLayer = Layer.effect;
+                            engineSize = 3.1f;
+                            engineOffset = 10f;
+                            rotateSpeed = 0.4f;
+                            trailLength = 18;
+                            missileAccelTime = 50f;
+                            lowAltitude = true;
+                            loopSound = Sounds.missileTrail;
+                            loopSoundVolume = 0.6f;
+                            deathSound = Sounds.largeExplosion;
+                            targetAir = false;
+
+                            fogRadius = 6f;
+
+                            health = 210;
+
+                            weapons.add(new Weapon(){{
+                                shootCone = 360f;
+                                mirror = false;
+                                reload = 1f;
+                                deathExplosionEffect = Fx.massiveExplosion;
+                                shootOnDeath = true;
+                                shake = 10f;
+                                shoot = new ShootSpread(3, 10);
+                                bullet = new ShrapnelBulletType(){{
+                                    fromColor = toColor = Color.valueOf("fe7d71");
+                                    damage = 66f;
+                                    width = 17f;
+                                    lifetime = 30f;
+                                }};
+                            }});
+
+                            abilities.add(new MoveEffectAbility(){{
+                                effect = Fx.missileTrailSmoke;
+                                rotation = 180f;
+                                y = -9f;
+                                color = Color.grays(0.6f).lerp(Pal.redLight, 0.5f).a(0.4f);
+                                interval = 7f;
+                            }});
+                        }};
+                    }}
+            );
+
+            drawer = new DrawTurret("dark-"){{
+                parts.addAll(new RegionPart("-side"){{
+                    progress = PartProgress.warmup;
+                    heatProgress = PartProgress.warmup;
+                    mirror = true;
+                    under = true;
+                    moveRot = -30f;
+                    moveX = 5f;
+                    moves.add(new PartMove(PartProgress.recoil, 0f, -3f, 0f));
+                }}, new RegionPart("-missile"){{
+                    progress = PartProgress.reload.curve(Interp.pow2In);
+
+                    colorTo = new Color(1f, 1f, 1f, 0f);
+                    color = Color.white;
+                    mixColorTo = Pal.accent;
+                    mixColor = new Color(1f, 1f, 1f, 0f);
+                    outline = false;
+                    under = true;
+                    mirror = true;
+                    moveRot = -30f;
+                    moveX = 5f;
+                    layerOffset = -0.01f;
+                }});
+            }};
+
+            recoil = 0.5f;
+
+            fogRadiusMultiplier = 0.4f;
+            coolantMultiplier = 6f;
+            shootSound = Sounds.missileLaunch;
+
+            minWarmup = 0.94f;
+            shootWarmupSpeed = 0.03f;
+            targetAir = false;
+            targetUnderBlocks = false;
+
+            shake = 6f;
+            ammoPerShot = 15;
+            maxAmmo = 30;
+            shootY = -1;
+            outlineColor = Pal.darkOutline;
+            size = 4;
+            envEnabled |= Env.space;
+            reload = 600f;
+            range = 650;
+            shootCone = 1f;
+            scaledHealth = 220;
+            rotateSpeed = 0.9f;
+            limitRange();
+        }};
         //endregion
         //region drill
         quarry = new Quarry("quarry"){{
@@ -3205,7 +3383,6 @@ public class DTBlocks {
             requirements(Category.production, BuildVisibility.sandboxOnly, with(DTItems.nickel, 12));
         }};
         ((PortableBlockAbility)((PortableDrill)portableDrill).portableUnitType.abilities.get(0)).unitContent = portableDrill;
-
         unitProducer = new UnitFactory("unit-producer"){{
             requirements(Category.units, with(DTItems.nickel, 30, Items.graphite, 20));
             researchCostMultiplier = 0.15f;
@@ -3217,7 +3394,6 @@ public class DTBlocks {
             regionSuffix = "-darker";
             consumePower(1.2f);
         }};
-
         portableDrillUnloader = new PortableDrillUnloadPoint("portable-drill-unloader"){{
             size = 2;
             range = 90f;
@@ -3227,7 +3403,6 @@ public class DTBlocks {
             itemCapacity = 50;
             requirements(Category.production, with(DTItems.nickel, 30));
         }};
-
         plasmaBeamDrill = new MonoBeamDrill("plasma-beam-drill"){{
             requirements(Category.production, with(DTItems.nickel, 40));
             consumePower(0.15f);
@@ -3239,7 +3414,7 @@ public class DTBlocks {
             fogRadius = 3;
             researchCost = with(DTItems.nickel, 10);
 
-            //consumeLiquid(Liquids.nitrogen, 0.25f / 60f).boost();
+            consumeLiquid(DTLiquids.carbonDioxide, 0.25f / 60f).boost();
         }};
         //endregion
         //region effect

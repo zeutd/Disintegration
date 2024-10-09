@@ -13,7 +13,6 @@ import arc.util.Tmp;
 import arc.util.io.Reads;
 import arc.util.io.Writes;
 import arclibrary.graphics.Draw3d;
-import disintegration.util.DrawDef;
 import disintegration.util.MathDef;
 import disintegration.world.blocks.production.SolarCrafter;
 import mindustry.Vars;
@@ -23,12 +22,11 @@ import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
 import mindustry.io.TypeIO;
 import mindustry.world.Block;
-import mindustry.world.blocks.distribution.MassDriver;
 
 import static mindustry.Vars.tilesize;
 
 @SuppressWarnings("all")
-public class SolarMirror extends Block {
+public class Heliostat extends Block {
     public TextureRegion baseRegion;
     public TextureRegion panelRegion;
     public TextureRegion panelLightRegion;
@@ -42,7 +40,7 @@ public class SolarMirror extends Block {
 
     public float range = 110f;
 
-    public SolarMirror(String name) {
+    public Heliostat(String name) {
         super(name);
         update = true;
         solid = true;

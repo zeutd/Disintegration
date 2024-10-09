@@ -11,6 +11,8 @@ import disintegration.core.*;
 import disintegration.entities.DTGroups;
 import disintegration.entities.bullet.ContinuousLaserLightningBulletType;
 import disintegration.gen.entities.EntityRegistry;
+import disintegration.graphics.DTCacheLayer;
+import disintegration.graphics.DTShaders;
 import disintegration.graphics.LaserLightning;
 import disintegration.graphics.Pal2;
 import disintegration.ui.DTUI;
@@ -44,8 +46,8 @@ public class DisintegrationJavaMod extends Mod{
 
     @Override
     public void init(){
-        PlanetDialog.debugSelect = DTVars.debugMode;
         app.addListener(DTVars.renderer = new DTRenderer());
+        PlanetDialog.debugSelect = DTVars.debugMode;
         app.addListener(DTVars.DTUI = new DTUI());
         DTVars.renderer3D = new GenericRenderer3D();
         DTVars.renderer3D.init();
@@ -66,13 +68,9 @@ public class DisintegrationJavaMod extends Mod{
             p.orbitRadius += p.solarSystem.radius * 2f;
         });
         Vars.content.planets().each(p -> p == p.solarSystem, p -> {
-            p.radius *= 2f;
+            p.radius *= 2.1f;
             p.reloadMesh();
             p.clipRadius *= 2f;
-        });
-        Vars.content.planets().each(p -> {
-            p.orbitTime /= 20000;
-            p.rotateTime /= 20000;
         });
         DTPlanets.luna.orbitRadius *= 0.5f;
         try {
@@ -137,9 +135,16 @@ public class DisintegrationJavaMod extends Mod{
         Vars.content.planets().each(p -> p.solarSystem == Planets.sun, p -> {
             p.hiddenItems.remove(DTItems.spaceStationPanel);
         });
+        if(DTVars.debugMode) TechTree.all.each(c -> {
+            c.requiresUnlock = false;
+            c.requirements = ItemStack.with();
+            c.objectives.clear();
+        });
     }
     @Override
     public void loadContent() {
+        DTShaders.init();
+        DTCacheLayer.init();
         EntityRegistry.register();
         DTSounds.load();
         DTItems.load();
@@ -154,11 +159,5 @@ public class DisintegrationJavaMod extends Mod{
         OmurloTechTree.load();
         VanillaTechTree.load();
         SpaceStationTechTree.load();
-        if(DTVars.debugMode) content.planets().each(p -> {
-            if(p.techTree != null) p.techTree.each(c -> {
-                c.requiresUnlock = false;
-                c.requirements = ItemStack.with();
-            });
-        });
     }
 }

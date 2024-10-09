@@ -155,6 +155,7 @@ public class LunaPlanetGenerator extends PlanetGenerator {
             }
         }
         inverseFloodFill(tiles.get(spawnX, spawnY));
+        median(9);
         Schematics.placeLaunchLoadout(spawnX, spawnY);
     }
 }

@@ -156,14 +156,23 @@ public class CosiuazPlanetGenerator extends PlanetGenerator {
                         }
                         ore = Blocks.air;
                     }
-
-                    //TODO this needs to be tweaked
-                    if (noise > 0.55f && floor == Blocks.beryllicStone) {
-                        floor = Blocks.yellowStone;
-                    }
                 }
             });
         }
+
+        pass((x, y) -> {
+            float noise = noise(x + 999, y, 7, 0.8f, 280f, 1f);
+            if (noise > 0.72f) {
+                if (noise > 0.727f) {
+                    floor = DTBlocks.moltenLithium;
+                } else {
+                    noise = noise(x + 999, y + 999, 7, 0.8f, 280f, 1f);
+                    if(noise > 0.6)floor = DTBlocks.lithiumStone;
+                    else floor = DTBlocks.obsidianFloor;
+                }
+                ore = Blocks.air;
+            }
+        });
 
         cells(4);
 
@@ -198,6 +207,10 @@ public class CosiuazPlanetGenerator extends PlanetGenerator {
 
         //smooth out slag to prevent random 1-tile patches
         median(3, 0.6, Blocks.slag);
+
+        median(3, 0.6, DTBlocks.moltenLithium);
+
+        blend(DTBlocks.moltenLithium, DTBlocks.lithiumStone, 2);
 
         pass((x, y) -> {
             //rough rhyolite
@@ -239,9 +252,9 @@ public class CosiuazPlanetGenerator extends PlanetGenerator {
                 if (nearAir(x, y)) {
                     if (block == Blocks.carbonWall && noise(x + 78, y, 4, 0.7f, 33f, 1f) > 0.52f) {
                         block = Blocks.graphiticWall;
-                    } else if (block != Blocks.carbonWall && noise(x + 782, y, 4, 0.8f, 38f, 1f) > 0.665f) {
+                    }/* else if (block != Blocks.carbonWall && noise(x + 782, y, 4, 0.8f, 38f, 1f) > 0.665f) {
                         ore = DTBlocks.wallOreLithium;
-                    }
+                    }*/
 
                 }
             } else if (!nearWall(x, y)) {

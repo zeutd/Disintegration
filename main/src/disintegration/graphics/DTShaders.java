@@ -17,6 +17,7 @@ import arc.util.Tmp;
 import arclibrary.graphics.g3d.model.obj.ObjectShader;
 import disintegration.DTVars;
 import disintegration.content.DTBlocks;
+import disintegration.util.DrawDef;
 import disintegration.world.blocks.debug.ShaderTestBlock;
 import mindustry.game.EventType;
 import mindustry.graphics.Shaders;
@@ -30,12 +31,14 @@ public class DTShaders {
     public static ObjectShader objectShader;
     public static ArcShader arc;
     public static PortalShader portal;
+    public static DTSurfaceShader lithium;
 
     public static void init() {
         blackHole = new BlackHoleShader();
         objectShader = new ObjectShader(Core.files.internal("shaders/screenspace.vert"), Core.files.internal("shaders/screenspace.frag"));
         arc = new ArcShader();
         portal = new PortalShader();
+        lithium = new DTSurfaceShader("lithium");
         //((ShaderTestBlock)DTBlocks.shaderTestBlock).shader = Shaders.screenspace;
     }
 
@@ -145,6 +148,68 @@ public class DTShaders {
                 items[3] = force;
             } else {
                 data.addAll(x, y, radius, force);
+            }
+        }
+    }
+
+    public static class DTSurfaceShader extends Shader {
+        Texture noiseTex, noiseTex2, noiseTex3;
+
+        public DTSurfaceShader(String frag) {
+            super(Core.files.internal("shaders/screenspace.vert"), getDTShaderFi(frag + ".frag"));
+            loadNoise();
+        }
+
+        public void loadNoise(){
+            Core.assets.load("sprites/noise.png", Texture.class).loaded = t -> {
+                t.setFilter(Texture.TextureFilter.linear);
+                t.setWrap(Texture.TextureWrap.repeat);
+            };
+            noiseTex2 = DrawDef.loadTex("noise2");
+            noiseTex2.setFilter(Texture.TextureFilter.linear);
+            noiseTex2.setWrap(Texture.TextureWrap.repeat);
+            noiseTex3 = DrawDef.loadTex("noise3");
+            noiseTex3.setFilter(Texture.TextureFilter.linear);
+            noiseTex3.setWrap(Texture.TextureWrap.repeat);
+        }
+
+        @Override
+        public void apply(){
+            setUniformf("u_campos", Core.camera.position.x - Core.camera.width / 2, Core.camera.position.y - Core.camera.height / 2);
+            setUniformf("u_resolution", Core.camera.width, Core.camera.height);
+            setUniformf("u_time", Time.time);
+
+            if(hasUniform("u_noise")){
+                if(noiseTex == null){
+                    noiseTex = Core.assets.get("sprites/noise.png", Texture.class);
+                }
+
+                noiseTex.bind(1);
+                renderer.effectBuffer.getTexture().bind(0);
+
+                setUniformi("u_noise", 1);
+            }
+
+            if(hasUniform("u_noise2")){
+                if(noiseTex2 == null){
+                    noiseTex2 = DrawDef.loadTex("noise2");
+                }
+
+                noiseTex2.bind(2);
+                renderer.effectBuffer.getTexture().bind(0);
+
+                setUniformi("u_noise2", 2);
+            }
+
+            if(hasUniform("u_noise3")){
+                if(noiseTex3 == null){
+                    noiseTex3 = DrawDef.loadTex("noise3");
+                }
+
+                noiseTex3.bind(3);
+                renderer.effectBuffer.getTexture().bind(0);
+
+                setUniformi("u_noise3", 3);
             }
         }
     }

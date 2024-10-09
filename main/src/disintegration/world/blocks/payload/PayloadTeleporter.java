@@ -19,8 +19,8 @@ import mindustry.world.blocks.payloads.Payload;
 import mindustry.world.blocks.payloads.PayloadBlock;
 import mindustry.world.blocks.payloads.PayloadMassDriver;
 
-import static mindustry.Vars.tilesize;
-import static mindustry.Vars.world;
+import static mindustry.Vars.*;
+import static mindustry.Vars.control;
 
 public class PayloadTeleporter extends PayloadBlock {
     public TextureRegion teleporterRegion;
@@ -42,6 +42,10 @@ public class PayloadTeleporter extends PayloadBlock {
         rotateDraw = false;
         rotate = true;
 
+        hasPower = true;
+        update = true;
+        outputsPayload = true;
+
         config(Point2.class, (PayloadTeleporterBuild tile, Point2 point) -> tile.link = Point2.pack(point.x + tile.tileX(), point.y + tile.tileY()));
         config(Integer.class, (PayloadTeleporterBuild tile, Integer point) -> tile.link = point);
     }
@@ -51,6 +55,30 @@ public class PayloadTeleporter extends PayloadBlock {
         configurable = true;
         teleporterRegion = Core.atlas.find(name + "-teleporter");
         portalRegion = Core.atlas.find(name + "-portal");
+    }
+    @Override
+    public void drawPlace(int x, int y, int rotation, boolean valid){
+        super.drawPlace(x, y, rotation, valid);
+
+        Drawf.dashCircle(x * tilesize, y * tilesize, range, Pal.accent);
+
+        //check if a mass driver is selected while placing this driver
+        if(!control.input.config.isShown()) return;
+        Building selected = control.input.config.getSelected();
+        if(selected == null || selected.block != this || !selected.within(x * tilesize, y * tilesize, range)) return;
+
+        //if so, draw a dotted line towards it while it is in range
+        float sin = Mathf.absin(Time.time, 6f, 1f);
+        Tmp.v1.set(x * tilesize + offset, y * tilesize + offset).sub(selected.x, selected.y).limit((size / 2f + 1) * tilesize + sin + 0.5f);
+        float x2 = x * tilesize - Tmp.v1.x, y2 = y * tilesize - Tmp.v1.y,
+                x1 = selected.x + Tmp.v1.x, y1 = selected.y + Tmp.v1.y;
+        int segs = (int)(selected.dst(x * tilesize, y * tilesize) / tilesize);
+
+        Lines.stroke(4f, Pal.gray);
+        Lines.dashLine(x1, y1, x2, y2, segs);
+        Lines.stroke(2f, Pal.placing);
+        Lines.dashLine(x1, y1, x2, y2, segs);
+        Draw.reset();
     }
     public class PayloadTeleporterBuild extends PayloadBlockBuild<Payload> {
         public int link = -1;
@@ -85,7 +113,7 @@ public class PayloadTeleporter extends PayloadBlock {
 
         @Override
         public boolean acceptPayload(Building source, Payload payload){
-            return super.acceptPayload(source, payload) && payload.size() <= maxPayloadSize * tilesize;
+            return super.acceptPayload(source, payload) && payload.fits(maxPayloadSize);
         }
 
         @Override
@@ -101,7 +129,7 @@ public class PayloadTeleporter extends PayloadBlock {
                 charge = 0;
             }
             else if (moveInPayload()) {
-                charge += Time.delta;
+                charge += edelta();
                 if(charge >= reload){
                     Building link = world.build(this.link);
                     var other = (PayloadTeleporterBuild)link;
