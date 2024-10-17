@@ -25,6 +25,7 @@ import static mindustry.Vars.tilesize;
 
 public class VelocityPayloadConveyor extends PayloadBlock {
     public float force;
+    public float friction = 0.002f;
     public float explodeVelocity = 10f;
     public FloatFloatf forceFormula = f -> 1f / (abs(f) + 1f);
 
@@ -75,8 +76,6 @@ public class VelocityPayloadConveyor extends PayloadBlock {
             }
             payload = null;
         }
-
-        //let b=Vars.world.tile(Vars.player.tileX(),Vars.player.tileY()).build;b.block.forceFormula.get(b.velocity)
         @Override
         public void updateTile() {
             super.updateTile();
@@ -87,11 +86,11 @@ public class VelocityPayloadConveyor extends PayloadBlock {
             if (velocity >= 0) {
                 dest = Tmp.v1.trns(rotdeg(), size * tilesize / 2f);
                 payVector.approach(dest, velocity * delta());
-                next = this.tile.nearby(Geometry.d4(this.rotation).x * trns, Geometry.d4(this.rotation).y * trns);
+                next = tile.nearby(Geometry.d4(rotation).x * trns, Geometry.d4(rotation).y * trns);
             } else {
                 dest = Tmp.v1.trns(rotdeg() + 180, size * tilesize / 2f);
                 payVector.approach(dest, -velocity * delta());
-                next = this.tile.nearby(Geometry.d4(this.rotation + 2).x * trns, Geometry.d4(this.rotation + 2).y * trns);
+                next = tile.nearby(Geometry.d4(rotation + 2).x * trns, Geometry.d4(rotation + 2).y * trns);
             }
             if (payVector.within(dest, 0.001f)) {
                 if (next != null && next.build != null && next.build.team == this.team) {
@@ -109,14 +108,9 @@ public class VelocityPayloadConveyor extends PayloadBlock {
                             else if (build.rotation == rotation) build.velocity = velocity;
                         } else if (abs(velocity) > explodeVelocity) explode();
                     } else {
-                        if (abs(velocity) < explodeVelocity) {
-                            Building build = next.build;
-                            if (build.acceptPayload(this, payload)) {
-                                build.handlePayload(this, payload);
-                                velocity = 0;
-                                payload = null;
-                            }
-                        } else explode();
+                        if (!(abs(velocity) < explodeVelocity)) {
+                            explode();
+                        }
                     }
                 } else if (abs(velocity) > explodeVelocity) explode();
                 else if (payload instanceof UnitPayload up) {
@@ -125,7 +119,8 @@ public class VelocityPayloadConveyor extends PayloadBlock {
                     payload = null;
                 }
             } else {
-                velocity += forceFormula.get(velocity) * force * edelta();
+                velocity *= (1 - friction * edelta());
+                velocity += forceFormula.get(velocity) * force / payload.size() / payload.size() * edelta();
             }
         }
 

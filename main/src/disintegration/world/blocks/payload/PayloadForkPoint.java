@@ -33,11 +33,10 @@ public class PayloadForkPoint extends VelocityPayloadConveyor {
 
         @Override
         public void updateTile() {
-            super.updateTile();
             if (payload == null || buildings == null) return;
             Building other = buildings[0];
             PayloadFork.PayloadForkBuild parent = (PayloadFork.PayloadForkBuild) buildings[0];
-            if (parent == null || other == null) return;
+            if (parent == null) return;
             if (!parent.payloads.contains(p -> p.within(x, y, payload.size()))) {
                 parent.payloads.add(payload);
                 parent.velocities.put(payload, Math.abs(velocity));

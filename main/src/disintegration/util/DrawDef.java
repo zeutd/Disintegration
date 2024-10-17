@@ -15,10 +15,8 @@ import arclibrary.graphics.Draw3d;
 import disintegration.DTVars;
 import mindustry.graphics.Drawf;
 
-import static arc.Core.camera;
 import static arc.math.Mathf.cosDeg;
 import static arc.math.Mathf.sinDeg;
-import static mindustry.Vars.renderer;
 
 public class DrawDef {
     private static final Mat3D tmpMat = new Mat3D();
@@ -37,7 +35,7 @@ public class DrawDef {
      * Original code from Prog-mats
      * @author: MEEPofFaith
      */
-    public static void tube(float x, float y, float rad, float height, Color baseColorLight, Color baseColorDark, Color topColorLight, Color topColorDark){
+    public static void tube3d(float x, float y, float rad, float height, Color baseColorLight, Color baseColorDark, Color topColorLight, Color topColorDark){
         int vert = Lines.circleVertices(rad);
         float space = 360f / vert;
         float angle = M3d.tubeStartAngle(x, y, M3d.x(x, height), M3d.y(y, height), rad, rad * M3d.height(height));
@@ -66,8 +64,8 @@ public class DrawDef {
         }
     }
 
-    public static void tube(float x, float y, float rad, float height, Color baseColor, Color topColor){
-        tube(x, y, rad, height, baseColor, baseColor, topColor, topColor);
+    public static void tube3d(float x, float y, float rad, float height, Color baseColor, Color topColor){
+        tube3d(x, y, rad, height, baseColor, baseColor, topColor, topColor);
     }
     public static TextureRegion noneRegion = Core.atlas.find("disintegration-none");
 

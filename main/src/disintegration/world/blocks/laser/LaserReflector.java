@@ -108,8 +108,8 @@ public class LaserReflector extends Block {
     }
 
     public class LaserReflectorBuild extends Building implements LaserBlock, LaserConsumer {
-        float[] sideLaser = new float[getEdges().length];
-        float[] callFrom = new float[getEdges().length];
+        float[] sideLaser = new float[4];
+        float[] callFrom = new float[4];
 
         IntSet came = new IntSet();
         IntSet otherCame = new IntSet();
@@ -127,7 +127,7 @@ public class LaserReflector extends Block {
                 Building other = world.build(Geometry.d4x(rotation + a - 1) * i + tileX(), Geometry.d4y(rotation + a - 1) * i + tileY());
                 if (other != null && other.block.solid) {
                     if (other instanceof LaserConsumer build) {
-                        build.call(split ? luminosity / 3 : luminosity, Arrays.asList(Edges.getEdges(other.block.size)).indexOf(new Point2(Geometry.d4x(rotation + a - 1) * (i - 1) + tileX() - other.tileX(), Geometry.d4y(rotation + a - 1) * (i - 1) + tileY() - other.tileY())), came);
+                        if(other.tileX() == tileX() || other.tileY() == tileY()) build.call(split ? luminosity / 3 : luminosity, relativeTo(other), came);
                     }
                     break;
                 }
@@ -157,7 +157,7 @@ public class LaserReflector extends Block {
             came.addAll(otherCame);
             came.add(id);
             sideLaser = callFrom.clone();
-            callFrom = new float[getEdges().length];
+            callFrom = new float[4];
             luminosity = 0;
             label:
             {

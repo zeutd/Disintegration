@@ -37,15 +37,9 @@ public class DTPlanets {
 
     public static Planet luna, omurlo, cosiuaz, caelpse, terminsi, twinCenter, wormHole;
 
-    public static final ObjectMap<Planet, Boolean> canSpaceStation = new ObjectMap<>();
-
-    public static void init(){
-        canSpaceStation.putAll(terminsi, true);
-        for (Planet p : Vars.content.planets()){
-            if (canSpaceStation.containsKey(p)) continue;
-            boolean b = p.accessible && p.isLandable() && !(p instanceof SpaceStation);
-            canSpaceStation.put(p, b);
-        }
+    public static boolean canSpaceStation(Planet p){
+        return p == DTPlanets.terminsi ||
+                (p.accessible && p.isLandable() && !(p instanceof SpaceStation));
     }
     public static void load(){
         Planets.serpulo.hiddenItems.add(DTItems.nitride);
@@ -117,6 +111,7 @@ public class DTPlanets {
                 r.lighting = false;
                 r.coreDestroyClear = true;
                 r.onlyDepositCore = true;
+                r.solarMultiplier = 5f;
             };
 
             unlockedOnLand.add(Blocks.coreBastion);
@@ -160,6 +155,7 @@ public class DTPlanets {
                 r.lighting = false;
                 r.coreDestroyClear = true;
                 r.onlyDepositCore = true;
+                r.solarMultiplier = 5f;
             };
 
             unlockedOnLand.add(Blocks.coreBastion);

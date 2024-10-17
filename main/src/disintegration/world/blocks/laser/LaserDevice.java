@@ -120,7 +120,7 @@ public class LaserDevice extends Block {
                 Building other = world.build(Geometry.d4x(rotation + a - 1) * i + tileX(), Geometry.d4y(rotation + a - 1) * i + tileY());
                 if (other != null && other.block.solid) {
                     if (other instanceof LaserConsumer build) {
-                        build.call(luminosity, Arrays.asList(Edges.getEdges(other.block.size)).indexOf(new Point2(Geometry.d4x(rotation + a - 1) * (i - 1) + tileX() - other.tileX(), Geometry.d4y(rotation + a - 1) * (i - 1) + tileY() - other.tileY())), came);
+                        if(other.tileX() == tileX() || other.tileY() == tileY()) build.call(luminosity, relativeTo(other), came);
                     }
                     break;
                 }

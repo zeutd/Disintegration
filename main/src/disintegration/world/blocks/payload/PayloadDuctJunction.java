@@ -24,7 +24,7 @@ public class PayloadDuctJunction extends PayloadConveyor {
 
         @Override
         public void onProximityUpdate(){
-            super.onProximityUpdate();
+            noSleep();
 
             Building accept = nearby(Geometry.d4(cameFrom + 2).x * (size/2+1), Geometry.d4(cameFrom + 2).y * (size/2+1));
             //next block must be aligned and of the same size
@@ -52,6 +52,7 @@ public class PayloadDuctJunction extends PayloadConveyor {
         public void handlePayload(Building source, Payload payload){
             super.handlePayload(source, payload);
             cameFrom = relativeTo(source);
+            onProximityUpdate();
         }
 
         @Override

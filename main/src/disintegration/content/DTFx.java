@@ -20,6 +20,8 @@ import disintegration.util.DrawDef;
 import mindustry.content.Fx;
 import mindustry.ctype.UnlockableContent;
 import mindustry.entities.Effect;
+import mindustry.gen.Bullet;
+import mindustry.gen.Posc;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
@@ -107,19 +109,19 @@ public class DTFx {
             e.scaled(e.lifetime * rand.random(0.2f, 1f), b -> Fill.circle(e.x + v.x, e.y + v.y, b.fout() * 2f + 0.2f));
         }
     }),
-            shootSparkBeryl = new Effect(40, e -> {
-                color(Pal.berylShot);
-                stroke(e.fout() * 1.6f);
+    shootSparkBeryl = new Effect(40, e -> {
+        color(Pal.berylShot);
+        stroke(e.fout() * 1.6f);
 
-                randLenVectors(e.id, 18, e.finpow() * 27f, e.rotation, 360f, (x, y) -> {
-                    float ang = Mathf.angle(x, y);
-                    lineAngle(e.x + x, e.y + y, ang, e.fout() * 6 + 1f);
-                });
-            }),
-            compressSmoke = new Effect(90, e -> randLenVectors(e.id, 7, 3f + e.fin(Interp.pow5Out) * 15f, (x, y) -> {
-                color(Pal.stoneGray);
-                Fill.square(e.x + x, e.y + y, e.fout(Interp.pow5Out) * 1.5f + 0.5f, 45);
-            })),
+        randLenVectors(e.id, 18, e.finpow() * 27f, e.rotation, 360f, (x, y) -> {
+            float ang = Mathf.angle(x, y);
+            lineAngle(e.x + x, e.y + y, ang, e.fout() * 6 + 1f);
+        });
+    }),
+    compressSmoke = new Effect(90, e -> randLenVectors(e.id, 7, 3f + e.fin(Interp.pow5Out) * 15f, (x, y) -> {
+        color(Pal.stoneGray);
+        Fill.square(e.x + x, e.y + y, e.fout(Interp.pow5Out) * 1.5f + 0.5f, 45);
+    })),
 
     blastFurnaceSmoke = new Effect(100, e -> {
         color(Pal.stoneGray);
@@ -234,16 +236,16 @@ public class DTFx {
             Fill.circle(e.x + x, e.y + y, 1f + e.fout() * 3f);
         });
     }),
-            warpCharge = new Effect(120f, 100f / 4f, e -> {
-                color(Pal2.hyperBlue);
-                float range = 100f;
-                float spacing = 20f;
-                for (int i = 0; i < 4; i++) {
-                    stroke(Interp.pow3In.apply(e.fin() - i * 0.1f) * 20f);
-                    if (e.fin() >= i * 0.125f)
-                        Lines.poly(e.x, e.y, 4, (range - spacing * i) * e.foutpowdown(), min(0, e.foutpow() - i) * 90);
-                }
-            }),
+    warpCharge = new Effect(120f, 100f / 4f, e -> {
+        color(Pal2.hyperBlue);
+        float range = 100f;
+        float spacing = 20f;
+        for (int i = 0; i < 4; i++) {
+            stroke(Interp.pow3In.apply(e.fin() - i * 0.1f) * 20f);
+            if (e.fin() >= i * 0.125f)
+                Lines.poly(e.x, e.y, 4, (range - spacing * i) * e.foutpowdown(), min(0, e.foutpow() - i) * 90);
+        }
+    }),
 
     warpEffect = new Effect(120f, 130f / 4f, e -> {
         color(Pal2.hyperBlue);
@@ -480,9 +482,50 @@ public class DTFx {
         float h = (data.fullIcon.height / aspect * e.foutpowdown()) / 4f;
         Draw.rect(data.fullIcon, e.x, e.y, w, h, 0);*/
         Tmp.c1.set(Color.valueOf("abf6fe")).lerp(Color.clear, e.fin());
-        DrawDef.tube(e.x, e.y, data.fullIcon.width / 4f, 0.1f, Tmp.c1, Color.clear);
+        DrawDef.tube3d(e.x, e.y, data.fullIcon.width / 4f, 0.1f, Tmp.c1, Color.clear);
         Draw.color(Tmp.c1);
         Fill.circle(e.x, e.y, data.fullIcon.width / 4f);
-    }).layer(Layer.bullet - 1)
+    }).layer(Layer.bullet - 1),
+    yellowBomb = new Effect(40f, 100f, e -> {
+        color(Pal.bulletYellowBack);
+        stroke(e.fout() * 2f);
+        float circleRad = 4f + e.finpow() * 65f;
+        Lines.circle(e.x, e.y, circleRad);
+
+        color(Pal.bulletYellowBack);
+        for(int i = 0; i < 4; i++){
+            Drawf.tri(e.x, e.y, 6f, 100f * e.fout(), i*90);
+        }
+
+        color();
+        for(int i = 0; i < 4; i++){
+            Drawf.tri(e.x, e.y, 3f, 35f * e.fout(), i*90);
+        }
+
+        Drawf.light(e.x, e.y, circleRad * 1.6f, Pal.heal, e.fout());
+    }),
+    vortex = new Effect(20, 40f, e -> {
+        if(!(e.data instanceof Posc p)) return;
+        color(e.color);
+        rand.setSeed(e.id);
+        float ang = rand.random(0f, 360f);
+        Tmp.v1.trns(ang + e.fin() * 70f, e.foutpowdown() * 30f);
+        Fill.circle(p.x() + Tmp.v1.x, p.y() + Tmp.v1.y, e.finpow() * 0.8f);
+        for (float i = e.fin(); i  > 0 && i > e.fin() - 0.5; i -= 0.1f){
+            Tmp.v1.trns(ang + i * 70f, (1 - Interp.pow3In.apply(i)) * 30f);
+            Tmp.v2.trns(ang + (i - 0.1f) * 70f, (1 - Interp.pow3In.apply(i - 0.1f)) * 30f);
+            Lines.stroke(1.6f * (1 - e.fin() + i));
+            Lines.line(Tmp.v1.x + p.x(), Tmp.v1.y + p.y(), Tmp.v2.x + p.x(), Tmp.v2.y + p.y(), false);
+            Fill.circle(Tmp.v1.x + p.x(), Tmp.v1.y + p.y(), 0.8f * (1 - e.fin() + i));
+            Fill.circle(Tmp.v2.x + p.x(), Tmp.v2.y + p.y(), 0.8f * (1 - e.fin() + i));
+        }
+    }),
+    blueSpark = new Effect(20, e -> {
+        color(Color.valueOf("9bbfeb"));
+        randLenVectors(e.id, 5, e.finpow() * 70f, e.rotation, 30f, (x, y) -> {
+            float ang = Mathf.angle(x, y);
+            lineAngle(e.x + x, e.y + y, ang, e.fout() * 6 + 1f);
+        });
+    })
             ;
 }

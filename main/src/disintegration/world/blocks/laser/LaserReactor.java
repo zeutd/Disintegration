@@ -76,8 +76,8 @@ public class LaserReactor extends PowerGenerator {
     }
 
     public class LaserReactorBuild extends GeneratorBuild implements LaserConsumer {
-        float[] sideLaser = new float[getEdges().length];
-        float[] callFrom = new float[getEdges().length];
+        float[] sideLaser = new float[4];
+        float[] callFrom = new float[4];
 
         public float luminosity;
         public float heat;
@@ -100,7 +100,7 @@ public class LaserReactor extends PowerGenerator {
         @Override
         public void updateTile() {
             sideLaser = callFrom.clone();
-            callFrom = new float[getEdges().length];
+            callFrom = new float[4];
             luminosity = 0;
             for (float side : sideLaser) {
                 luminosity += side;

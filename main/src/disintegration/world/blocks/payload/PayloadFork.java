@@ -180,8 +180,8 @@ public class PayloadFork extends VelocityPayloadConveyor {
                     }
                     if (next != null && next.build != null && next.build.team == this.team && next.build.acceptPayload(this, p)) {
                         next.build.handlePayload(dests.get(p), p);
-                        if (next.build instanceof VelocityPayloadConveyorBuild build) {
-                            build.velocity = velocities.get(p);
+                        if (next.build instanceof VelocityPayloadConveyorBuild build && (build.rotation == dests.get(p).rotation || build.rotation == Mathf.mod(dests.get(p).rotation + 2, 4))) {
+                            build.velocity = build.rotation == dests.get(p).rotation ? velocities.get(p) : -velocities.get(p);
                         }
                         payloads.remove(p);
                         velocities.remove(p);

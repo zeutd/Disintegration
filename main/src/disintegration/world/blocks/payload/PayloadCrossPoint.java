@@ -34,7 +34,6 @@ public class PayloadCrossPoint extends VelocityPayloadConveyor {
 
         @Override
         public void updateTile() {
-            super.updateTile();
             if (payload == null || buildings == null) return;
             Building other = buildings[Mathf.mod(rotation + 2, 4)];
             PayloadCross.PayloadCrossBuild parent = (PayloadCross.PayloadCrossBuild) buildings[4];

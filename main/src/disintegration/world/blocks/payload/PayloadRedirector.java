@@ -1,6 +1,7 @@
 package disintegration.world.blocks.payload;
 
 import arc.graphics.g2d.TextureRegion;
+import arc.math.Mathf;
 import arc.math.geom.Geometry;
 import arc.math.geom.Vec2;
 import arc.struct.ObjectMap;
@@ -138,8 +139,8 @@ public class PayloadRedirector extends Block {
                     }
                     if (next != null && next.build != null && next.build.team == this.team && next.build.acceptPayload(this, p)) {
                         next.build.handlePayload(dests.get(p), p);
-                        if (next.build instanceof VelocityPayloadConveyor.VelocityPayloadConveyorBuild build) {
-                            build.velocity = velocities.get(p);
+                        if (next.build instanceof VelocityPayloadConveyor.VelocityPayloadConveyorBuild build && (build.rotation == dests.get(p).rotation || build.rotation == Mathf.mod(dests.get(p).rotation + 2, 4))) {
+                            build.velocity = build.rotation == dests.get(p).rotation ? velocities.get(p) : -velocities.get(p);
                         }
                         payloads.remove(p);
                         velocities.remove(p);

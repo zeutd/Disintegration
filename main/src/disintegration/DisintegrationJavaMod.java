@@ -54,7 +54,6 @@ public class DisintegrationJavaMod extends Mod{
         DTVars.DTUI.init();
         Events.run(EventType.Trigger.universeDraw, DTVars.renderer.spaceStation::drawExportLines);
         //Events.run(EventType.Trigger.update, DTVars.loadRenderer::draw);
-        DTPlanets.init();
         Planets.sun.iconColor = Color.valueOf("ffebab");
         Vars.content.units().each(u -> {
             if(u.flying)u.envEnabled |= Env.space;

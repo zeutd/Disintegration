@@ -19,6 +19,8 @@ public class DTLiquids {
         oxygen = new Liquid("oxygen", Color.valueOf("9eaefd")) {{
             gas = true;
             coolant = false;
+            flammability = 1f;
+            explosiveness = 1f;
         }};
         carbonDioxide = new Liquid("carbon-dioxide", Color.valueOf("8a8ea3")){{
             gas = true;

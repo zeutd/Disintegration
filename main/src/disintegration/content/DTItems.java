@@ -90,7 +90,7 @@ public class DTItems {
             cost = 2f;
         }};
 
-        obsidian = new Item("obsidian", Color.valueOf("4E4E79")){{
+        obsidian = new Item("obsidian", Color.valueOf("42426a")){{
             hardness = 2;
             cost = 1f;
             lowPriority = true;
@@ -103,6 +103,9 @@ public class DTItems {
 
         omurloItems.addAll(
                 iridium, iron, silver, magnetismAlloy, conductionAlloy, sand, silicon, surgeAlloy, graphite, coal, metaglass, lead, blastCompound, steel
+        );
+        twinItems.addAll(
+                nickel, obsidian, tantalum, tantalumTungstenAlloy, lithium, siliconCrystal, tungsten, silicon, surgeAlloy, graphite
         );
     }
 }

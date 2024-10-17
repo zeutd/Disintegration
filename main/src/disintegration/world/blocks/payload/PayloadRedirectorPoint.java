@@ -33,7 +33,6 @@ public class PayloadRedirectorPoint extends VelocityPayloadConveyor {
 
         @Override
         public void updateTile() {
-            super.updateTile();
             if (payload == null || buildings == null) return;
             Building other = buildings[0];
             if (other == this) other = buildings[2];
