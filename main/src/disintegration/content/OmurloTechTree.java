@@ -119,6 +119,9 @@ public class OmurloTechTree {
                                     node(magnetizedConduit);
                                     node(liquidContainer, () -> {
                                         node(liquidTank);
+                                        node(liquidCellPacker, () -> {
+                                            node(liquidCellUnpacker);
+                                        });
                                     });
                                 });
                             });

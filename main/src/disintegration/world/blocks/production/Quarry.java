@@ -75,6 +75,8 @@ public class Quarry extends Block {
 
     protected float fulls = areaSize * tilesize / 2f;
 
+    private FrameBuffer shadow = null;
+
     public Quarry(String name) {
         super(name);
         update = true;
@@ -231,7 +233,6 @@ public class Quarry extends Block {
     }
 
     public class QuarryBuild extends Building {
-        private FrameBuffer shadow = null;
         public int lastChange = -2;
         public float progress;
         public float deployProgress;
@@ -432,16 +433,13 @@ public class Quarry extends Block {
             drawDrill(x, y, mx, my, Layer.flyingUnitLow - 0.01f);
             Draw.draw(Layer.floor + 2, () -> {
                 if (shadow == null) shadow = new FrameBuffer(graphics.getWidth(), graphics.getHeight());
-                Draw.flush();
                 shadow.resize(graphics.getWidth(), graphics.getHeight());
                 shadow.begin(Color.clear);
                 drawDrill(x - elevation, y - elevation, mx - elevation, my - elevation, Layer.floor + 2);
-                Draw.flush();
                 shadow.end();
                 Draw.color(Pal.shadow);
                 Draw.z(Layer.blockOver);
                 Draw.rect(Draw.wrap(shadow.getTexture()), Core.camera.position, Core.camera.width, -Core.camera.height);
-                Draw.flush();
                 Draw.color();
             });
             Draw.reset();
@@ -482,12 +480,13 @@ public class Quarry extends Block {
 
         @Override
         public byte version() {
-            return 1;
+            return 2;
         }
 
         @Override
         public void write(Writes write) {
             super.write(write);
+            write.f(deployProgress);
             write.f(progress);
             write.f(warmup);
         }
@@ -495,6 +494,9 @@ public class Quarry extends Block {
         @Override
         public void read(Reads read, byte revision) {
             super.read(read, revision);
+            if (revision >= 2) {
+                deployProgress = read.f();
+            }
             if (revision >= 1) {
                 progress = read.f();
                 warmup = read.f();

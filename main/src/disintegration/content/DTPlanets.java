@@ -21,6 +21,7 @@ import disintegration.type.maps.planet.CosiuazPlanetGenerator;
 import disintegration.type.maps.planet.LunaPlanetGenerator;
 import disintegration.type.maps.planet.OmurloPlanetGenerator;
 import disintegration.util.DTUtil;
+import disintegration.world.meta.DTEnv;
 import mindustry.Vars;
 import mindustry.content.Blocks;
 import mindustry.content.Items;
@@ -80,7 +81,7 @@ public class DTPlanets {
             alwaysUnlocked = true;
             landCloudColor = Color.valueOf("bd7552");
             atmosphereColor = Color.valueOf("d06218");
-            defaultEnv = Env.scorching | Env.terrestrial;
+            defaultEnv = Env.scorching | Env.terrestrial | DTEnv.twin;
             startSector = 10;
             atmosphereRadIn = 0.02f;
             atmosphereRadOut = 0.3f;
@@ -124,7 +125,7 @@ public class DTPlanets {
             alwaysUnlocked = true;
             landCloudColor = Color.valueOf("fd5542");
             atmosphereColor = Color.valueOf("ff5218");
-            defaultEnv = Env.scorching | Env.terrestrial;
+            defaultEnv = Env.scorching | Env.terrestrial | DTEnv.twin;
             startSector = 10;
             atmosphereRadIn = 0.02f;
             atmosphereRadOut = 0.3f;
@@ -192,7 +193,7 @@ public class DTPlanets {
                 atmosphereRadIn = 0.02f;
                 atmosphereRadOut = 0.3f;
                 tidalLock = true;
-                defaultEnv = Env.terrestrial | Env.groundWater | Env.groundOil | Env.oxygen;
+                defaultEnv = Env.terrestrial | Env.groundWater | Env.oxygen | DTEnv.omurlo;
                 orbitSpacing = 4f;
                 totalRadius += 2.6f;
                 clearSectorOnLose = true;

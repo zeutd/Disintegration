@@ -2,7 +2,7 @@ package disintegration.world.meta;
 
 public class DTEnv {
     public static final int
-    twin = 1 << 8,
-    tesstar = 1 << 9
+    omurlo = 1 << 8,
+    twin = 1 << 9
     ;
 }

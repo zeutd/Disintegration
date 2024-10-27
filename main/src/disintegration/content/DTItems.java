@@ -1,12 +1,15 @@
 package disintegration.content;
 
 import arc.graphics.Color;
+import arc.struct.ObjectMap;
 import arc.struct.Seq;
 import mindustry.type.Item;
+import mindustry.type.Liquid;
 
 import static mindustry.content.Items.*;
 
 public class DTItems {
+    public static ObjectMap<Liquid, Item> cells = new ObjectMap<>();
     public static Item
             spaceStationPanel,
             nitride,

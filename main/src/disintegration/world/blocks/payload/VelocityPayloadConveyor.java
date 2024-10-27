@@ -26,7 +26,7 @@ import static mindustry.Vars.tilesize;
 public class VelocityPayloadConveyor extends PayloadBlock {
     public float force;
     public float friction = 0.002f;
-    public float explodeVelocity = 10f;
+    public float explodeVelocity = 8f;
     public FloatFloatf forceFormula = f -> 1f / (abs(f) + 1f);
 
     public DrawBlock drawer;
@@ -108,9 +108,11 @@ public class VelocityPayloadConveyor extends PayloadBlock {
                             else if (build.rotation == rotation) build.velocity = velocity;
                         } else if (abs(velocity) > explodeVelocity) explode();
                     } else {
-                        if (!(abs(velocity) < explodeVelocity)) {
-                            explode();
+                        if (next.build.acceptPayload(this, payload)){
+                            next.build.handlePayload(this, payload);
+                            payload = null;
                         }
+                        if (abs(velocity) > explodeVelocity) explode();
                     }
                 } else if (abs(velocity) > explodeVelocity) explode();
                 else if (payload instanceof UnitPayload up) {

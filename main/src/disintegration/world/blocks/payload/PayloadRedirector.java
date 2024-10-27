@@ -113,6 +113,7 @@ public class PayloadRedirector extends Block {
                 lastChange = world.tileChanges;
                 Tile tile1 = Vars.world.tile(tileX() + Geometry.d8edge(rotation).x * length, tileY() + Geometry.d8edge(rotation).y * length);
                 Tile tile2 = Vars.world.tile(tileX() - Geometry.d8edge(rotation).x * length, tileY() - Geometry.d8edge(rotation).y * length);
+                if(tile1 == null || tile2 == null) return;
                 if (!(tile1.build instanceof PayloadRedirectorPoint.PayloadRedirectorPointBuild b1) || !(tile2.build instanceof PayloadRedirectorPoint.PayloadRedirectorPointBuild b2)) {
                     tile.remove();
                     return;

@@ -67,7 +67,7 @@ public class DTUnitTypes {
             lancet, talwar, estoc, epee,
             colibri, albatross, crane, eagle, phoenix,
             converge, cover, protect, defend,
-            separate, attract, blend, spaceStationDrone;
+            separate, attract, blend, spaceStationDrone, particle;
     public static @Annotations.EntityDef({Unitc.class, Payloadc.class}) UnitType spear, harbour;
     public static @Annotations.EntityDef({Unitc.class, ElevationMovec.class}) UnitType assist, strike, coverture, attack, devastate;
     public static @Annotations.EntityDef({Unitc.class, Mechc.class}) UnitType verity, truth, solve, essence, axiom;
@@ -734,7 +734,7 @@ public class DTUnitTypes {
             flying = true;
             drag = 0.05f;
             speed = 1f;
-            rotateSpeed = 10f;
+            rotateSpeed = 3f;
             accel = 0.1f;
             range = 130f;
             health = 400;
@@ -1570,6 +1570,53 @@ public class DTUnitTypes {
                 bullet = new BulletType() {{
                     maxRange = 60f;
                 }};
+            }});
+        }});
+        particle = EntityRegistry.content("particle", UnitEntity.class, name -> new UnitType(name) {{
+            coreUnitDock = true;
+            controller = u -> new BuilderAI(true, coreFleeRange);
+            isEnemy = false;
+            envDisabled = 0;
+
+            targetPriority = -2;
+            lowAltitude = false;
+            mineWalls = true;
+            mineFloor = false;
+            mineHardnessScaling = false;
+            flying = true;
+            mineSpeed = 6f;
+            mineTier = 3;
+            buildSpeed = 1.2f;
+            drag = 0.08f;
+            speed = 5.6f;
+            rotateSpeed = 7f;
+            accel = 0.09f;
+            itemCapacity = 60;
+            health = 300f;
+            armor = 1f;
+            hitSize = 9f;
+            engineOffset = 2.6f;
+            pickupUnits = false;
+
+            fogRadius = 0f;
+
+            weapons.add(new Weapon() {{
+                mirror = false;
+                y = 2.5f;
+                x = 0f;
+                top = false;
+                reload = 24f;
+                ejectEffect = Fx.none;
+                recoil = 2f;
+                shootSound = Sounds.missileSmall;
+                inaccuracy = 20f;
+                bullet = new MissileBulletType(3f, 9f) {{
+                    lifetime = 30;
+                    backColor = Color.valueOf("fe7d71");
+                    frontColor = Color.white;
+                    trailColor = Color.valueOf("fe7d71");
+                }};
+                outlineColor = Pal2.darkerOutline;
             }});
         }});
         //endregion

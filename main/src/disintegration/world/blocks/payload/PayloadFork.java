@@ -16,6 +16,7 @@ import mindustry.ctype.ContentType;
 import mindustry.ctype.UnlockableContent;
 import mindustry.game.Team;
 import mindustry.gen.Building;
+import mindustry.input.Placement;
 import mindustry.type.UnitType;
 import mindustry.world.Block;
 import mindustry.world.Tile;
@@ -136,6 +137,7 @@ public class PayloadFork extends VelocityPayloadConveyor {
                 for (int i = 0; i < points.length; i++) {
                     Tmp.p1.set(points[i]).rotate(rotation);
                     Tile tile1 = Vars.world.tile(tileX() + Tmp.p1.x, tileY() + Tmp.p1.y);
+                    if(tile1 == null) return;
                     if (!(tile1.build instanceof PayloadForkPoint.PayloadForkPointBuild)) {
                         tile.remove();
                         return;

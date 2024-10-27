@@ -127,6 +127,7 @@ public class PayloadCross extends Block {
                 Tile tile2 = Vars.world.tile(tile.x + Geometry.d4x(1) * length, tile.y + Geometry.d4y(1) * length);
                 Tile tile3 = Vars.world.tile(tile.x + Geometry.d4x(2) * length, tile.y + Geometry.d4y(2) * length);
                 Tile tile4 = Vars.world.tile(tile.x + Geometry.d4x(3) * length, tile.y + Geometry.d4y(3) * length);
+                if(tile1 == null || tile2 == null || tile3 == null || tile4 == null) return;
                 if (!(tile1.build instanceof PayloadCrossPoint.PayloadCrossPointBuild b1) || !(tile2.build instanceof PayloadCrossPoint.PayloadCrossPointBuild b2) || !(tile3.build instanceof PayloadCrossPoint.PayloadCrossPointBuild b3) || !(tile4.build instanceof PayloadCrossPoint.PayloadCrossPointBuild b4)) {
                     tile.remove();
                     return;

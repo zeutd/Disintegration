@@ -20,6 +20,7 @@ import mindustry.graphics.Pal;
 import mindustry.ui.Bar;
 import mindustry.world.Block;
 import mindustry.world.Edges;
+import mindustry.world.blocks.production.GenericCrafter;
 import mindustry.world.draw.DrawBlock;
 import mindustry.world.meta.Stat;
 
@@ -28,7 +29,7 @@ import java.util.Arrays;
 import static mindustry.Vars.tilesize;
 import static mindustry.Vars.world;
 
-public class LaserDevice extends Block {
+public class LaserDevice extends GenericCrafter {
     public DrawBlock drawer;
 
     public float visualMaxLaser = 10f;
@@ -104,7 +105,7 @@ public class LaserDevice extends Block {
         addBar("laser", (LaserDeviceBuild entity) -> new Bar(() -> Core.bundle.format("bar.laseramount", MathDef.round(entity.luminosity(), 10)), () -> Pal.redLight, () -> entity.luminosity / laserOutput));
     }
 
-    public class LaserDeviceBuild extends Building implements LaserBlock {
+    public class LaserDeviceBuild extends GenericCrafterBuild implements LaserBlock {
         IntSet came = new IntSet();
 
         float luminosity;

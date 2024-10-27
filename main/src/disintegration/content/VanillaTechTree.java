@@ -19,6 +19,8 @@ public class VanillaTechTree {
         addTechNodeProduce(Planets.serpulo.techTree, Items.titanium, DTItems.spaceStationPanel);
         addTechNode(Planets.serpulo.techTree, Blocks.launchPad, DTBlocks.spaceStationLaunchPad);
         addTechNode(Planets.serpulo.techTree, Blocks.lancer, DTBlocks.sabre);
+        addTechNode(Planets.serpulo.techTree, Blocks.liquidContainer, DTBlocks.liquidCellPacker);
+        addTechNode(Planets.serpulo.techTree, DTBlocks.liquidCellPacker, DTBlocks.liquidCellUnpacker);
 
         addTechNode(Planets.erekir.techTree, Blocks.carbideWallLarge, DTBlocks.nitrideWall);
         addTechNode(Planets.erekir.techTree, DTBlocks.nitrideWall, DTBlocks.nitrideWallLarge);
