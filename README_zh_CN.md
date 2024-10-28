@@ -1,28 +1,27 @@
-[English](README.md) | ÖÐÎÄ
+[English](README.md) | ä¸­æ–‡
 
-+ **Discord ·þÎñÆ÷£º**
-  [![Discord](https://img.shields.io/discord/825801593466388520.svg?logo=discord&logoColor=white&logoWidth=20&labelColor=7289DA&label=Discord&color=17cf48)](https://discord.gg/yNmbMcuwyW)
-+ **QQ**£º676206144
++ **Discord æœåŠ¡å™¨**ï¼šhttps://discord.gg/XGq7NBz8RZ
++ **QQ**ï¼š676206144
 
 ![](images/qq-QRcode.png)
 
-## ÓÃGithub Action¹¹½¨
+## ç”¨Github Actionæž„å»º
 
-Õâ¸ö²Ö¿âÒÑ¿ªÆôGithub Action CIµÄ×Ô¶¯¹¹½¨
-1. µã»÷Actions£¬µã»÷×î½üµÄ³É¹¦¹¹½¨£¨ÏÔÊ¾ÂÌÉ«¹´ºÅ£©¡£
-2. ·­µ½×îºó£¬µã»÷DisintegrationÀ´ÏÂÔØ**Ñ¹ËõµÄjarÎÄ¼þ**£¨ÎÞ·¨Ö±½Ó·ÅÈëÓÎÏ·£©½âÑ¹ÎÄ¼þºó²Å¿ÉÒÔ·ÅÈëÓÎÏ·modÎÄ¼þ¼Ð¡£
-* £¨´Ë·½·¨¿ÉÒÔ¹¹½¨°²×¿ºÍµçÄÔ¶¼ÄÜÓÃµÄÎÄ¼þ£©
+è¿™ä¸ªä»“åº“å·²å¼€å¯Github Action CIçš„è‡ªåŠ¨æž„å»º
+1. ç‚¹å‡»Actionsï¼Œç‚¹å‡»æœ€è¿‘çš„æˆåŠŸæž„å»ºï¼ˆæ˜¾ç¤ºç»¿è‰²å‹¾å·ï¼‰ã€‚
+2. ç¿»åˆ°æœ€åŽï¼Œç‚¹å‡»Disintegrationæ¥ä¸‹è½½**åŽ‹ç¼©çš„jaræ–‡ä»¶**ï¼ˆæ— æ³•ç›´æŽ¥æ”¾å…¥æ¸¸æˆï¼‰è§£åŽ‹æ–‡ä»¶åŽæ‰å¯ä»¥æ”¾å…¥æ¸¸æˆmodæ–‡ä»¶å¤¹ã€‚
+* ï¼ˆæ­¤æ–¹æ³•å¯ä»¥æž„å»ºå®‰å“å’Œç”µè„‘éƒ½èƒ½ç”¨çš„æ–‡ä»¶ï¼‰
 
-## ±¾µØ¹¹½¨
+## æœ¬åœ°æž„å»º
 
-* ### ½öµçÄÔ°æ·½·¨£º
-1. °²×° JDK **17**¡£
-2. ÔËÐÐ `gradlew jar`¡£
-3. modÎÄ¼þ½«»áÔÚ`build/libs` Â·¾¶¡£
+* ### ä»…ç”µè„‘ç‰ˆæ–¹æ³•ï¼š
+1. å®‰è£… JDK **17**ã€‚
+2. è¿è¡Œ `gradlew jar`ã€‚
+3. modæ–‡ä»¶å°†ä¼šåœ¨`build/libs` è·¯å¾„ã€‚
 
-* ### °²×¿ºÍµçÄÔ°æ·½·¨£º
-  £¨²»ÍÆ¼ö£¬Ö»ÓÐaction builds²»ÄÜÓÃµÄÊ±ºòÔÙÓÃ£©
-1. ÏÂÔØAndroid SDK, ½âÑ¹²¢½« `ANDROID_HOME` »·¾³±äÁ¿ÉèÖÃÎªËüµÄ°²×°Â·¾¶¡£*¹Ù·½discord·þÎñÆ÷ÖÐ`modding-general`ÆµµÀÖÐÓÐ×Ô¶¯ÉèÖÃµÄÅú´¦ÀíÎÄ¼þ¡£*
-2. È·¶¨Äã°²×°ÁËAPI level 30£¬ ×îºÃÊÇ×î½üµÄ°æ±¾¡£ (±ÈÈç 30.0.1)
-3. ½«build-tools·ÅÈëÂ·¾¶¡£ ±ÈÈç, Èç¹û°²×°µÄ°æ±¾ÊÇ `30.0.1`£¬ ÄÇ¾ÍÊÇ `$ANDROID_HOME/build-tools/30.0.1`¡£
-4. ÔËÐÐ `gradlew deploy`¡£ Èç¹ûÄã×ö¶ÔÁË, modÎÄ¼þ½«»áÔÚ `build/libs` Â·¾¶¡£
+* ### å®‰å“å’Œç”µè„‘ç‰ˆæ–¹æ³•ï¼š
+  ï¼ˆä¸æŽ¨èï¼Œåªæœ‰action buildsä¸èƒ½ç”¨çš„æ—¶å€™å†ç”¨ï¼‰
+1. ä¸‹è½½Android SDK, è§£åŽ‹å¹¶å°† `ANDROID_HOME` çŽ¯å¢ƒå˜é‡è®¾ç½®ä¸ºå®ƒçš„å®‰è£…è·¯å¾„ã€‚*å®˜æ–¹discordæœåŠ¡å™¨ä¸­`modding-general`é¢‘é“ä¸­æœ‰è‡ªåŠ¨è®¾ç½®çš„æ‰¹å¤„ç†æ–‡ä»¶ã€‚*
+2. ç¡®å®šä½ å®‰è£…äº†API level 30ï¼Œ æœ€å¥½æ˜¯æœ€è¿‘çš„ç‰ˆæœ¬ã€‚ (æ¯”å¦‚ 30.0.1)
+3. å°†build-toolsæ”¾å…¥è·¯å¾„ã€‚ æ¯”å¦‚, å¦‚æžœå®‰è£…çš„ç‰ˆæœ¬æ˜¯ `30.0.1`ï¼Œ é‚£å°±æ˜¯ `$ANDROID_HOME/build-tools/30.0.1`ã€‚
+4. è¿è¡Œ `gradlew deploy`ã€‚ å¦‚æžœä½ åšå¯¹äº†, modæ–‡ä»¶å°†ä¼šåœ¨ `build/libs` è·¯å¾„ã€‚
