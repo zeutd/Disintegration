@@ -100,7 +100,7 @@ public class LaserFusionReactor extends PowerGenerator{
             if(flushed) {
                 if (efficiency >= 0.9999f && power.status >= 0.99f) {
 
-                    warmup = Mathf.lerpDelta(warmup, fullness, warmupSpeed * timeScale * fullness);
+                    warmup = Mathf.lerpDelta(warmup, fullness, warmupSpeed * timeScale);
                     if (Mathf.equal(warmup, fullness, 0.001f)) {
                         warmup = fullness;
                     }

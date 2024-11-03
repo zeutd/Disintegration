@@ -8,7 +8,8 @@ public class DTLoadouts {
             basicSpacestations,
             basicPedestal,
             basicPillar,
-            basicAltar
+            basicAltar,
+            basicPlain
     ;
 
     public static void load() {
@@ -16,5 +17,6 @@ public class DTLoadouts {
         basicPillar = Schematics.readBase64("bXNjaAF4nCWLwQqAIBAFnyVd/IP+wX/pHh1WXWLBVFz/n5KYuQ0DC7vCFnoYLpBKPCRn6nCJNXZpQ2oBsGUKnBXLeRnsSVTK4LvTzD7Wzr79H2CmHy+CDhiO");
         basicAltar = Schematics.readBase64("bXNjaAF4nB3Lyw2AIBBF0QeKC63AIijCOoyLASZmEgQz0H/85C5PLhzcgLHQxZgDNYlb7qRYEreocnepBcCUKXBusPthsCZpUjqfSh/7WJU9/RtgAPtmHkGeF7A=");
         basicSpacestations = Schematics.readBase64("bXNjaAF4nCWLQQrAIAwEVy299BV9gC8qPaQaJGBVjP+nStm5DMPCwTlshV6GzRFHZA1d2pBaAOyZHs4Ke90GZxSVMjh1Wtlro8Bex2+hdp4Ps5j7ACLBF6s=");
+        basicPlain = Schematics.readBase64("bXNjaAF4nB2LwQqAIBAFnyUd6gv6CP+le3RYdYkFU3H9f8qYuQ0DCzvDZnoYqyeVcCSSjC2yhia1S8kAlkSek2I6L4M9ikrufDca2YXS2NV/A8zw4wVBJBes");
     }
 }

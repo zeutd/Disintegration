@@ -163,11 +163,8 @@ public class LaserReflector extends Block {
             {
                 if (otherCame.contains(id)) break label;
                 if (!split) {
-                    for (int i = 0; i < sideLaser.length; i++) {
-                        float side = sideLaser[i];
-                        if (i != rotation) {
-                            luminosity += side;
-                        }
+                    for (float side : sideLaser) {
+                        luminosity += side;
                     }
                 } else {
                     luminosity = sideLaser[Mathf.mod(rotation + 2, 4)];

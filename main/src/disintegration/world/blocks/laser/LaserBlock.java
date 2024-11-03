@@ -1,6 +1,6 @@
 package disintegration.world.blocks.laser;
 
-public interface LaserBlock extends LaserConsumer {
+public interface LaserBlock{
     float luminosityFrac();
 
     float[] l();

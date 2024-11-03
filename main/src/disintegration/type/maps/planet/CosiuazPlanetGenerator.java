@@ -10,6 +10,7 @@ import arc.util.Tmp;
 import arc.util.noise.Ridged;
 import arc.util.noise.Simplex;
 import disintegration.content.DTBlocks;
+import disintegration.content.DTLoadouts;
 import mindustry.ai.Astar;
 import mindustry.content.Blocks;
 import mindustry.content.Loadouts;
@@ -27,6 +28,7 @@ import static mindustry.Vars.state;
 import static mindustry.Vars.world;
 
 public class CosiuazPlanetGenerator extends PlanetGenerator {
+
     public float heightScl = 0.9f, octaves = 8, persistence = 0.7f, heightPow = 3f, heightMult = 1.6f;
 
     //TODO inline/remove
@@ -37,7 +39,7 @@ public class CosiuazPlanetGenerator extends PlanetGenerator {
 
     {
         baseSeed = 2;
-        defaultLoadout = Loadouts.basicBastion;
+        defaultLoadout = DTLoadouts.basicPlain;
     }
 
     @Override

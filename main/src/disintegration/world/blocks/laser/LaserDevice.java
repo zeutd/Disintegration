@@ -129,11 +129,6 @@ public class LaserDevice extends GenericCrafter {
         }
 
         @Override
-        public void call(float value, int from, IntSet cameFrom) {
-
-        }
-
-        @Override
         public float luminosityFrac() {
             return Mathf.clamp(luminosity / visualMaxLaser) * laserScale;
         }

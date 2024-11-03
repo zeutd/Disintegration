@@ -91,7 +91,7 @@ public class DTPlanets {
             lightSrcTo = 0.5f;
             lightDstFrom = 0.2f;
             clearSectorOnLose = true;
-            defaultCore = Blocks.coreBastion;
+            defaultCore = DTBlocks.corePlain;
             iconColor = Color.valueOf("dd5b24");
             allowWaves = true;
             allowWaveSimulation = true;

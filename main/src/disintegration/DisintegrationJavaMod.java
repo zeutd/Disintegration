@@ -4,22 +4,15 @@ import arc.Core;
 import arc.Events;
 import arc.graphics.Color;
 import arc.graphics.Pixmap;
-import arc.graphics.Texture;
-import arc.graphics.g2d.TextureRegion;
-import arc.math.geom.Vec2;
 import arc.struct.Seq;
-import arc.util.Log;
 import arclibrary.graphics.g3d.model.obj.OBJModel;
 import arclibrary.graphics.g3d.render.GenericRenderer3D;
 import disintegration.content.*;
 import disintegration.core.*;
 import disintegration.entities.DTGroups;
-import disintegration.entities.bullet.ContinuousLaserLightningBulletType;
 import disintegration.gen.entities.EntityRegistry;
 import disintegration.graphics.DTCacheLayer;
 import disintegration.graphics.DTShaders;
-import disintegration.graphics.LaserLightning;
-import disintegration.graphics.Pal2;
 import disintegration.ui.DTUI;
 import mindustry.Vars;
 import mindustry.content.Items;
@@ -28,7 +21,6 @@ import mindustry.content.TechTree;
 import mindustry.game.EventType;
 import mindustry.graphics.MultiPacker;
 import mindustry.mod.Mod;
-import mindustry.type.Category;
 import mindustry.type.Item;
 import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
@@ -41,9 +33,6 @@ import multicraft.Recipe;
 import java.util.Objects;
 
 import static arc.Core.app;
-import static disintegration.DTVars.modName;
-import static mindustry.Vars.*;
-import static mindustry.type.ItemStack.with;
 
 public class DisintegrationJavaMod extends Mod{
     public static OBJModel test;
@@ -128,10 +117,7 @@ public class DisintegrationJavaMod extends Mod{
         } catch (Throwable ignored) {
 
         }
-        Events.run(EventType.Trigger.drawOver, () -> {
-            LaserLightning.draw();
-            if(!state.isPaused()) ContinuousLaserLightningBulletType.data.update();
-        });
+
         Vars.content.planets().each(p -> p.solarSystem == Planets.sun, p -> {
             p.hiddenItems.remove(DTItems.spaceStationPanel);
         });

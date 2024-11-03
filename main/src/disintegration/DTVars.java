@@ -18,7 +18,7 @@ import java.util.Objects;
 
 public class DTVars {
     public static String modName = "disintegration";
-    public static int spaceStationRequirement = 10000;
+    public static int spaceStationRequirement = 5000;
     public static int spaceStationBaseRequirement = 2;
     public static boolean debugMode = true;
 

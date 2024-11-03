@@ -8,6 +8,8 @@ import arc.math.Mathf;
 import arc.math.geom.Point2;
 import arc.util.Time;
 import arc.util.Tmp;
+import arc.util.io.Reads;
+import arc.util.io.Writes;
 import disintegration.content.DTFx;
 import disintegration.util.DrawDef;
 import mindustry.entities.Effect;
@@ -183,6 +185,27 @@ public class PayloadTeleporter extends PayloadBlock {
 
         protected boolean linkValid(){
             return link != -1 && world.build(this.link) instanceof PayloadTeleporterBuild other && other.block == block && other.team == team && within(other, range);
+        }
+
+        @Override
+        public byte version(){
+            return 1;
+        }
+
+        @Override
+        public void read(Reads read, byte revision){
+            if(revision >= 1){
+                height = read.f();
+                charge = read.f();
+                link = read.i();
+            }
+        }
+
+        @Override
+        public void write(Writes write){
+            write.f(height);
+            write.f(charge);
+            write.i(link);
         }
     }
 }
