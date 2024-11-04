@@ -1,6 +1,6 @@
 [English](README.md) | 中文
 
-+ **Discord 服务器**：https://discord.gg/XGq7NBz8RZ
++ **Discord 服务器**：https://discord.gg/GKESE5hHXZ
 + **QQ**：676206144
 
 ![](images/qq-QRcode.png)

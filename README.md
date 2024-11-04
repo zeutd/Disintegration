@@ -1,6 +1,6 @@
 English | [ÖÐÎÄ](README_zh_CN.md)
 
-+ **Discord Server**: https://discord.gg/XGq7NBz8RZ
++ **Discord Server**: https://discord.gg/GKESE5hHXZ
 + **QQ**: 676206144
 
 ![](images/qq-QRcode.png)
