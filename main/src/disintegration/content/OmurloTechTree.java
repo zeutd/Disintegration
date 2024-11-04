@@ -73,9 +73,11 @@ public class OmurloTechTree {
                                     node(steelBlastFurnace);
                                 });
                                 node(conductionAlloySmelter, () -> {
+                                    node(airCompressor);
                                     node(magnetismAlloySmelter);
                                 });
                                 node(melter, () -> {
+                                    node(centrifuge);
                                     node(surgeFurnace, () -> {
 
                                     });
@@ -116,7 +118,9 @@ public class OmurloTechTree {
                         node(liquidJunction, () -> {
                             node(liquidRouter, () -> {
                                 node(bridgeConduit, () -> {
-                                    node(magnetizedConduit);
+                                    node(magnetizedConduit, () -> {
+                                        node(centrifugalPump);
+                                    });
                                     node(liquidContainer, () -> {
                                         node(liquidTank);
                                         node(liquidCellPacker, () -> {
@@ -254,6 +258,9 @@ public class OmurloTechTree {
                     });
                 });
                 nodeProduce(Liquids.water, () -> {
+                    nodeProduce(DTLiquids.steam, () -> {});
+                    nodeProduce(Liquids.hydrogen, () -> {});
+                    nodeProduce(DTLiquids.oxygen, () -> {});
                     nodeProduce(DTLiquids.algalWater, () -> {});
                 });
             });

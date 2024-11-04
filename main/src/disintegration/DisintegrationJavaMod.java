@@ -33,7 +33,12 @@ import multicraft.Recipe;
 import java.util.Objects;
 
 import static arc.Core.app;
+import static arc.Core.graphics;
+import static mindustry.Vars.renderer;
+import static mindustry.Vars.state;
 
+//Vars.content.each(c=>{if(c.minfo.mod!=null&&c.minfo.mod.name=="disintegration"&&c.localizedName==c.name)Log.info(c)})
+//Vars.content.each(c=>{if(c.minfo.mod!=null&&c.minfo.mod.name=="disintegration"&&c instanceof UnlockableContent&&!c.unlocked())Log.info(c)})
 public class DisintegrationJavaMod extends Mod{
     public static OBJModel test;
     public DisintegrationJavaMod(){
@@ -85,8 +90,31 @@ public class DisintegrationJavaMod extends Mod{
     @Override
     public void init(){
         DTBlocks.init();
+        try {
+            DTVars.spaceStationIO.read();
+            DTVars.exportIO.read();
+        } catch (Throwable ignored) {
+
+        }
+        Events.run(EventType.Trigger.preDraw, () -> {
+            if(renderer.backgroundBuffer != null){
+                int size = Math.max(graphics.getWidth(), graphics.getHeight());
+                Vars.renderer.backgroundBuffer.begin(Color.clear);
+
+                var params = state.rules.planetBackground;
+
+                //override some values
+                params.viewW = size;
+                params.viewH = size;
+                params.alwaysDrawAtmosphere = true;
+                params.drawUi = false;
+
+                Vars.renderer.planets.render(params);
+
+                Vars.renderer.backgroundBuffer.end();
+            }
+        });
         app.addListener(DTVars.renderer = new DTRenderer());
-        PlanetDialog.debugSelect = DTVars.debugMode;
         app.addListener(DTVars.DTUI = new DTUI());
         DTVars.renderer3D = new GenericRenderer3D();
         DTVars.renderer3D.init();
@@ -110,13 +138,11 @@ public class DisintegrationJavaMod extends Mod{
             p.reloadMesh();
             p.clipRadius *= 2f;
         });
+        Vars.content.planets().each(p -> {
+            p.orbitTime /= 10;
+            p.rotateTime /= 10;
+        });
         DTPlanets.luna.orbitRadius *= 0.5f;
-        try {
-            DTVars.spaceStationIO.read();
-            DTVars.exportIO.read();
-        } catch (Throwable ignored) {
-
-        }
 
         Vars.content.planets().each(p -> p.solarSystem == Planets.sun, p -> {
             p.hiddenItems.remove(DTItems.spaceStationPanel);

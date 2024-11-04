@@ -38,6 +38,7 @@ public class SpaceStationTechTree {
                 });
             });
             node(spaceSolarPanel);
+            node(gasCollector);
         });
         r.planet = Planets.serpulo;
         r.objectives = Seq.with(new Objectives.Research(spaceStationLaunchPad));

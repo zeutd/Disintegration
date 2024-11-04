@@ -6,6 +6,7 @@ import arc.util.Log;
 import disintegration.DTVars;
 import disintegration.content.DTBlocks;
 import disintegration.type.maps.planet.SpaceStationGenerator;
+import disintegration.world.meta.DTEnv;
 import mindustry.Vars;
 import mindustry.game.Saves;
 import mindustry.graphics.g3d.HexMesh;
@@ -34,7 +35,7 @@ public class SpaceStation extends Planet {
         clipRadius = 2;
         orbitRadius = parent.radius + 1f;
         alwaysUnlocked = true;
-        defaultEnv = Env.space;
+        defaultEnv = Env.space | DTEnv.omurlo | DTEnv.twin;
         allowWaves = false;
         icon = "commandRally";
         defaultCore = DTBlocks.spaceStationCore;

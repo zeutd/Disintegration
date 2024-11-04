@@ -37,8 +37,9 @@ public class SpaceStationGenerator extends BlankPlanetGenerator {
         state.rules.planetBackground = new PlanetParams() {{
             planet = sector.planet.parent;
             camPos.setZero();
-            planet.addParentOffset(camPos).nor();
-            zoom = 1;
+            sector.planet.addParentOffset(camPos);
+            camPos.scl(0.5f);
+            zoom = 1f;
         }};
 
         state.rules.dragMultiplier = 0.7f; //yes, space actually has 0 drag but true 0% drag is very annoying

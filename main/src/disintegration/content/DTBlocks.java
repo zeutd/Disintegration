@@ -4058,6 +4058,7 @@ public class DTBlocks {
             size = 3;
             hasPower = true;
             tier = 6;
+            drillMultipliers.put(DTItems.nickel, 1.5f);
             drillEffect = new MultiEffect(Fx.mineImpact, Fx.drillSteam, Fx.mineImpactWave.wrap(Pal.redLight, 40f));
             shake = 4f;
             itemCapacity = 40;
@@ -4255,7 +4256,7 @@ public class DTBlocks {
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
         }};
 
-        blackHoleBlock = new BlackHoleBlock("black-hole-block"){{
+        /*blackHoleBlock = new BlackHoleBlock("black-hole-block"){{
             requirements(Category.effect, with(), true);
             buildVisibility = DTVars.debugMode ? BuildVisibility.shown : BuildVisibility.hidden;
             envEnabled = Env.any;
@@ -4268,7 +4269,7 @@ public class DTBlocks {
             envEnabled = Env.any;
             buildCostMultiplier = 0.01f;
             runs = b -> DTGroups.blackHole.each(Entityc::remove);
-        }};
+        }};*/
         //endregion
     }
 

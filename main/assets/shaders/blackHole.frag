@@ -11,13 +11,13 @@ uniform int u_blackhole_count;
 varying vec2 v_texCoords;
 
 float cforce(in float dst, in float radius, in float force){
-    return (abs(dst / radius) - 1.0)*(abs(dst / radius) - 1.0)*force;
+    return pow((abs(dst / radius) - 1.0), 2.0)*force;
 }
 
 void main(){
     vec2 worldCoords = v_texCoords * u_resolution + u_campos;
-    vec2 displacement = vec2(0, 0);
-    vec4 color = vec4(0, 0, 0, 0);
+    vec2 displacement = vec2(0., 0.);
+    vec4 color = vec4(0., 0., 0., 0.);
     for (int i = 0; i < MAX_BLACKHOLES; i++){
         vec4 blackhole = u_blackholes[i];
         float radius = blackhole.z;

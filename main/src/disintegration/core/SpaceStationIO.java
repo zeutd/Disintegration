@@ -24,7 +24,8 @@ public class SpaceStationIO implements ApplicationListener {
     public void read() throws IOException {
         content.setCurrentMod(mods.getMod(modName));
         for (String s : DTVars.spaceStationFi.readString().split("/")) {
-            SpaceStation.create(content.planet(s));
+            SpaceStation ss = SpaceStation.create(content.planet(s));
+            ss.init();
         }
         content.setCurrentMod(null);
     }

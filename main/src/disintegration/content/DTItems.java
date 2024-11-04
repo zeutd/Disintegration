@@ -73,10 +73,10 @@ public class DTItems {
             cost = 0.5f;
         }};
 
-        aluminum = new Item("aluminum", Color.valueOf("D2D2D2")){{
+        /*aluminum = new Item("aluminum", Color.valueOf("D2D2D2")){{
             hardness = 2;
             cost = 1f;
-        }};
+        }};*/
         lithium = new Item("lithium", Color.valueOf("d5d5d5")){{
             cost = 1;
             hardness = 1;
@@ -84,7 +84,7 @@ public class DTItems {
             explosiveness = 0.5f;
         }};
         siliconCrystal = new Item("silicon-crystal", Color.valueOf("dfdfe8")){{
-            hardness = 2;
+            hardness = 1;
             cost = 1f;
         }};
 
