@@ -123,9 +123,9 @@ public class OmurloTechTree {
                                     });
                                     node(liquidContainer, () -> {
                                         node(liquidTank);
-                                        node(liquidCellPacker, () -> {
+                                        /*node(liquidCellPacker, () -> {
                                             node(liquidCellUnpacker);
-                                        });
+                                        });*/
                                     });
                                 });
                             });

@@ -124,7 +124,7 @@ public class ExportHandler implements ApplicationListener {
                 items.add(item, (int)(stat.mean * newSecondsPassed * sector.getProductionScale()));
             });
             to.info.lastImported.add(items);
-            to.addItems(items);
+            items.each((item, amount) -> to.info.handleItemImport(item, amount));
             map.each((item, stat) -> {
                 if(sector.info.items.get(item) <= 0 && sector.info.production.get(item, SectorInfo.ExportStat::new).mean < 0 && stat.mean > 0){
                     //cap export by import when production is negative.
@@ -141,7 +141,7 @@ public class ExportHandler implements ApplicationListener {
                     items.add(item, (int) (stat.mean * newSecondsPassed * sector.getProductionScale()));
                 });
                 sector.info.lastImported.add(items);
-                sector.addItems(items);
+                items.each((item, amount) -> sector.info.handleItemImport(item, amount));
                 map.each((item, stat) -> {
                     if (sector.info.items.get(item) <= 0 && from.info.production.get(item, SectorInfo.ExportStat::new).mean < 0 && stat.mean > 0) {
                         //cap export by import when production is negative.
@@ -160,7 +160,7 @@ public class ExportHandler implements ApplicationListener {
                     items.add(item, (int) (stat.mean * newSecondsPassed * fromSec.getProductionScale()));
                 });
                 toSec.info.lastImported.add(items);
-                toSec.addItems(items);
+                items.each((item, amount) -> toSec.info.handleItemImport(item, amount));
                 map1.each((item, stat) -> {
                     if (to.getSector(PlanetGrid.Ptile.empty).info.items.get(item) <= 0 && fromSec.info.production.get(item, SectorInfo.ExportStat::new).mean < 0 && stat.mean > 0) {
                         //cap export by import when production is negative.

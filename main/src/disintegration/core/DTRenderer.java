@@ -22,14 +22,5 @@ public class DTRenderer implements ApplicationListener {
     public void update() {
         Vars.renderer.planets.cam.near = 0.4f;
         spaceStation.update();
-        if(Vars.state.isGame() && Vars.state.isCampaign() && Vars.state.getSector().planet instanceof SpaceStation){
-            Planet p = Vars.state.getSector().planet;
-            Vars.state.rules.planetBackground = new PlanetParams() {{
-                planet = p;
-                camPos.setZero();
-                p.addParentOffset(camPos);
-                zoom = 0;
-            }};
-        }
     }
 }

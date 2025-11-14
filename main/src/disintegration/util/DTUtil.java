@@ -5,6 +5,7 @@ import arc.files.Fi;
 import arc.graphics.Texture;
 import arc.struct.Seq;
 import arc.util.Log;
+import arc.util.Structs;
 import arclibrary.graphics.g3d.model.obj.OBJModel;
 import arclibrary.graphics.g3d.model.obj.ObjectModelFactory;
 import arclibrary.graphics.g3d.model.obj.ObjectShader;
@@ -14,6 +15,8 @@ import mindustry.content.TechTree.TechNode;
 import mindustry.ctype.UnlockableContent;
 import mindustry.game.Objectives;
 import mindustry.type.ItemStack;
+import mindustry.type.Planet;
+import mindustry.world.Block;
 
 import java.io.File;
 import java.io.IOException;
@@ -95,5 +98,9 @@ public class DTUtil {
             }
         });
         //new TechNode(tree, content, content.researchRequirements());
+    }
+
+    public static boolean isVisibleOn(Block block, Planet planet){
+        return Structs.contains(block.requirements, i -> i.item.shownPlanets.contains(planet));
     }
 }

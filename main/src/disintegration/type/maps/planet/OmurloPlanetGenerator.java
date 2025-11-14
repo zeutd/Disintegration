@@ -122,11 +122,11 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
     }
 
     @Override
-    public Color getColor(Vec3 position) {
+    public void getColor(Vec3 position, Color out) {
         Block block = getBlock(position);
         //replace salt with sand color
-        if (block == Blocks.hotrock) return Blocks.snow.mapColor;
-        return Tmp.c1.set(block.mapColor).a(1f - block.albedo);
+        if (block == Blocks.hotrock) out.set(Blocks.snow.mapColor);
+        out.set(block.mapColor).a(1f - block.albedo);
     }
 
     @Override
@@ -605,51 +605,6 @@ public class OmurloPlanetGenerator extends PlanetGenerator {
         }
 
         float difficulty = sector.threat;
-        ints.clear();
-        ints.ensureCapacity(width * height / 4);
-
-        int ruinCount = rand.random(-2, 4);
-        if (ruinCount > 0) {
-            int padding = 25;
-
-            //create list of potential positions
-            for (int x = padding; x < width - padding; x++) {
-                for (int y = padding; y < height - padding; y++) {
-                    Tile tile = tiles.getn(x, y);
-                    if (!tile.solid() && (tile.drop() != null || tile.floor().liquidDrop != null)) {
-                        ints.add(tile.pos());
-                    }
-                }
-            }
-
-            ints.shuffle(rand);
-
-            int placed = 0;
-            float diffRange = 0.4f;
-            //try each position
-            for (int i = 0; i < ints.size && placed < ruinCount; i++) {
-                int val = ints.items[i];
-                int x = Point2.x(val), y = Point2.y(val);
-
-                //do not overwrite player spawn
-                if (Mathf.within(x, y, spawn.x, spawn.y, 18f)) {
-                    continue;
-                }
-
-                float range = difficulty + rand.random(diffRange);
-
-                Tile tile = tiles.getn(x, y);
-                BasePart part = null;
-                if (tile.overlay().itemDrop != null) {
-                    part = bases.forResource(tile.drop()).getFrac(range);
-                } else if (tile.floor().liquidDrop != null && rand.chance(0.05)) {
-                    part = bases.forResource(tile.floor().liquidDrop).getFrac(range);
-                } else if (rand.chance(0.05)) { //ore-less parts are less likely to occur.
-                    part = bases.parts.getFrac(range);
-                }
-
-            }
-        }
 
         //remove invalid ores
         for (Tile tile : tiles) {

@@ -131,7 +131,7 @@ public class Quarry extends Block {
         int mx = (int) (x + Geometry.d4x(rotation) * (areaSize / 2f - (areaSize % 2) / 2f - sizeOffset * 2) - areaSize / 2f + (areaSize % 2));
         int my = (int) (y + Geometry.d4y(rotation) * (areaSize / 2f - (areaSize % 2) / 2f - sizeOffset * 2) - areaSize / 2f + (areaSize % 2));
 
-        Seq<Tile> tiles = WorldDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
+        Seq<Tile> tiles = WorldDef.getAreaTile(mx - 1, my - 1, areaSize, areaSize);
 
         Seq<Item> items = getDropList(tiles);
 
@@ -153,7 +153,7 @@ public class Quarry extends Block {
         int mx = (int) (tile.x + Geometry.d4x(rotation) * (areaSize / 2f - (areaSize % 2) / 2f - sizeOffset * 2) - areaSize / 2f + (areaSize % 2));
         int my = (int) (tile.y + Geometry.d4y(rotation) * (areaSize / 2f - (areaSize % 2) / 2f - sizeOffset * 2) - areaSize / 2f + (areaSize % 2));
 
-        Seq<Tile> tiles = WorldDef.getAreaTile(new Vec2(mx - 1, my - 1), areaSize, areaSize);
+        Seq<Tile> tiles = WorldDef.getAreaTile(mx - 1, my - 1, areaSize, areaSize);
 
         Seq<Item> items = getDropList(tiles);
         Seq<Item> itemList = DTUtil.listItem(items);
@@ -266,10 +266,10 @@ public class Quarry extends Block {
             mx = mineCentre.x;
             my = mineCentre.y;
 
-            Vec2 MiningPos = new Vec2(World.conv(mx - fulls), World.conv(my - fulls));
+            Vec2 miningPos = new Vec2(World.conv(mx - fulls), World.conv(my - fulls));
 
             if(lastChange != Vars.world.tileChanges) {
-                tiles = WorldDef.getAreaTile(MiningPos, areaSize, areaSize);
+                tiles = WorldDef.getAreaTile((int)miningPos.x, (int)miningPos.y, areaSize, areaSize);
 
                 itemsArray = getDropList(tiles);
 

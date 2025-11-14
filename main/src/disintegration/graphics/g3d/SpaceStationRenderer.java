@@ -12,9 +12,12 @@ import arc.util.Log;
 import arc.util.Time;
 import arc.util.Tmp;
 import disintegration.content.DTPlanets;
+import disintegration.type.SpaceStation;
 import mindustry.Vars;
 import mindustry.content.Planets;
 import mindustry.graphics.Pal;
+import mindustry.graphics.g3d.PlanetParams;
+import mindustry.type.Planet;
 
 import static arc.math.Mathf.lerp;
 import static disintegration.DTVars.exportHandler;
@@ -24,7 +27,15 @@ public class SpaceStationRenderer{
     private static final Seq<Vec2> points = new Seq<>();
     private static final Vec2 aP = new Vec2(), bP = new Vec2();
     public void update(){
-
+        if(Vars.state.isGame() && Vars.state.isCampaign() && Vars.state.getSector().planet instanceof SpaceStation){
+            Planet p = Vars.state.getSector().planet;
+            Vars.state.rules.planetBackground = new PlanetParams() {{
+                planet = p;
+                camPos.setZero();
+                p.addParentOffset(camPos);
+                zoom = 1;
+            }};
+        }
     }
 
     public void drawExportLines(){

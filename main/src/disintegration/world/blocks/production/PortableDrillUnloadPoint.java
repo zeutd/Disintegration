@@ -60,7 +60,7 @@ public class PortableDrillUnloadPoint extends Block {
                 if (seq.isEmpty()) return;
                 seq.each(b -> {
                     if (!(b instanceof PortableDrill.PortableDrillBuild && b.dst(this) < range)) return;
-                    b.items().each((item, amount) -> {
+                    b.items.each((item, amount) -> {
                         if (items.get(item) < itemCapacity) {
                             b.items.remove(item, amount);
                             items.add(item, amount);

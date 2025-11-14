@@ -17,21 +17,17 @@ import arc.util.Log;
 import arc.util.Structs;
 import arc.util.Time;
 import arc.util.Tmp;
-import arc.util.noise.Noise;
-import arc.util.noise.Ridged;
-import arc.util.noise.Simplex;
 import disintegration.DTVars;
-import disintegration.entities.DTGroups;
 import disintegration.entities.abilities.PortableBlockAbility;
 import disintegration.entities.bullet.*;
 import disintegration.gen.entities.EntityRegistry;
 import disintegration.graphics.DTCacheLayer;
 import disintegration.graphics.Pal2;
+import disintegration.util.DTUtil;
 import disintegration.world.blocks.campaign.InterplanetaryLaunchPad;
 import disintegration.world.blocks.campaign.OrbitalLaunchPad;
 import disintegration.world.blocks.campaign.SpaceLaunchPad;
 import disintegration.world.blocks.campaign.SpaceStationLaunchPad;
-import disintegration.world.blocks.debug.BlackHoleBlock;
 import disintegration.world.blocks.debug.DPSBlock;
 import disintegration.world.blocks.debug.DebugBlock;
 import disintegration.world.blocks.defence.ContinuousMendProjector;
@@ -71,7 +67,6 @@ import mindustry.entities.pattern.ShootHelix;
 import mindustry.entities.pattern.ShootSpread;
 import mindustry.game.Team;
 import mindustry.gen.Bullet;
-import mindustry.gen.Entityc;
 import mindustry.gen.LegsUnit;
 import mindustry.gen.Sounds;
 import mindustry.graphics.CacheLayer;
@@ -112,9 +107,7 @@ import mindustry.world.meta.Attribute;
 import mindustry.world.meta.BlockGroup;
 import mindustry.world.meta.BuildVisibility;
 import mindustry.world.meta.Env;
-import multicraft.MultiCrafter;
 
-import javax.sound.sampled.LineEvent;
 import java.lang.reflect.Field;
 
 import static arc.graphics.g2d.Draw.color;
@@ -168,6 +161,7 @@ public class DTBlocks {
             liquidCellPacker, liquidCellUnpacker,
             pyrolysisFurnace, tantalumTungstenAlloySmelter, surgeKiln,
             resistanceHeater, heatRelocator, heatExchanger,
+            atmosphereCollector, atmosphereProcessor, liquidCrystalMixer,
     //payload
             payloadAccelerator, payloadDecelerator, magnetizedPayloadRail, magnetizedPayloadRailShort, payloadRedirector, payloadRedirectorPoint, payloadCross, payloadCrossPoint, payloadSeparator, payloadForkLeft, payloadForkRight, payloadForkPoint,
             payloadConstructor, largePayloadConstructor, payloadDeconstructor, payloadLoader, payloadUnloader, //payloadPropulsionTower,
@@ -238,7 +232,7 @@ public class DTBlocks {
         Blocks.kiln.requirements(Category.crafting, with(Items.graphite, 30, Items.lead, 60));
         Blocks.melter.requirements(Category.crafting, with(Items.lead, 35, Items.graphite, 45));
 
-        Blocks.sporePress.envDisabled |= DTEnv.omurlo;
+        Blocks.sporePress.requirements(Category.crafting, with(Items.lead, 35, Items.silicon, 30, Items.copper, 10));
 
         Blocks.slagCentrifuge.buildVisibility = BuildVisibility.shown;
         Blocks.slagCentrifuge.consumeLiquid(Liquids.slag, 30f / 60f);
@@ -246,21 +240,21 @@ public class DTBlocks {
 
         Blocks.unloader.requirements(Category.effect, with(Items.lead, 25, Items.silicon, 30));
 
-        Blocks.reinforcedContainer.envDisabled |= DTEnv.twin;
-        Blocks.ductUnloader.envDisabled |= DTEnv.twin;
-        Blocks.surgeConveyor.envDisabled |= DTEnv.twin;
-        Blocks.surgeRouter.envDisabled |= DTEnv.twin;
-        Blocks.unitCargoUnloadPoint.envDisabled |= DTEnv.twin;
-        Blocks.heatRedirector.envDisabled |= DTEnv.twin;
-        Blocks.heatRouter.envDisabled |= DTEnv.twin;
-        Blocks.slagIncinerator.envDisabled |= DTEnv.twin;
-        Blocks.mechFabricator.envDisabled |= DTEnv.twin;
-        Blocks.unitRepairTower.envDisabled |= DTEnv.twin;
-        Blocks.reinforcedPayloadConveyor.envDisabled |= DTEnv.twin;
-        Blocks.reinforcedPayloadRouter.envDisabled |= DTEnv.twin;
-        Blocks.payloadMassDriver.envDisabled |= DTEnv.twin;
-        Blocks.payloadLoader.envDisabled |= DTEnv.twin;
-        Blocks.payloadUnloader.envDisabled |= DTEnv.twin;
+        Blocks.reinforcedContainer.requirements = Structs.add(Blocks.reinforcedContainer.requirements, new ItemStack(Items.beryllium, 10));
+        Blocks.ductUnloader.requirements = Structs.add(Blocks.ductUnloader.requirements, new ItemStack(Items.beryllium, 1));
+        Blocks.surgeConveyor.requirements = Structs.add(Blocks.surgeConveyor.requirements, new ItemStack(Items.beryllium, 1));
+        Blocks.surgeRouter.requirements = Structs.add(Blocks.surgeRouter.requirements, new ItemStack(Items.beryllium, 1));
+        Blocks.unitCargoUnloadPoint.requirements = Structs.add(Blocks.unitCargoUnloadPoint.requirements, new ItemStack(Items.beryllium, 10));
+        Blocks.heatRedirector.requirements = Structs.add(Blocks.heatRedirector.requirements, new ItemStack(Items.beryllium, 3));
+        Blocks.heatRouter.requirements = Structs.add(Blocks.heatRouter.requirements, new ItemStack(Items.beryllium, 3));
+        Blocks.slagIncinerator.requirements = Structs.add(Blocks.slagIncinerator.requirements, new ItemStack(Items.beryllium, 1));
+        Blocks.mechFabricator.requirements = Structs.add(Blocks.mechFabricator.requirements, new ItemStack(Items.beryllium, 10));
+        Blocks.unitRepairTower.requirements = Structs.add(Blocks.unitRepairTower.requirements, new ItemStack(Items.beryllium, 10));
+        Blocks.reinforcedPayloadConveyor.requirements = Structs.add(Blocks.reinforcedPayloadConveyor.requirements, new ItemStack(Items.beryllium, 3));
+        Blocks.reinforcedPayloadRouter.requirements = Structs.add(Blocks.reinforcedPayloadRouter.requirements, new ItemStack(Items.beryllium, 3));
+        Blocks.payloadMassDriver.requirements = Structs.add(Blocks.payloadMassDriver.requirements, new ItemStack(Items.beryllium, 10));
+        Blocks.payloadLoader.requirements = Structs.add(Blocks.payloadLoader.requirements, new ItemStack(Items.beryllium, 10));
+        Blocks.payloadUnloader.requirements = Structs.add(Blocks.payloadUnloader.requirements, new ItemStack(Items.beryllium, 10));
 
         //endregion
         //region environment
@@ -836,8 +830,8 @@ public class DTBlocks {
             hasLiquids = true;
             outputsLiquid = true;
             envEnabled = Env.any;
-            loopSound = DTSounds.boiler;
-            loopSoundVolume = 0.5f;
+            ambientSound = DTSounds.boiler;
+            ambientSoundVolume = 0.5f;
             drawer = new DrawMulti(
                     new DrawRegion("-bottom"),
                     new DrawLiquidTile(Liquids.water),
@@ -1134,7 +1128,7 @@ public class DTBlocks {
             consumeItems(with(Items.titanium, 5, Items.copper, 3));
             consumePower(0.5f);
         }};
-        liquidCellPacker = new MultiCrafter("liquid-cell-packer"){{
+        /*liquidCellPacker = new MultiCrafter("liquid-cell-packer"){{
             size = 2;
             hasItems = true;
             hasLiquids = true;
@@ -1161,7 +1155,7 @@ public class DTBlocks {
                     new DrawLiquidTile(),
                     new DrawDefault()
             );
-        }};
+        }};*/
 
         pyrolysisFurnace = new GenericCrafter("pyrolysis-furnace"){{
             requirements(Category.crafting, with(DTItems.nickel, 70, Items.graphite, 80));
@@ -1195,7 +1189,7 @@ public class DTBlocks {
             drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawSoftParticles(){{
                 particleRad = 12f;
                 particleSize = 10f;
-            }}, new DrawDefault());
+            }}, new DrawDefault(), new DrawHeatInput());
             fogRadius = 3;
             ambientSound = Sounds.smelter;
             ambientSoundVolume = 0.12f;
@@ -1257,6 +1251,55 @@ public class DTBlocks {
             consumePower(0.5f);
             regionRotated1 = 2;
             heatOutput = 5f;
+        }};
+        atmosphereCollector = new GenericCrafter("atmosphere-collector"){{
+            requirements(Category.crafting, with(DTItems.obsidian, 100, DTItems.nickel, 180, Items.silicon, 150));
+            size = 3;
+            hasLiquids = true;
+
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawLiquidTile(DTLiquids.carbonDioxide), new DrawDefault(),
+                    new DrawParticles(){{
+                        color = Color.valueOf("d4f0ff");
+                        alpha = 0.6f;
+                        particleSize = 4f;
+                        particles = 10;
+                        particleRad = 12f;
+                        particleLife = 140f;
+                    }});
+
+            researchCostMultiplier = 1.1f;
+            liquidCapacity = 40f;
+            consumePower(2f);
+            ambientSound = Sounds.extractLoop;
+            ambientSoundVolume = 0.06f;
+
+            outputLiquid = new LiquidStack(DTLiquids.carbonDioxide, 4f / 60f);
+        }};
+        atmosphereProcessor = new HeatCrafter("atmosphere-processor"){{
+            requirements(Category.crafting, with(DTItems.nickel, 120, DTItems.obsidian, 100, Items.silicon, 90));
+            heatRequirement = 6;
+            maxEfficiency = 2;
+            size = 3;
+            outputLiquid = new LiquidStack(Liquids.ozone, 8f / 60f);
+            consumePower(2f);
+            hasLiquids = true;
+            craftTime = 60f;
+            consumeLiquid(DTLiquids.carbonDioxide, 4f / 60f);
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawLiquidTile(DTLiquids.carbonDioxide), new DrawDefault(), new DrawHeatInput(), new DrawGlowRegion());
+            outputItem = new ItemStack(Items.graphite, 2);
+        }};
+        liquidCrystalMixer = new HeatCrafter("liquid-crystal-mixer"){{
+            requirements(Category.crafting, with(Items.tungsten, 100, Items.silicon, 50, DTItems.nickel, 120, DTItems.siliconCrystal, 50));
+            heatRequirement = 10;
+            maxEfficiency = 3;
+            size = 3;
+            outputLiquid = new LiquidStack(DTLiquids.liquidCrystal, 4f / 60f);
+            consumePower(2f);
+            hasLiquids = true;
+            craftTime = 60f;
+            consumeLiquid(Liquids.ozone, 8f / 60f);
+            consumeItems(with(Items.graphite, 2, Items.silicon, 2));
+            drawer = new DrawMulti(new DrawRegion("-bottom"), new DrawLiquidTile(DTLiquids.liquidCrystal), new DrawLiquidTile(Liquids.ozone), new DrawRegion("-rotator", 1f, true), new DrawDefault());
         }};
         //endregion
         //region payload
@@ -1908,8 +1951,8 @@ public class DTBlocks {
             firingMoveFract = 0.5f;
             shootDuration = 230f;
             shootSound = Sounds.laserbig;
-            loopSound = Sounds.beam;
-            loopSoundVolume = 2f;
+            ambientSound = Sounds.beam;
+            ambientSoundVolume = 2f;
             envEnabled |= Env.space;
 
             shootType = new ContinuousLaserBulletType(78){{
@@ -2911,7 +2954,7 @@ public class DTBlocks {
         }};
         focus = new ContinuousTurret("focus"){{
             consumePower(3);
-            loopSound = Sounds.tractorbeam;
+            ambientSound = Sounds.tractorbeam;
             researchCostMultiplier = 0.75f;
             requirements(Category.turret, with(DTItems.iron,50, Items.graphite, 60, Items.lead, 70));
             shootType = new PointLaserBulletType(){{
@@ -3117,9 +3160,9 @@ public class DTBlocks {
 
             float r = range = 130f;
 
-            loopSound = Sounds.torch;
+            ambientSound = Sounds.torch;
             shootSound = Sounds.none;
-            loopSoundVolume = 1f;
+            ambientSoundVolume = 1f;
 
             shootWarmupSpeed = 0.07f;
 
@@ -3147,9 +3190,9 @@ public class DTBlocks {
             targetInterval = 5f;
             consumePower(12f);
 
-            loopSound = Sounds.laserbeam;
+            ambientSound = Sounds.laserbeam;
             shootSound = Sounds.none;
-            loopSoundVolume = 1f;
+            ambientSoundVolume = 1f;
 
             shootWarmupSpeed = 0.07f;
 
@@ -3218,8 +3261,8 @@ public class DTBlocks {
         }};
         condense = new ContinuousTurret("condense"){{
             shootSound = Sounds.none;
-            loopSoundVolume = 1f;
-            loopSound = Sounds.laserbeam;
+            ambientSoundVolume = 1f;
+            ambientSound = Sounds.laserbeam;
             requirements(Category.turret, with(DTItems.iron, 1000, DTItems.magnetismAlloy, 700, DTItems.iridium, 800, DTItems.conductionAlloy, 300));
             size = 5;
             range = 250;
@@ -3273,8 +3316,8 @@ public class DTBlocks {
             rotateSpeed = 2;
             shootDuration = 230f;
             shootSound = Sounds.laserbig;
-            loopSound = Sounds.beam;
-            loopSoundVolume = 2f;
+            ambientSound = Sounds.beam;
+            ambientSoundVolume = 2f;
             envEnabled |= Env.space;
 
             drawer = new DrawTurret("framed-");
@@ -3315,8 +3358,8 @@ public class DTBlocks {
         }};
         amperage = new ContinuousTurret("amperage"){{
             shootSound = Sounds.none;
-            loopSoundVolume = 1f;
-            loopSound = DTSounds.electricity;
+            ambientSoundVolume = 1f;
+            ambientSound = DTSounds.electricity;
             requirements(Category.turret, with(DTItems.iron, 200, DTItems.magnetismAlloy, 200, DTItems.iridium, 150, DTItems.conductionAlloy, 90));
             size = 5;
             range = 250;
@@ -3657,8 +3700,8 @@ public class DTBlocks {
                             trailLength = 18;
                             missileAccelTime = 50f;
                             lowAltitude = true;
-                            loopSound = Sounds.missileTrail;
-                            loopSoundVolume = 0.6f;
+                            ambientSound = Sounds.missileTrail;
+                            ambientSoundVolume = 0.6f;
                             deathSound = Sounds.largeExplosion;
                             targetAir = false;
 
@@ -3768,9 +3811,9 @@ public class DTBlocks {
 
             float r = range = 200f;
 
-            loopSound = Sounds.torch;
+            ambientSound = Sounds.torch;
             shootSound = Sounds.none;
-            loopSoundVolume = 1f;
+            ambientSoundVolume = 1f;
 
             ammo(
                     Liquids.ozone, new ContinuousFlameBulletType(){{
@@ -3890,7 +3933,7 @@ public class DTBlocks {
             squareSprite = false;
 
             shootSound = Sounds.shootAltLong;
-            loopSoundVolume = 1f;
+            ambientSoundVolume = 1f;
             float r = 1000f;
             range = r * 2;
 
@@ -4281,7 +4324,7 @@ public class DTBlocks {
                 Object o = f.get(null);
                 if(o instanceof Block block) {
                     if(
-                            block.isVisibleOn(DTPlanets.omurlo) &&
+                            DTUtil.isVisibleOn(block, DTPlanets.omurlo) &&
                             block.supportsEnv(DTPlanets.omurlo.defaultEnv)
                     ) {
                         omurloOnlyBlocks.add(block);
@@ -4297,7 +4340,7 @@ public class DTBlocks {
                 Object o = f.get(null);
                 if(o instanceof Block block) {
                     if(
-                            block.isVisibleOn(DTPlanets.cosiuaz) &&
+                            DTUtil.isVisibleOn(block, DTPlanets.cosiuaz) &&
                             block.supportsEnv(DTPlanets.cosiuaz.defaultEnv)
                     ) {
                         twinOnlyBlocks.add(block);

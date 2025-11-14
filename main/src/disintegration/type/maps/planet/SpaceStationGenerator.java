@@ -1,6 +1,7 @@
 package disintegration.type.maps.planet;
 
 import arc.math.geom.Vec2;
+import arc.util.Tmp;
 import disintegration.content.DTBlocks;
 import disintegration.content.DTLoadouts;
 import disintegration.util.WorldDef;
@@ -29,17 +30,16 @@ public class SpaceStationGenerator extends BlankPlanetGenerator {
 
         tiles.eachTile(t -> t.setFloor(background));
 
-        WorldDef.getAreaTile(new Vec2(sx, sy), core.size + 4, core.size + 4).each(t -> {
+        WorldDef.getAreaTile(sx - (core.size + 4) / 2, sy - (core.size + 4) / 2, core.size + 4, core.size + 4).each(t -> {
             t.setFloor(ground);
         });
-        world.tile(sx + core.size / 2 + 3, sy + core.size / 2 + 3).setBlock(core, Team.sharded);
+        world.tile(sx, sy).setBlock(core, Team.sharded);
 
         state.rules.planetBackground = new PlanetParams() {{
-            planet = sector.planet.parent;
+            planet = sector.planet;
             camPos.setZero();
-            sector.planet.addParentOffset(camPos);
-            camPos.scl(0.5f);
-            zoom = 1f;
+            planet.addParentOffset(camPos);
+            zoom = 1;
         }};
 
         state.rules.dragMultiplier = 0.7f; //yes, space actually has 0 drag but true 0% drag is very annoying

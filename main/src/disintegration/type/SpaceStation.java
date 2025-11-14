@@ -39,6 +39,7 @@ public class SpaceStation extends Planet {
         allowWaves = false;
         icon = "commandRally";
         defaultCore = DTBlocks.spaceStationCore;
+        tidalLock = true;
     }
 
     public static SpaceStation create(Planet parent){
@@ -57,6 +58,7 @@ public class SpaceStation extends Planet {
         DTVars.spaceStations.add(spaceStation);
         DTVars.spaceStationPlanets.add(parent);
         Sector sector = spaceStation.getSector(PlanetGrid.Ptile.empty);
+        Vars.content.items().each(item -> item.shownPlanets.add(spaceStation));
         try {
             Fi f = control.saves.getSectorFile(sector);
             if (f.exists()) {
@@ -77,8 +79,14 @@ public class SpaceStation extends Planet {
     public static void remove(Planet p) {
         spaceStations.remove((SpaceStation) p);
         spaceStationPlanets.remove(p.parent);
+        Vars.content.items().each(item -> item.shownPlanets.remove(p));
         p.accessible = false;
         p.visible = false;
+        p.sectors.each(s -> {
+            if(s.save != null) {
+                s.save.delete();
+            }
+        });
         p.sectors.clear();
     }
 }

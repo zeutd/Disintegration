@@ -45,9 +45,9 @@ public class FloorBuilder extends Block {
         public void updateTile() {
             super.updateTile();
             if (!allowUpdate()) return;
-            WorldDef.getAreaTile(new Vec2(
-                            tileX() - (float) range / 2 + Geometry.d4x(rotation) * (float) floorOffset / 2,
-                            tileY() - (float) range / 2 + Geometry.d4y(rotation) * (float) floorOffset / 2),
+            WorldDef.getAreaTile(
+                    (int)(tileX() - (float) range / 2 + Geometry.d4x(rotation) * (float) floorOffset / 2),
+                    (int)(tileY() - (float) range / 2 + Geometry.d4y(rotation) * (float) floorOffset / 2),
                     range, range).each(t -> {
                 if (t != null &&
                         whiteList.size > 0 ? whiteList.contains(t.floor()) :

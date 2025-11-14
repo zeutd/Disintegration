@@ -43,7 +43,6 @@ public class DTPlanets {
                 (p.accessible && p.isLandable() && !(p instanceof SpaceStation));
     }
     public static void load(){
-        Planets.serpulo.hiddenItems.add(DTItems.nitride);
         luna = new Planet("luna", Planets.serpulo, 0.4f, 2){{
             generator = new LunaPlanetGenerator();
             meshLoader = () -> new HexMesh(this, 5);
@@ -62,8 +61,6 @@ public class DTPlanets {
             clearSectorOnLose = true;
             defaultCore = Blocks.coreBastion;
             iconColor = Color.valueOf("cceeff");
-            hiddenItems.addAll(Items.erekirItems);
-
             updateLighting = false;
         }};
         twinCenter = new Planet("twin-center", sun, 0f){{
@@ -97,8 +94,6 @@ public class DTPlanets {
             allowWaveSimulation = true;
             allowSectorInvasion = false;
             allowLaunchSchematics = true;
-            itemWhitelist.addAll(DTItems.twinItems);
-
             updateLighting = false;
 
             defaultAttributes.set(Attribute.heat, 0.8f);
@@ -141,8 +136,6 @@ public class DTPlanets {
             allowWaveSimulation = true;
             allowSectorInvasion = false;
             allowLaunchSchematics = true;
-            itemWhitelist.addAll(DTItems.twinItems);
-
             updateLighting = false;
 
             defaultAttributes.set(Attribute.heat, 0.8f);
@@ -197,7 +190,6 @@ public class DTPlanets {
                 orbitSpacing = 4f;
                 totalRadius += 2.6f;
                 clearSectorOnLose = true;
-                itemWhitelist.addAll(DTItems.omurloItems);
                 updateLighting = false;
                 ruleSetter = r -> {
                     r.waveTeam = Team.blue;

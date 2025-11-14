@@ -13,6 +13,7 @@ import disintegration.entities.DTGroups;
 import disintegration.gen.entities.EntityRegistry;
 import disintegration.graphics.DTCacheLayer;
 import disintegration.graphics.DTShaders;
+import disintegration.type.SpaceStation;
 import disintegration.ui.DTUI;
 import mindustry.Vars;
 import mindustry.content.Items;
@@ -26,9 +27,6 @@ import mindustry.type.ItemStack;
 import mindustry.type.LiquidStack;
 import mindustry.ui.dialogs.PlanetDialog;
 import mindustry.world.meta.Env;
-import multicraft.IOEntry;
-import multicraft.MultiCrafter;
-import multicraft.Recipe;
 
 import java.util.Objects;
 
@@ -52,39 +50,6 @@ public class DisintegrationJavaMod extends Mod{
         //Events.run(EventType.Trigger.postDraw, DTVars.loadRenderer::draw);
         Events.on(EventType.TurnEvent.class, __ -> DTVars.exportHandler.updateItem((int) Vars.turnDuration / 60));
         Events.on(EventType.WorldLoadEvent.class, __ -> DTBlocks.updateVisibility());
-        /*Events.run(EventType.ContentInitEvent.class, () -> {
-            content.setCurrentMod(mods.getMod(modName));
-            DTBlocks.liquidCellPacker = new multicraft.MultiCrafter("liquid-cell-packer"){{
-                size = 2;
-                hasItems = true;
-                hasLiquids = true;
-                liquidCapacity = 200;
-                resolvedRecipes = new Seq<>();
-                requirements(Category.crafting, with());
-            }};
-            Vars.content.liquids().each(l -> {
-                if(!l.hidden){
-                    Item i = new Item(l.name + "-cell", l.color);
-                    i.alwaysUnlocked = true;
-                    String whiteSpace = Objects.equals(Core.bundle.get("whitespacebetween"), "true") ? " " : "";
-                    i.localizedName = l.localizedName + whiteSpace + Core.bundle.get("cell");
-                    ((MultiCrafter)DTBlocks.liquidCellPacker).resolvedRecipes.add(new Recipe(
-                            new IOEntry(
-                                    Seq.with(ItemStack.with(Items.graphite, 1)),
-                                    Seq.with(LiquidStack.with(l, 100))
-                            ),
-                            new IOEntry(
-                                    Seq.with(ItemStack.with(i, 1)),
-                                    Seq.with()
-                            ),
-                            30)
-                    );
-                    DTItems.cells.put(l, i);
-                }
-            });
-            DTBlocks.liquidCellPacker.init();
-            content.setCurrentMod(null);
-        });*/
     }
 
     @Override
@@ -97,7 +62,7 @@ public class DisintegrationJavaMod extends Mod{
 
         }
         Events.run(EventType.Trigger.preDraw, () -> {
-            if(renderer.backgroundBuffer != null){
+            if(renderer.backgroundBuffer != null && !state.isPaused() && state.isGame()){
                 int size = Math.max(graphics.getWidth(), graphics.getHeight());
                 Vars.renderer.backgroundBuffer.begin(Color.clear);
 
@@ -138,37 +103,15 @@ public class DisintegrationJavaMod extends Mod{
             p.reloadMesh();
             p.clipRadius *= 2f;
         });
-        Vars.content.planets().each(p -> {
-            p.orbitTime /= 10;
-            p.rotateTime /= 10;
-        });
         DTPlanets.luna.orbitRadius *= 0.5f;
 
-        Vars.content.planets().each(p -> p.solarSystem == Planets.sun, p -> {
-            p.hiddenItems.remove(DTItems.spaceStationPanel);
-        });
+        DTVars.spaceStations.each(planet -> Vars.content.items().each(item -> item.shownPlanets.addAll(planet)));
+        DTVars.spaceStations.each(planet -> Vars.content.blocks().each(block -> block.shownPlanets.addAll(planet)));
         if(DTVars.debugMode) TechTree.all.each(c -> {
             c.requiresUnlock = false;
             c.requirements = ItemStack.with();
             c.objectives.clear();
         });
-/*        DTItems.cells.each((l, i) -> {
-            TextureRegion base = Core.atlas.find("disintegration-cell");
-            TextureRegion liq = Core.atlas.find("disintegration-cell-liquid");
-            Pixmap liqPixmap = liq.texture.getTextureData().getPixmap().crop(liq.getX(), liq.getY(), liq.width, liq.height);
-            Pixmap basePixmap = base.texture.getTextureData().getPixmap().crop(base.getX(), base.getY(), base.width, base.height);
-            for(int x = 0; x < liqPixmap.width; x++){
-                for(int y = 0; y < liqPixmap.height; y++) {
-                    if (!liqPixmap.empty(x, y)) {
-                        liqPixmap.set(x, y, l.color);
-                    }
-                    if(!basePixmap.empty(x, y)){
-                        liqPixmap.set(x, y, basePixmap.get(x, y));
-                    }
-                }
-            }
-            i.fullIcon = i.uiIcon = new TextureRegion(new Texture(liqPixmap));
-        });*/
     }
     @Override
     public void loadContent() {
@@ -213,7 +156,7 @@ public class DisintegrationJavaMod extends Mod{
                 i.alwaysUnlocked = true;
                 String whiteSpace = Objects.equals(Core.bundle.get("whitespacebetween"), "true") ? " " : "";
                 i.localizedName = l.localizedName + whiteSpace + Core.bundle.get("cell");
-                ((MultiCrafter)DTBlocks.liquidCellPacker).resolvedRecipes.add(new Recipe(
+                /*((MultiCrafter)DTBlocks.liquidCellPacker).resolvedRecipes.add(new Recipe(
                         new IOEntry(
                                 Seq.with(ItemStack.with(Items.graphite, 1)),
                                 Seq.with(LiquidStack.with(l, 10))
@@ -234,7 +177,7 @@ public class DisintegrationJavaMod extends Mod{
                                 Seq.with(LiquidStack.with(l, 10))
                         ),
                         30)
-                );
+                );*/
                 DTItems.cells.put(l, i);
             }
         });

@@ -12,6 +12,7 @@ import mindustry.Vars;
 import mindustry.entities.Units;
 import mindustry.entities.units.BuildPlan;
 import mindustry.game.Team;
+import mindustry.gen.Building;
 import mindustry.graphics.Drawf;
 import mindustry.graphics.Layer;
 import mindustry.graphics.Pal;
@@ -96,7 +97,7 @@ public class UnitAssemblerConstructModule extends BaseTurret {
 
         @Override
         public void draw() {
-            Draw.rect(baseRegions[rotation()], x, y);
+            Draw.rect(baseRegions[((Building)this).rotation], x, y);
             Draw.z(Layer.turret);
             Drawf.shadow(region, x - elevation, y - elevation, rotation - 90);
             Draw.rect(region, x, y, rotation - 90);
@@ -125,7 +126,7 @@ public class UnitAssemblerConstructModule extends BaseTurret {
 
         @Override
         public void updateTile() {
-            link = getLink(player.team(), tileX(), tileY(), rotation());
+            link = getLink(player.team(), tileX(), tileY(), ((Building)this).rotation);
             if (link == null) return;
             building = link.shouldConsume();
             if (!link.wasOccupied && efficiency > 0 && Units.canCreate(team, link.plan().unit)) {

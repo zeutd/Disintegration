@@ -1,41 +1,5 @@
 package disintegration.world.blocks.production;
 
-import arc.Core;
-import arc.graphics.Color;
-import arc.graphics.g2d.TextureRegion;
-import arc.math.Mathf;
-import arc.scene.style.TextureRegionDrawable;
-import arc.scene.ui.ImageButton;
-import arc.scene.ui.layout.Table;
-import arc.struct.EnumSet;
-import arc.struct.Seq;
-import arc.util.*;
-import arc.util.io.Reads;
-import arc.util.io.Writes;
-import mindustry.content.Fx;
-import mindustry.ctype.UnlockableContent;
-import mindustry.entities.Effect;
-import mindustry.entities.units.BuildPlan;
-import mindustry.gen.Building;
-import mindustry.gen.Icon;
-import mindustry.gen.Sounds;
-import mindustry.gen.Tex;
-import mindustry.type.Item;
-import mindustry.type.ItemStack;
-import mindustry.type.Liquid;
-import mindustry.type.LiquidStack;
-import mindustry.ui.ItemDisplay;
-import mindustry.ui.LiquidDisplay;
-import mindustry.ui.Styles;
-import mindustry.world.Block;
-import mindustry.world.consumers.ConsumeItemDynamic;
-import mindustry.world.consumers.ConsumeLiquidsDynamic;
-import mindustry.world.draw.DrawBlock;
-import mindustry.world.draw.DrawDefault;
-import mindustry.world.meta.BlockFlag;
-import mindustry.world.meta.Stat;
-
-import static mindustry.Vars.content;
 
 //nope
 

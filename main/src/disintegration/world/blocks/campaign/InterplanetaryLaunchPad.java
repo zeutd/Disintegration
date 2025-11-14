@@ -221,10 +221,6 @@ public class InterplanetaryLaunchPad extends Block {
                 }
             }
         }
-        @Override
-        public Object config(){
-            return dest.id;
-        }
 
         @Override
         public byte version() {

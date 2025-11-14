@@ -26,6 +26,7 @@ public class SpaceStationIO implements ApplicationListener {
         for (String s : DTVars.spaceStationFi.readString().split("/")) {
             SpaceStation ss = SpaceStation.create(content.planet(s));
             ss.init();
+            ss.orbitTime /= 20f;
         }
         content.setCurrentMod(null);
     }

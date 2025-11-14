@@ -211,11 +211,6 @@ public class SpaceLaunchPad extends Block {
         }
 
         @Override
-        public Object config(){
-            return dest.id;
-        }
-
-        @Override
         public byte version() {
             return 1;
         }

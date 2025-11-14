@@ -1,8 +1,5 @@
 buildscript {
     ext{
-        //the build number that this mod is made for
-        //mindustryVersion = 'v146'
-        //jabelVersion = "93fde537c7"
         sdkRoot = System.getenv("ANDROID_HOME") ?: System.getenv("ANDROID_SDK_ROOT")
         gamePath = "D:/mdt/V7/Mindustry.exe"
         modPath = "${System.getenv("USERPROFILE")}/AppData/Roaming/Mindustry/mods"
@@ -22,10 +19,9 @@ buildscript {
         mavenCentral()
         maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
         maven{ url  'https://raw.githubusercontent.com/Zelaux/Repo/master/repository' }
-        maven{ url 'https://www.jitpack.io' }
-        maven{url 'https://oss.sonatype.org/content/repositories/snapshots/'}
-        maven{url 'https://oss.sonatype.org/content/repositories/releases/'}
-        maven{url 'https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository'}
+        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/"}
+        maven{ url "https://oss.sonatype.org/content/repositories/releases/"}
+        maven{ url "https://raw.githubusercontent.com/GglLfr/EntityAnnoMaven/main"}
     }
     dependencies{
         classpath "${arc(':arc-core')}"
@@ -33,7 +29,7 @@ buildscript {
 }
 plugins{
     id 'java'
-    id 'com.github.GlennFolker.EntityAnno' version "$entVersion"
+    id 'com.github.GglLfr.EntityAnno' version "$entVersion"
 }
 
 version '1.0'
@@ -44,10 +40,9 @@ repositories{
     mavenCentral()
     maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
     maven{ url  'https://raw.githubusercontent.com/Zelaux/Repo/master/repository' }
-    maven{ url 'https://www.jitpack.io' }
-    maven{url 'https://oss.sonatype.org/content/repositories/snapshots/'}
-    maven{url 'https://oss.sonatype.org/content/repositories/releases/'}
-    maven{url 'https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository'}
+    maven{ url "https://oss.sonatype.org/content/repositories/snapshots/"}
+    maven{ url "https://oss.sonatype.org/content/repositories/releases/"}
+    maven{ url "https://raw.githubusercontent.com/GglLfr/EntityAnnoMaven/main"}
 }
 
 java{
@@ -95,15 +90,14 @@ dependencies{
     implementation "${arcLibrary(':graphics-draw3d')}"
     implementation "${arcLibrary(':graphics-g3d')}"
     implementation "${arcLibrary(':graphics-extendedDraw')}"
-    implementation 'com.github.liplum:MultiCrafterLib:v1.8'
 
     // ii.
-    annotationProcessor "com.github.GlennFolker.EntityAnno:downgrader:$entVersion"
+    annotationProcessor "com.github.GglLfr.EntityAnno:downgrader:$entVersion"
 
     // iii.
-    compileOnly "com.github.GlennFolker.EntityAnno:entity:$entVersion"
+    compileOnly "com.github.GglLfr.EntityAnno:entity:$entVersion"
     // iv.
-    kapt "com.github.GlennFolker.EntityAnno:entity:$entVersion"
+    kapt "com.github.GglLfr.EntityAnno:entity:$entVersion"
 }
 
 project(":tools"){
@@ -113,10 +107,6 @@ project(":tools"){
         mavenCentral()
         maven{ url "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
         maven{ url  'https://raw.githubusercontent.com/Zelaux/Repo/master/repository' }
-        maven{ url 'https://www.jitpack.io' }
-        maven{url 'https://oss.sonatype.org/content/repositories/snapshots/'}
-        maven{url 'https://oss.sonatype.org/content/repositories/releases/'}
-        maven{url 'https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository'}
     }
 
     dependencies {
@@ -212,6 +202,7 @@ task testModDesktop {
             into modPath
             rename ("${project.archivesBaseName}Desktop.jar", "${project.archivesBaseName}.jar")
         }
+
         exec {
             commandLine 'cmd', "/c", "${gamePath}"
         }

@@ -72,8 +72,8 @@ public class LunaPlanetGenerator extends PlanetGenerator {
     }
 
     @Override
-    public Color getColor(Vec3 position) {
-        return getBlock(position).mapColor;
+    public void getColor(Vec3 position, Color out) {
+        out.set(getBlock(position).mapColor);
     }
 
     public Block getBlock(Vec3 position) {
